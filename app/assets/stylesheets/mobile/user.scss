@@ -56,6 +56,10 @@
     }
   }
 
+  .delete-account {
+    overflow: hidden;
+  }
+
   .checkbox-label {
     overflow: auto;
     display: block;
@@ -67,9 +71,8 @@
 }
 
 .profile-image {
-  height: 150px;
+  height: 25px;
   width: 100%;
-  background-size: cover;
 }
 
 
@@ -141,11 +144,6 @@
 
 .user-main {
 
-  width: 100%;
-  float: left;
-  margin-bottom: 50px;
-
-
   table.group-members {
     width: 100%;
     p {
@@ -170,18 +168,15 @@
         color: $primary;
       }
     }
-    .user-small {
+    .user-info {
       width: 245px;
     }
   }
 
   .user-content {
-    padding: 10px 8px;
     background-color: $secondary;
-    border: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
-    margin-bottom: 10px;
     box-sizing: border-box;
-    margin-top: 20px;
+    margin-top: 10px;
 
     .btn.right {
       float: right
@@ -209,8 +204,7 @@
   }
 
   .about {
-    background-size: cover;
-    background: dark-light-diff($primary, $secondary, 0%, -75%) center center;
+    background: dark-light-diff($primary, $secondary, 0%, -75%) center;
     width: 100%;
     margin-bottom: 10px;
     overflow: hidden;
@@ -305,6 +299,7 @@
 
         .primary-textual {
           float: left;
+          padding-left: 15px;
           a[href] {
             color: dark-light-diff($secondary, $primary, 75%, -10%);
           }
@@ -329,16 +324,15 @@
     }
 
     .controls {
-      width: 160px;
-      float: right;
-      text-align: right;
+      float: left;
+      padding-left: 15px;
       ul {
         list-style-type: none;
         margin: 0;
       }
       a {
         padding: 5px 10px;
-        width: 140px;
+        width: 120px;
         margin-bottom: 10px;
       }
     }
@@ -395,7 +389,6 @@
 
 
   .user-stream {
-    padding: 0 10px;
     .excerpt {
       margin: 5px 0;
       font-size: 0.929em;
@@ -597,4 +590,34 @@
 
 .notification-buttons {
   display: inline-block;
+}
+
+// mobile fixups for badges
+
+.badge-card.medium {
+  width: 300px;
+}
+
+.show-badge-details {
+  margin-bottom: 1em;
+}
+
+.user-badges {
+  margin-bottom: 2em;
+}
+
+.show-badge-details .badge-grant-info {
+  display: none;
+}
+
+.user-info.medium {
+  width: 300px;
+}
+
+.user-info.medium .user-detail {
+  width: 240px;
+}
+
+.user-info.medium .user-image {
+  width: auto;
 }

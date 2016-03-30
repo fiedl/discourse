@@ -15,7 +15,7 @@ module Jobs
       user = User.find_by(id: args[:user_id])
       to_address = args[:to_address].presence || user.try(:email).presence || "no_email_found"
 
-      set_skip_context(type, args[:user_id], to_address)
+      set_skip_context(type, args[:user_id], to_address, args[:post_id])
 
       return skip(I18n.t("email_log.no_user", user_id: args[:user_id])) unless user
 
@@ -44,17 +44,17 @@ module Jobs
       end
     end
 
-    def set_skip_context(type, user_id, to_address)
-      @skip_context = { type: type, user_id: user_id, to_address: to_address }
+    def set_skip_context(type, user_id, to_address, post_id)
+      @skip_context = { type: type, user_id: user_id, to_address: to_address, post_id: post_id }
     end
 
     NOTIFICATIONS_SENT_BY_MAILING_LIST ||= Set.new %w{posted replied mentioned group_mentioned quoted}
 
-   def message_for_email(user, post, type, notification,
+    def message_for_email(user, post, type, notification,
                          notification_type=nil, notification_data_hash=nil,
                          email_token=nil, to_address=nil)
 
-      set_skip_context(type, user.id, to_address || user.email)
+      set_skip_context(type, user.id, to_address || user.email, post.try(:id))
 
       return skip_message(I18n.t("email_log.anonymous_user"))   if user.anonymous?
       return skip_message(I18n.t("email_log.suspended_not_pm")) if user.suspended? && type != :user_private_message
@@ -62,7 +62,7 @@ module Jobs
       return if user.staged && type == :digest
 
       seen_recently = (user.last_seen_at.present? && user.last_seen_at > SiteSetting.email_time_window_mins.minutes.ago)
-      seen_recently = false if user.email_always || user.staged
+      seen_recently = false if user.user_option.email_always || user.staged
 
       email_args = {}
 
@@ -85,14 +85,14 @@ module Jobs
           email_args[:notification_type] = email_args[:notification_type].to_s
         end
 
-        if user.mailing_list_mode? &&
-           !post.topic.private_message? &&
+        if user.user_option.mailing_list_mode? &&
+           (!post.try(:topic).try(:private_message?)) &&
            NOTIFICATIONS_SENT_BY_MAILING_LIST.include?(email_args[:notification_type])
            # no need to log a reason when the mail was already sent via the mailing list job
            return [nil, nil]
         end
 
-        unless user.email_always?
+        unless user.user_option.email_always?
           if (notification && notification.read?) || (post && post.seen?(user))
             return skip_message(I18n.t('email_log.notification_already_read'))
           end
@@ -107,6 +107,14 @@ module Jobs
 
       if email_token.present?
         email_args[:email_token] = email_token
+      end
+
+      if type == 'notify_old_email'
+        email_args[:new_email] = user.email
+      end
+
+      if EmailLog.reached_max_emails?(user)
+        return skip_message(I18n.t('email_log.exceeded_limit'))
       end
 
       message = UserNotifications.send(type, user, email_args)
@@ -142,6 +150,7 @@ module Jobs
         email_type: @skip_context[:type],
         to_address: @skip_context[:to_address],
         user_id: @skip_context[:user_id],
+        post_id: @skip_context[:post_id],
         skipped: true,
         skipped_reason: "[UserEmail] #{reason}",
       )

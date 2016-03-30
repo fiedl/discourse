@@ -152,6 +152,12 @@ aside.quote {
 }
 
 .topic-body {
+  // this is necessary for ANYTHING that extends past the right edge of
+  // the post body, such as an image in a deeply nested list, image in
+  // a deeply nested blockquote, and so on.. you get the idea.
+  .contents .cooked {
+    overflow: hidden;
+  }
   &.highlighted {
     background-color: dark-light-diff($tertiary, $secondary, 85%, -65%);
   }
@@ -336,6 +342,9 @@ table.md-table {
 }
 
 .whisper {
+  .post-info.whisper {
+    margin-left: 0.5em;
+  }
   .topic-body {
     .cooked {
       font-style: italic;

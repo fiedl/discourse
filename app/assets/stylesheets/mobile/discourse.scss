@@ -110,6 +110,7 @@ h2#site-text-logo
 .mobile-view .mobile-nav {
   a .fa {
     margin-right: 8px;
+    color: dark-light-choose(scale-color($primary, $lightness: 50%), scale-color($secondary, $lightness: 50%));
   }
   a {
     color: $primary;
@@ -120,7 +121,7 @@ h2#site-text-logo
   list-style: none;
   overflow: visible;
   position: relative;
-  width: 40%;
+  width: 45%;
 
   > li > a {
     padding: 8px 10px;
@@ -159,4 +160,28 @@ h2#site-text-logo
       }
     }
   }
+}
+
+/* page not found styles */
+h1.page-not-found {
+  line-height: 24px;
+  margin: 5px 0 -5px 0;
+}
+
+.page-not-found-topics a.badge-wrapper {
+  margin-left: 8px;
+}
+
+h2.popular-topics-title {
+  margin-bottom: 6px;
+  font-size: 1.2em;
+}
+
+h2.recent-topics-title {
+  margin-bottom: 6px;
+  font-size: 1.2em;
+}
+
+.page-not-found-search h2 {
+  font-size: 1.2em;
 }
