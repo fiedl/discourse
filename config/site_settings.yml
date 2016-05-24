@@ -122,7 +122,7 @@ basic:
   post_menu_hidden_items:
     client: true
     type: list
-    default: 'bookmark|edit|delete|admin'
+    default: 'flag|bookmark|edit|delete|admin'
     choices:
      - like
      - edit
@@ -407,6 +407,7 @@ posting:
   min_private_message_title_length:
     client: true
     default: 2
+    min: 1
   allow_uncategorized_topics:
     client: true
     default: true
@@ -576,6 +577,9 @@ email:
     client: true
     default: 4
     min: 1
+  ignore_by_title:
+    type: list
+    default: ''
 
 
 files:
@@ -1124,6 +1128,9 @@ user_preferences:
   default_email_private_messages: true
   default_email_direct: true
   default_email_mailing_list_mode: false
+  default_email_mailing_list_mode_frequency:
+    enum: 'MailingListModeSiteSetting'
+    default: 1
   disable_mailing_list_mode:
     default: false
     client: true
@@ -1215,4 +1222,3 @@ tags:
     client: true
   remove_muted_tags_from_latest:
     default: false
-
