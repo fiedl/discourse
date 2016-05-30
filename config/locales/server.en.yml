@@ -928,7 +928,7 @@ en:
     allow_index_in_robots_txt: "Specify in robots.txt that this site is allowed to be indexed by web search engines."
     email_domains_blacklist: "A pipe-delimited list of email domains that users are not allowed to register accounts with. Example: mailinator.com|trashmail.net"
     email_domains_whitelist: "A pipe-delimited list of email domains that users MUST register accounts with. WARNING: Users with email domains other than those listed will not be allowed!"
-    forgot_password_strict: "Don't inform users of an account's existance when they use the forgot password dialog."
+    forgot_password_strict: "Don't inform users of an account's existence when they use the forgot password dialog."
     log_out_strict: "When logging out, log out ALL sessions for the user on all devices"
     version_checks: "Ping the Discourse Hub for version updates and show new version messages on the /admin dashboard"
     new_version_emails: "Send an email to the contact_email address when a new version of Discourse is available."
@@ -1068,7 +1068,9 @@ en:
     tl3_requires_days_visited: "Minimum number of days that a user needs to have visited the site in the last (tl3 time period) days to qualify for promotion to trust level 3. Set higher than tl3 time period to disable promotions to tl3. (0 or higher)"
     tl3_requires_topics_replied_to: "Minimum number of topics a user needs to have replied to in the last (tl3 time period) days to qualify for promotion to trust level 3. (0 or higher)"
     tl3_requires_topics_viewed: "The percentage of topics created in the last (tl3 time period) days that a user needs to have viewed to qualify for promotion to trust level 3. (0 to 100)"
+    tl3_requires_topics_viewed_cap: "The maximum required number of topics viewed in the last (tl3 time period) days."
     tl3_requires_posts_read: "The percentage of posts created in the last (tl3 time period) days that a user needs to have viewed to qualify for promotion to trust level 3. (0 to 100)"
+    tl3_requires_posts_read_cap: "The maximum required number of posts read in the last (tl3 time period) days."
     tl3_requires_topics_viewed_all_time: "The minimum total number of topics a user must have viewed to qualify for trust level 3."
     tl3_requires_posts_read_all_time: "The minimum total number of posts a user must have read to qualify for trust level 3."
     tl3_requires_max_flagged: "User must not have had more than x posts flagged by x different users in the last (tl3 time period) days to qualify for promotion to trust level 3, where x is this setting's value. (0 or higher)"
@@ -1164,6 +1166,7 @@ en:
 
     reply_by_email_enabled: "Enable replying to topics via email."
     reply_by_email_address: "Template for reply by email incoming email address, for example: %{reply_key}@reply.example.com or replies+%{reply_key}@example.com"
+    incoming_email_prefer_html: "Use the HTML instead of the text for incoming email. May cause unexcpeted formatting issues!"
 
     disable_emails: "Prevent Discourse from sending any kind of emails"
 
@@ -2804,7 +2807,7 @@ en:
         <tr><td><code>#category-slug</code></td><td><code>category:foo</code></td><td><code>group:foo</code></td><td><code>badge:foo</code></td><td></td></tr>
         <tr><td><code>in:likes</code></td><td><code>in:posted</code></td><td><code>in:watching</code></td><td><code>in:tracking</code></td><td><code>in:private</code></td></tr>
         <tr><td><code>in:bookmarks</code></td><td><code>in:first</code></td><td><code>in:pinned</code></td><td><code>in:unpinned</code></td><td><code>in:wiki</code></td></tr>
-        <tr><td><code>posts_count:num</code></td><td><code>before:days or date</code></td><td><code>after:days or date</code></td> <td colspan=2></td></tr>
+        <tr><td><code>posts_count:num</code></td><td><code>before:days or date</code></td><td><code>after:days or date</code></td><td><code>tags:one,two</code></td><td></td></tr>
         </table>
       </p>
       <h3>Examples</h3>
