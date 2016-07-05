@@ -38,6 +38,7 @@ sv:
       long_date_with_year_without_time: "D MMM, 'YY"
       long_date_without_year_with_linebreak: "D MMM <br/>LT"
       long_date_with_year_with_linebreak: "D MMM, 'YY <br/>LT"
+      wrap_ago: "%{date} sedan"
       tiny:
         half_a_minute: "< 1m"
         less_than_x_seconds:
@@ -111,6 +112,8 @@ sv:
       google+: 'dela denna länk på Google+'
       email: 'skicka denna länk i ett email'
     action_codes:
+      public_topic: "gjorde det här ämnet publikt %{when}"
+      private_topic: "gjorde det här ämnet privat %{when}"
       split_topic: "Dela den här tråden %{when}"
       invited_user: "bjöd in %{who} %{when}"
       removed_user: "tog bort %{who} %{when}"
@@ -125,13 +128,22 @@ sv:
         disabled: 'avarkiverades %{when}'
       pinned:
         enabled: 'klistrades %{when}'
+        disabled: 'avklistrad %{when}'
+      pinned_globally:
+        enabled: 'globalt klistrad %{when}'
+        disabled: 'avklistrad %{when}'
+      visible:
+        enabled: 'listades %{when}'
+        disabled: 'avlistades %{when}'
     topic_admin_menu: "ämne administratörs åtgärder"
     emails_are_disabled: "All utgående e-post har blivit globalt deaktiverad av en administratör. Inga e-postnotifikationer av något slag kommer att skickas ut."
+    bootstrap_mode_disabled: "Bootstrap-läge otillgängliggörs i 24 timmar."
     s3:
       regions:
         us_east_1: "Östra USA (N. Virginia)"
         us_west_1: "Västra USA (N. Kalifornien)"
         us_west_2: "Västra USA (Oregon)"
+        us_gov_west_1: "AWS GovCloud (US)"
         eu_west_1: "EU (Irland)"
         eu_central_1: "EU (Frankfurt)"
         sa_east_1: "Sydamerika (Sao Paulo)"
@@ -258,6 +270,7 @@ sv:
         one: "Detta ämne har <b>1</b> ämne som inväntar godkännande"
         other: "Detta ämne har <b>{{count}}</b> inlägg som inväntar godkännande"
       confirm: "Spara ändringar"
+      delete_prompt: "Vill du verkligen ta bort <b>%{username}</b>? Dennes alla poster kommer att tas bort samt epost och IP-adress kommer blockeras."
       approval:
         title: "Inlägget behöver godkännande"
         description: "Vi har mottagit ditt nya inlägg men det behöver bli godkänt av en moderator innan det kan visas. Ha tålamod."
@@ -284,8 +297,8 @@ sv:
       title: "Användare"
       likes_given: "Tilldelade"
       likes_received: "Mottagna"
-      topics_entered: "Registrerade"
-      topics_entered_long: "Registrerade ämnen"
+      topics_entered: "Visade"
+      topics_entered_long: "Ämnen Visade"
       time_read: "Lästid"
       topic_count: "Ämnen"
       topic_count_long: "Ämnen skapade"
@@ -301,8 +314,11 @@ sv:
         other: "%{count} användare"
     groups:
       empty:
+        posts: "Det finns inga inlägg från medlemmar in denna grupp."
         members: "Det finns ingen medlem i den här gruppen."
+        mentions: "Det finns ingen omnämnande i denna grupp."
         messages: "Det finns inget meddelande för den här gruppen."
+        topics: "Det finns inget ämne från medlemmar i denna grupp."
       add: "Lägg till"
       selector_placeholder: "Lägg till medlemmar"
       owner: "ägare"
@@ -409,7 +425,14 @@ sv:
       notifications: "Notifieringar"
       statistics: "Statistik"
       desktop_notifications:
+        label: "Skrivbordsaviseringar"
+        not_supported: "Aviseringar stöds inte i den här webbläsaren. Tyvärr!"
+        perm_default: "Sätt På Aviseringar"
         perm_denied_btn: "Behörighet saknas"
+        perm_denied_expl: "Du nekade tillåtelse för aviseringar. Tillåt aviseringar via din webbläsares inställningar."
+        disable: "Inaktivera Aviseringar"
+        enable: "Aktivera Aviseringar"
+        each_browser_note: "Notera: Du behöver ändra denna inställning i varje webbläsare du använder."
       dismiss_notifications: "Markera alla som lästa"
       dismiss_notifications_tooltip: "Markera alla olästa aviseringar som lästa"
       disable_jump_reply: "Hoppa inte till mitt inlägg efter att jag har svarat"
@@ -426,12 +449,16 @@ sv:
       suspended_notice: "Den här användaren är avstängd till {{date}}."
       suspended_reason: "Anledning:"
       github_profile: "Github"
-      mailing_list_mode: "Skicka mig e-post för varje nytt inlägg (om jag inte tystat ämnet eller kategorin)"
+      mailing_list_mode:
+        individual: "Skicka ett e-postmeddelande för varje nytt inlägg."
+        many_per_day: "Skicka ett epostmeddelande för varje nytt inlägg (ungefär {{dailyEmailEstimate}} per dag)."
+        few_per_day: "Skicka ett epostmeddelande för varje nytt inlägg (mindre än 2 per dag)."
       watched_categories: "Tittade på"
       watched_categories_instructions: "Du kommer automatiskt att bevaka alla nya ämnen i dessa kategorier. Du blir notifierad om alla nya inlägg och ämnen, och en räknare över antalet nya inlägg visas bredvid ämnet."
       tracked_categories: "Bevakade"
       tracked_categories_instructions: "Du kommer automatiskt att följa alla nya ämnen i dessa kategorier. Antalet nya inlägg visas bredvid ämnet."
       muted_categories: "Tystad"
+      muted_categories_instructions: "Du kommer inte att få notifieringar om nya ämnen inom dessa kategorier, och de kommer inte att visas under bland dina olästa ämnen. "
       delete_account: "Radera mitt konto"
       delete_account_confirm: "Är du säker på att du vill ta bort ditt konto permanent? Denna åtgärd kan inte ångras!"
       deleted_yourself: "Ditt konto har tagits bort."
@@ -441,6 +468,7 @@ sv:
       users: "Användare"
       muted_users: "Tystat"
       muted_users_instructions: "Undanta alla notiser från dessa användare."
+      muted_topics_link: "Visa tystade ämnen"
       staff_counters:
         flags_given: "Hjälpsamma flaggor"
         flagged_posts: "flaggade inlägg"
@@ -852,7 +880,7 @@ sv:
       invitee_accepted: "<i title='accepted your invitation' class='fa fa-user'></i><p><span>{{username}}</span> accepterade din inbjudan</p>"
       moved_post: "<i title='moved post' class='fa fa-sign-out'></i><p><span>{{username}}</span> flyttade {{description}}</p>"
       linked: "<i title='linked post' class='fa fa-arrow-left'></i><p><span>{{username}}</span> {{description}}</p>"
-      granted_badge: "<i title='badge granted' class='fa fa-certificate'></i><p>Fötjänade '{{description}}'</p>"
+      granted_badge: "<i title='badge granted' class='fa fa-certificate'></i><p>Förtjänade '{{description}}'</p>"
       alt:
         mentioned: "Omnämnd av"
         quoted: "Citerad av"
@@ -901,7 +929,6 @@ sv:
       post_format: "#{{post_number}} av {{username}}"
       context:
         user: "Sök inlägg av @{{username}}"
-        category: "Sök i kategorin \"{{category}}\""
         topic: "Sök i denna diskussion"
         private_messages: "Sök meddelanden"
     new_item: "ny"
@@ -1492,6 +1519,10 @@ sv:
       with_topics: "%{filter} ämnen"
       with_category: "%{filter} %{category} ämnen"
       latest:
+        title: "Senaste"
+        title_with_count:
+          one: "Senaste (1)"
+          other: "Senaste ({{count}})"
         help: "ämnen med nya inlägg"
       hot:
         title: "Hett"
@@ -1507,9 +1538,17 @@ sv:
         title_in: "Kategori - {{categoryName}}"
         help: "alla ämnen grupperade efter kategori"
       unread:
+        title: "Olästa"
+        title_with_count:
+          one: "Oläst"
+          other: "Olästa ({{count}})"
         help: "ämnen som du bevakar eller följer med olästa inlägg"
+        lower_title_with_count:
+          one: "1 oläst"
+          other: "{{count}} olästa"
       new:
         lower_title: "ny"
+        title: "Nya"
         help: "ämnen skapade de senaste dagarna"
       posted:
         title: "Mina Inlägg"
@@ -1588,7 +1627,6 @@ sv:
           30_days_ago: "30 dagar sedan"
           all: "Alla"
           view_table: "tabell"
-          view_chart: "Stapeldiagram"
           refresh_report: "Uppdatera rapport"
           start_date: "Startdatum"
           end_date: "Slutdatum"
@@ -1660,8 +1698,8 @@ sv:
       groups:
         primary: "primär grpp"
         no_primary: "(ingen primär grupp)"
-        title: "Groups"
-        edit: "Edit Groups"
+        title: "Grupper"
+        edit: "Redigera Grupper"
         refresh: "uppdatera"
         new: "Ny"
         selector_placeholder: "ange användarnamn"
@@ -1704,9 +1742,9 @@ sv:
         change_settings: "Ändra inställningar"
         howto: "Hur installerar jag tillägg?"
       backups:
-        title: "säkerhetskopior"
+        title: "Säkerhetskopior"
         menu:
-          backups: "säkerhetskopior"
+          backups: "Säkerhetskopior"
           logs: "loggar"
         none: "Ingen säkerhetskopia är tillgänglig."
         logs:
@@ -1839,6 +1877,7 @@ sv:
             name: 'älska'
             description: "Gillaknappens färg."
       email:
+        title: "Epost"
         settings: "Inställningar"
         preview_digest: "Sammandrag"
         sending_test: "Skickar testmail..."
@@ -2328,3 +2367,9 @@ sv:
           name: Övrigt
         posting:
           name: Inlägg
+    tagging:
+      topics:
+        none:
+          unread: "Du har inga olästa ämnen."
+        bottom:
+          unread: "Det finns inga fler olästa ämnen."

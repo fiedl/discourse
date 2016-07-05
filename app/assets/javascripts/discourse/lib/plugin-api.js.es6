@@ -10,6 +10,7 @@ import { onPageChange } from 'discourse/lib/page-tracker';
 import { preventCloak } from 'discourse/widgets/post-stream';
 import { h } from 'virtual-dom';
 import { addFlagProperty } from 'discourse/components/site-header';
+import { addPopupMenuOptionsCallback } from 'discourse/controllers/composer';
 
 class PluginApi {
   constructor(version, container) {
@@ -225,6 +226,26 @@ class PluginApi {
   }
 
   /**
+   * Add a new button in the options popup menu.
+   *
+   * Example:
+   *
+   * ```
+   * api.addToolbarPopupMenuOptionsCallback(() => {
+   *  return {
+   *    action: 'toggleWhisper',
+   *    icon: 'eye-slash',
+   *    label: 'composer.toggle_whisper',
+   *    condition: "canWhisper"
+   *  };
+   * });
+   * ```
+  **/
+  addToolbarPopupMenuOptionsCallback(callback) {
+    addPopupMenuOptionsCallback(callback);
+  }
+
+  /**
    * A hook that is called when the post stream is removed from the DOM.
    * This advanced hook should be used if you end up wiring up any
    * events that need to be torn down when the user leaves the topic
@@ -315,7 +336,7 @@ class PluginApi {
 let _pluginv01;
 function getPluginApi(version) {
   version = parseFloat(version);
-  if (version <= 0.4) {
+  if (version <= 0.5) {
     if (!_pluginv01) {
       _pluginv01 = new PluginApi(version, Discourse.__container__);
     }
@@ -337,7 +358,7 @@ export function withPluginApi(version, apiCodeCallback, opts) {
 
   const api = getPluginApi(version);
   if (api) {
-    return apiCodeCallback(api);
+    return apiCodeCallback(api, opts);
   }
 }
 

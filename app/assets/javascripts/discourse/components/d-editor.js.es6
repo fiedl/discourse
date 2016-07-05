@@ -63,18 +63,7 @@ class Toolbar {
       perform: e => e.applySurround('> ', '', 'code_text')
     });
 
-    this.addButton({
-      id: 'code',
-      group: 'insertions',
-      shortcut: 'Shift+C',
-      perform(e) {
-        if (e.selected.value.indexOf("\n") !== -1) {
-          e.applySurround('    ', '', 'code_text');
-        } else {
-          e.applySurround('`', '`', 'code_text');
-        }
-      },
-    });
+    this.addButton({id: 'code', group: 'insertions', shortcut: 'Shift+C', action: 'formatCode'});
 
     this.addButton({
       id: 'bullet',
@@ -113,14 +102,6 @@ class Toolbar {
 
     if (site.mobileView) {
       this.groups.push({group: 'mobileExtras', buttons: []});
-
-      this.addButton({
-        id: 'preview',
-        group: 'mobileExtras',
-        icon: 'television',
-        title: 'composer.hr_preview',
-        perform: e => e.preview()
-      });
     }
 
     this.groups[this.groups.length-1].lastGroup = true;
@@ -192,7 +173,6 @@ export function onToolbarCreate(func) {
 export default Ember.Component.extend({
   classNames: ['d-editor'],
   ready: false,
-  forcePreview: false,
   insertLinkHidden: true,
   linkUrl: '',
   linkText: '',
@@ -461,7 +441,7 @@ export default Ember.Component.extend({
 
         this.set('value', `${pre}${contents}${post}`);
         if (lines.length === 1 && tlen > 0) {
-          this._selectText(sel.start + hlen, contents.length - hlen - hlen);
+          this._selectText(sel.start + hlen, sel.value.length);
         } else {
           this._selectText(sel.start, contents.length);
         }
@@ -498,19 +478,16 @@ export default Ember.Component.extend({
     Ember.run.scheduleOnce("afterRender", () => this.$("textarea.d-editor-input").focus());
   },
 
-  _togglePreview() {
-    this.toggleProperty('forcePreview');
-  },
-
   actions: {
     toolbarButton(button) {
       const selected = this._getSelected(button.trimLeading);
       const toolbarEvent = {
         selected,
+        selectText: (from, length) => this._selectText(from, length),
         applySurround: (head, tail, exampleKey) => this._applySurround(selected, head, tail, exampleKey),
         applyList: (head, exampleKey) => this._applyList(selected, head, exampleKey),
         addText: text => this._addText(selected, text),
-        preview: () => this._togglePreview()
+        getText: () => this.get('value'),
       };
 
       if (button.sendAction) {
@@ -520,13 +497,22 @@ export default Ember.Component.extend({
       }
     },
 
-    hidePreview() {
-      this.set('forcePreview', false);
-    },
-
     showLinkModal() {
       this._lastSel = this._getSelected();
       this.set('insertLinkHidden', false);
+    },
+
+    formatCode() {
+      const sel = this._getSelected();
+      if (sel.value.indexOf("\n") !== -1) {
+        return (this.siteSettings.code_formatting_style === "4-spaces-indent") ?
+                this._applySurround(sel, '    ', '', 'code_text') :
+                this._addText(sel, '```\n' + sel.value + '\n```');
+      } else {
+        return (this.siteSettings.code_formatting_style === "4-spaces-indent") ?
+                this._applySurround(sel, '`', '`', 'code_text') :
+                this._applySurround(sel, '```\n', '\n```', 'paste_code_text');
+      }
     },
 
     insertLink() {
@@ -561,5 +547,4 @@ export default Ember.Component.extend({
       });
     }
   }
-
 });

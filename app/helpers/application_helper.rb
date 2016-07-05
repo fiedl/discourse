@@ -38,7 +38,7 @@ module ApplicationHelper
   def script(*args)
     if SiteSetting.enable_cdn_js_debugging && GlobalSetting.cdn_url
       tags = javascript_include_tag(*args, "crossorigin" => "anonymous")
-      tags.gsub!("/assets/", "/cdn_asset/#{Discourse.current_hostname.gsub(".","_")}/")
+      tags.gsub!("/assets/", "/cdn_asset/#{Discourse.current_hostname.tr(".","_")}/")
       tags.gsub!(".js\"", ".js?v=1&origin=#{CGI.escape request.base_url}\"")
       tags.html_safe
     else
@@ -57,6 +57,12 @@ module ApplicationHelper
 
   def html_classes
     "#{mobile_view? ? 'mobile-view' : 'desktop-view'} #{mobile_device? ? 'mobile-device' : 'not-mobile-device'} #{rtl_class} #{current_user ? '' : 'anon'}"
+  end
+
+  def body_classes
+    if @category && @category.url.present?
+      "category-#{@category.url.sub(/^\/c\//, '').gsub(/\//, '-')}"
+    end
   end
 
   def rtl_class

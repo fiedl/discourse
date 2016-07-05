@@ -66,7 +66,11 @@ class Auth::DefaultCurrentUserProvider
       user.auth_token = SecureRandom.hex(16)
       user.save!
     end
-    cookies.permanent[TOKEN_COOKIE] = { value: user.auth_token, httponly: true }
+    if SiteSetting.permanent_session_cookie
+      cookies.permanent[TOKEN_COOKIE] = { value: user.auth_token, httponly: true }
+    else
+      cookies[TOKEN_COOKIE] = { value: user.auth_token, httponly: true }
+    end
     make_developer_admin(user)
     enable_bootstrap_mode(user)
     @env[CURRENT_USER_KEY] = user
@@ -96,7 +100,7 @@ class Auth::DefaultCurrentUserProvider
         cookies["__profilin"] = nil
       end
 
-      MessageBus.publish "/logout", user.id, user_ids: [user.id]
+      user.logged_out
     end
     cookies[TOKEN_COOKIE] = nil
   end
@@ -120,12 +124,11 @@ class Auth::DefaultCurrentUserProvider
   protected
 
   def lookup_api_user(api_key_value, request)
-    api_key = ApiKey.where(key: api_key_value).includes(:user).first
-    if api_key
+    if api_key = ApiKey.where(key: api_key_value).includes(:user).first
       api_username = request["api_username"]
 
-      if api_key.allowed_ips.present? && !api_key.allowed_ips.any?{|ip| ip.include?(request.ip)}
-        Rails.logger.warn("Unauthorized API access: #{api_username} ip address: #{request.ip}")
+      if api_key.allowed_ips.present? && !api_key.allowed_ips.any? { |ip| ip.include?(request.ip) }
+        Rails.logger.warn("[Unauthorized API Access] username: #{api_username}, IP address: #{request.ip}")
         return nil
       end
 

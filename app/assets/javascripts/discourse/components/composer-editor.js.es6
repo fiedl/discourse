@@ -23,6 +23,11 @@ export default Ember.Component.extend({
     this.set('showPreview', val === 'true');
   },
 
+  @computed('site.mobileView', 'showPreview')
+  forcePreview(mobileView, showPreview) {
+    return mobileView && showPreview;
+  },
+
   @computed('showPreview')
   toggleText: function(showPreview) {
     return showPreview ? I18n.t('composer.hide_preview') : I18n.t('composer.show_preview');
@@ -82,7 +87,7 @@ export default Ember.Component.extend({
     }
 
     this._bindUploadTarget();
-    this.appEvents.trigger('composer:opened');
+    this.appEvents.trigger('composer:will-open');
   },
 
   @computed('composer.reply', 'composer.replyLength', 'composer.missingReplyCharacters', 'composer.minimumPostLength', 'lastValidatedAt')
@@ -341,6 +346,7 @@ export default Ember.Component.extend({
 
   @on('willDestroyElement')
   _composerClosed() {
+    this.appEvents.trigger('composer:will-close');
     Ember.run.next(() => {
       $('#main-outlet').css('padding-bottom', 0);
       // need to wait a bit for the "slide down" transition of the composer
@@ -361,7 +367,7 @@ export default Ember.Component.extend({
       this._resetUpload(true);
     },
 
-    showOptions() {
+    showOptions(toolbarEvent) {
       // long term we want some smart positioning algorithm in popup-menu
       // the problem is that positioning in a fixed panel is a nightmare
       // cause offsetParent can end up returning a fixed element and then
@@ -387,9 +393,11 @@ export default Ember.Component.extend({
         left = replyWidth - popupWidth - 40;
       }
 
-      this.sendAction('showOptions', { position: "absolute",
-                                       left: left,
-                                       top: top });
+      const selected = toolbarEvent.selected;
+      toolbarEvent.selectText(selected.start, selected.end - selected.start);
+
+      this.sendAction('showOptions', toolbarEvent,
+        { position: "absolute", left, top });
     },
 
     showUploadModal(toolbarEvent) {
@@ -419,13 +427,23 @@ export default Ember.Component.extend({
         sendAction: 'showUploadModal'
       });
 
-      if (this.get('canWhisper')) {
+      if (this.get("showPopupMenu")) {
         toolbar.addButton({
           id: 'options',
           group: 'extras',
           icon: 'gear',
           title: 'composer.options',
           sendAction: 'showOptions'
+        });
+      }
+
+      if (this.site.mobileView) {
+        toolbar.addButton({
+          id: 'preview',
+          group: 'mobileExtras',
+          icon: 'television',
+          title: 'composer.show_preview',
+          sendAction: 'togglePreview'
         });
       }
     },
@@ -458,6 +476,7 @@ export default Ember.Component.extend({
       // Paint oneboxes
       $('a.onebox', $preview).each((i, e) => Discourse.Onebox.load(e, refresh));
       this.trigger('previewRefreshed', $preview);
+      this.sendAction('afterRefresh', $preview);
     },
   }
 });

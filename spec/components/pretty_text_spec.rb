@@ -263,7 +263,7 @@ HTML
 
     it "should have an option to preserve emoji codes" do
       emoji_code = "<img src='/images/emoji/emoji_one/heart.png?v=1' title=':heart:' class='emoji' alt=':heart:'>"
-      expect(PrettyText.excerpt(emoji_code, 100, { keep_emoji_codes: true })).to eq(":heart:")
+      expect(PrettyText.excerpt(emoji_code, 100)).to eq(":heart:")
     end
 
   end
@@ -318,7 +318,7 @@ HTML
     it "adds base url to relative links" do
       html = "<p><a class=\"mention\" href=\"/users/wiseguy\">@wiseguy</a>, <a class=\"mention\" href=\"/users/trollol\">@trollol</a> what do you guys think? </p>"
       output = described_class.format_for_email(html, post)
-      expect(output).to eq("<p><a href=\"#{base_url}/users/wiseguy\">@wiseguy</a>, <a href=\"#{base_url}/users/trollol\">@trollol</a> what do you guys think? </p>")
+      expect(output).to eq("<p><a class=\"mention\" href=\"#{base_url}/users/wiseguy\">@wiseguy</a>, <a class=\"mention\" href=\"#{base_url}/users/trollol\">@trollol</a> what do you guys think? </p>")
     end
 
     it "doesn't change external absolute links" do
@@ -360,8 +360,17 @@ HTML
     SiteSetting.s3_cdn_url = "https://awesome.cdn"
 
     # add extra img tag to ensure it does not blow up
-    raw = "<img><img src='#{Discourse.store.absolute_base_url}/original/9/9/99c9384b8b6d87f8509f8395571bc7512ca3cad1.jpg'"
-    cooked = "<p><img><img src='https://awesome.cdn/original/9/9/99c9384b8b6d87f8509f8395571bc7512ca3cad1.jpg'></p>"
+    raw = <<HTML
+  <img>
+  <img src='https:#{Discourse.store.absolute_base_url}/original/9/9/99c9384b8b6d87f8509f8395571bc7512ca3cad1.jpg'>
+  <img src='http:#{Discourse.store.absolute_base_url}/original/9/9/99c9384b8b6d87f8509f8395571bc7512ca3cad1.jpg'>
+  <img src='#{Discourse.store.absolute_base_url}/original/9/9/99c9384b8b6d87f8509f8395571bc7512ca3cad1.jpg'>
+
+HTML
+
+    cooked = <<HTML
+<p>  <img><br>  <img src="https://awesome.cdn/original/9/9/99c9384b8b6d87f8509f8395571bc7512ca3cad1.jpg"><br>  <img src="https://awesome.cdn/original/9/9/99c9384b8b6d87f8509f8395571bc7512ca3cad1.jpg"><br>  <img src="https://awesome.cdn/original/9/9/99c9384b8b6d87f8509f8395571bc7512ca3cad1.jpg"></p>
+HTML
 
     expect(PrettyText.cook(raw)).to match_html(cooked)
   end

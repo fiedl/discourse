@@ -3,6 +3,7 @@ import Quote from 'discourse/lib/quote';
 import Draft from 'discourse/models/draft';
 import Composer from 'discourse/models/composer';
 import { default as computed, observes } from 'ember-addons/ember-computed-decorators';
+import { relativeAge } from 'discourse/lib/formatter';
 
 function loadDraft(store, opts) {
   opts = opts || {};
@@ -41,22 +42,26 @@ function loadDraft(store, opts) {
   }
 }
 
-export default Ember.Controller.extend({
-  needs: ['modal', 'topic', 'composer-messages', 'application'],
+const _popupMenuOptionsCallbacks = [];
 
+export function addPopupMenuOptionsCallback(callback) {
+  _popupMenuOptionsCallbacks.push(callback);
+}
+
+export default Ember.Controller.extend({
+  needs: ['modal', 'topic', 'application'],
   replyAsNewTopicDraft: Em.computed.equal('model.draftKey', Composer.REPLY_AS_NEW_TOPIC_KEY),
   checkedMessages: false,
-
+  messageCount: null,
   showEditReason: false,
   editReason: null,
   scopedCategoryId: null,
-  similarTopics: null,
-  similarTopicsMessage: null,
-  lastSimilaritySearch: null,
   optionsVisible: false,
   lastValidatedAt: null,
   isUploading: false,
   topic: null,
+  linkLookup: null,
+
   showToolbar: Em.computed({
     get(){
       const keyValueStore = this.container.lookup('key-value-store:main');
@@ -65,7 +70,7 @@ export default Ember.Controller.extend({
         // iPhone 6 is 375, anything narrower and toolbar should
         // be default disabled.
         // That said we should remember the state
-        this._toolbarEnabled = $(window).width() > 370;
+        this._toolbarEnabled = $(window).width() > 370 && !this.capabilities.isAndroid;
       }
       return this._toolbarEnabled || storedVal === "true";
     },
@@ -79,10 +84,6 @@ export default Ember.Controller.extend({
 
   topicModel: Ember.computed.alias('controllers.topic.model'),
 
-  _initializeSimilar: function() {
-    this.set('similarTopics', []);
-  }.on('init'),
-
   @computed('model.canEditTitle', 'model.creatingPrivateMessage')
   canEditTags(canEditTitle, creatingPrivateMessage) {
     return !this.site.mobileView &&
@@ -95,6 +96,43 @@ export default Ember.Controller.extend({
   canWhisper(action) {
     const currentUser = this.currentUser;
     return currentUser && currentUser.get('staff') && this.siteSettings.enable_whispers && action === Composer.REPLY;
+  },
+
+  @computed("popupMenuOptions")
+  showPopupMenu(popupMenuOptions) {
+    return popupMenuOptions ? popupMenuOptions.some(option => option.condition) : false;
+  },
+
+  _setupPopupMenuOption(callback) {
+    let option = callback();
+
+    if (option.condition) {
+      option.condition = this.get(option.condition);
+    } else {
+      option.condition = true;
+    }
+
+    return option;
+  },
+
+  @computed("model.composeState")
+  popupMenuOptions(composeState) {
+    if (composeState === 'open') {
+      let options = [];
+
+      options.push(this._setupPopupMenuOption(() => {
+        return {
+          action: 'toggleWhisper',
+          icon: 'eye-slash',
+          label: 'composer.toggle_whisper',
+          condition: "canWhisper"
+        };
+      }));
+
+      return options.concat(_popupMenuOptionsCallbacks.map(callback => {
+        return this._setupPopupMenuOption(callback);
+      }));
+    }
   },
 
   showWarning: function() {
@@ -111,6 +149,45 @@ export default Ember.Controller.extend({
   }.property('model.creatingPrivateMessage', 'model.targetUsernames'),
 
   actions: {
+    addLinkLookup(linkLookup) {
+      this.set('linkLookup', linkLookup);
+    },
+
+    afterRefresh($preview) {
+      const topic = this.get('model.topic');
+      const linkLookup = this.get('linkLookup');
+      if (!topic || !linkLookup) { return; }
+
+      // Don't check if there's only one post
+      if (topic.get('posts_count') === 1) { return; }
+
+      const post = this.get('model.post');
+      if (post && post.get('user_id') !== this.currentUser.id) { return; }
+
+      const $links = $('a[href]', $preview);
+      $links.each((idx, l) => {
+        const href = $(l).prop('href');
+        if (href && href.length) {
+          const [warn, info] = linkLookup.check(post, href);
+
+          if (warn) {
+            const body = I18n.t('composer.duplicate_link', {
+              domain: info.domain,
+              username: info.username,
+              post_url: topic.urlForPostNumber(info.post_number),
+              ago: relativeAge(moment(info.posted_at).toDate(), { format: 'medium' })
+            });
+            this.appEvents.trigger('composer-messages:create', {
+              extraClass: 'custom-body',
+              templateName: 'custom-body',
+              body
+            });
+            return false;
+          }
+        }
+        return true;
+      });
+    },
 
     toggleWhisper() {
       this.toggleProperty('model.whisper');
@@ -120,7 +197,8 @@ export default Ember.Controller.extend({
       this.toggleProperty('showToolbar');
     },
 
-    showOptions(loc) {
+    showOptions(toolbarEvent, loc) {
+      this.set('toolbarEvent', toolbarEvent);
       this.appEvents.trigger('popup-menu:open', loc);
       this.set('optionsVisible', true);
     },
@@ -184,9 +262,8 @@ export default Ember.Controller.extend({
     },
 
     hitEsc() {
-      const messages = this.get('controllers.composer-messages.model');
-      if (messages.length) {
-        messages.popObject();
+      if ((this.get('messageCount') || 0) > 0) {
+        this.appEvents.trigger('composer-messages:close');
         return;
       }
 
@@ -203,7 +280,18 @@ export default Ember.Controller.extend({
 
     groupsMentioned(groups) {
       if (!this.get('model.creatingPrivateMessage') && !this.get('model.topic.isPrivateMessage')) {
-        this.get('controllers.composer-messages').groupsMentioned(groups);
+        groups.forEach(group => {
+          const body = I18n.t('composer.group_mentioned', {
+            group: "@" + group.name,
+            count: group.user_count,
+            group_link: Discourse.getURL(`/group/${group.name}/members`)
+          });
+          this.appEvents.trigger('composer-messages:create', {
+            extraClass: 'custom-body',
+            templateName: 'custom-body',
+            body
+          });
+        });
       }
     }
 
@@ -344,7 +432,7 @@ export default Ember.Controller.extend({
 
     }).catch(function(error) {
       composer.set('disableDrafts', false);
-      self.appEvents.one('composer:opened', () => bootbox.alert(error));
+      self.appEvents.one('composer:will-open', () => bootbox.alert(error));
     });
 
     if (this.get('controllers.application.currentRouteName').split('.')[0] === 'topic' &&
@@ -360,59 +448,12 @@ export default Ember.Controller.extend({
     return promise;
   },
 
-  // Checks to see if a reply has been typed.
-  // This is signaled by a keyUp event in a view.
+  // Notify the composer messages controller that a reply has been typed. Some
+  // messages only appear after typing.
   checkReplyLength() {
     if (!Ember.isEmpty('model.reply')) {
-      // Notify the composer messages controller that a reply has been typed. Some
-      // messages only appear after typing.
-      this.get('controllers.composer-messages').typedReply();
+      this.appEvents.trigger('composer:typed-reply');
     }
-  },
-
-  // Fired after a user stops typing.
-  // Considers whether to check for similar topics based on the current composer state.
-  findSimilarTopics() {
-    // We don't care about similar topics unless creating a topic
-    if (!this.get('model.creatingTopic')) { return; }
-
-    let body = this.get('model.reply') || '';
-    const title = this.get('model.title') || '';
-
-    // Ensure the fields are of the minimum length
-    if (body.length < Discourse.SiteSettings.min_body_similar_length) { return; }
-    if (title.length < Discourse.SiteSettings.min_title_similar_length) { return; }
-
-    // TODO pass the 200 in from somewhere
-    body = body.substr(0, 200);
-
-    // Done search over and over
-    if ((title + body) === this.get('lastSimilaritySearch')) { return; }
-    this.set('lastSimilaritySearch', title + body);
-
-    const messageController = this.get('controllers.composer-messages'),
-          similarTopics = this.get('similarTopics');
-
-    let message = this.get('similarTopicsMessage');
-    if (!message) {
-      message = Discourse.ComposerMessage.create({
-        templateName: 'composer/similar-topics',
-        extraClass: 'similar-topics'
-      });
-      this.set('similarTopicsMessage', message);
-    }
-
-    this.store.find('similar-topic', {title, raw: body}).then(function(newTopics) {
-      similarTopics.clear();
-      similarTopics.pushObjects(newTopics.get('content'));
-
-      if (similarTopics.get('length') > 0) {
-        message.set('similarTopics', similarTopics);
-        messageController.send("popup", message);
-      } else if (message) {
-        messageController.send("hideMessage", message);
-      }
-    });
   },
 
   /**
@@ -432,6 +473,12 @@ export default Ember.Controller.extend({
       alert("composer was opened without a draft key");
       throw "composer opened without a proper draft key";
     }
+    const self = this;
+    let composerModel = this.get('model');
+
+    if (opts.ignoreIfChanged && composerModel && composerModel.composeState !== Composer.CLOSED) {
+      return;
+    }
 
     // If we show the subcategory list, scope the categories drop down to
     // the category we opened the composer with.
@@ -439,13 +486,8 @@ export default Ember.Controller.extend({
       this.set('scopedCategoryId', opts.categoryId);
     }
 
-    const composerMessages = this.get('controllers.composer-messages'),
-          self = this;
-
-    let composerModel = this.get('model');
 
     this.setProperties({ showEditReason: false, editReason: null });
-    composerMessages.reset();
 
     // If we want a different draft than the current composer, close it and clear our model.
     if (composerModel &&
@@ -493,6 +535,8 @@ export default Ember.Controller.extend({
 
   // Given a potential instance and options, set the model for this composer.
   _setModel(composerModel, opts) {
+    this.set('linkLookup', null);
+
     if (opts.draft) {
       composerModel = loadDraft(this.store, opts);
       if (composerModel) {
@@ -532,11 +576,13 @@ export default Ember.Controller.extend({
       }
     }
 
+    if (opts.topicTags && !this.site.mobileView && this.site.get('can_tag_topics')) {
+      this.set('model.tags', opts.topicTags.split(","));
+    }
+
     if (opts.topicBody) {
       this.set('model.reply', opts.topicBody);
     }
-
-    this.get('controllers.composer-messages').queryFor(composerModel);
   },
 
   // View a new reply we've made

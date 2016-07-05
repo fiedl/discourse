@@ -4,7 +4,7 @@ require_dependency 'single_sign_on'
 class SessionController < ApplicationController
 
   skip_before_filter :redirect_to_login_if_required
-  skip_before_filter :preload_json, :check_xhr, only: ['sso', 'sso_login', 'become', 'sso_provider']
+  skip_before_filter :preload_json, :check_xhr, only: ['sso', 'sso_login', 'become', 'sso_provider', 'destroy']
 
   def csrf
     render json: {csrf: form_authenticity_token }
@@ -126,6 +126,14 @@ class SessionController < ApplicationController
         render text: I18n.t("sso.not_found"), status: 500
       end
     rescue ActiveRecord::RecordInvalid => e
+      if SiteSetting.verbose_sso_logging
+        Rails.logger.warn(<<-EOF)
+          Verbose SSO log: Record was invalid: #{e.record.class.name} #{e.record.id}\n
+          #{e.record.errors.to_h}\n
+          \n
+          #{sso.diagnostics}
+        EOF
+      end
       render text: I18n.t("sso.unknown_error"), status: 500
     rescue => e
       message = "Failed to create or lookup user: #{e}."
@@ -237,7 +245,11 @@ class SessionController < ApplicationController
   def destroy
     reset_session
     log_off_user
-    render nothing: true
+    if request.xhr?
+      render nothing: true
+    else
+      redirect_to (params[:return_url] || path("/"))
+    end
   end
 
   private

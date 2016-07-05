@@ -16,6 +16,11 @@ Discourse::Application.routes.draw do
   match "/404", to: "exceptions#not_found", via: [:get, :post]
   get "/404-body" => "exceptions#not_found_body"
 
+  post "webhooks/mailgun"  => "webhooks#mailgun"
+  post "webhooks/sendgrid" => "webhooks#sendgrid"
+  post "webhooks/mailjet"  => "webhooks#mailjet"
+  post "webhooks/mandrill" => "webhooks#mandrill"
+
   if Rails.env.development?
     mount Sidekiq::Web => "/sidekiq"
     mount Logster::Web => "/logs"
@@ -111,7 +116,7 @@ Discourse::Application.routes.draw do
       post "reset_bounce_score"
     end
     get "users/:id.json" => 'users#show', defaults: {format: 'json'}
-    get 'users/:id/:username' => 'users#show'
+    get 'users/:id/:username' => 'users#show', constraints: {username: USERNAME_ROUTE_FORMAT}
     get 'users/:id/:username/badges' => 'users#show'
 
 
@@ -230,8 +235,10 @@ Discourse::Application.routes.draw do
   end # admin namespace
 
   get "email_preferences" => "email#preferences_redirect", :as => "email_preferences_redirect"
+
   get "email/unsubscribe/:key" => "email#unsubscribe", as: "email_unsubscribe"
-  post "email/resubscribe/:key" => "email#resubscribe", as: "email_resubscribe"
+  get "email/unsubscribed" => "email#unsubscribed", as: "email_unsubscribed"
+  post "email/unsubscribe/:key" => "email#perform_unsubscribe", as: "email_perform_unsubscribe"
 
   resources :session, id: USERNAME_ROUTE_FORMAT, only: [:create, :destroy, :become] do
     get 'become'
@@ -245,7 +252,7 @@ Discourse::Application.routes.draw do
   get "session/sso_provider" => "session#sso_provider"
   get "session/current" => "session#current"
   get "session/csrf" => "session#csrf"
-  get "composer-messages" => "composer_messages#index"
+  get "composer_messages" => "composer_messages#index"
 
   resources :users, except: [:show, :update, :destroy] do
     collection do
@@ -540,6 +547,7 @@ Discourse::Application.routes.draw do
   put "t/:topic_id/make-banner" => "topics#make_banner", constraints: {topic_id: /\d+/}
   put "t/:topic_id/remove-banner" => "topics#remove_banner", constraints: {topic_id: /\d+/}
   put "t/:topic_id/remove-allowed-user" => "topics#remove_allowed_user", constraints: {topic_id: /\d+/}
+  put "t/:topic_id/remove-allowed-group" => "topics#remove_allowed_group", constraints: {topic_id: /\d+/}
   put "t/:topic_id/recover" => "topics#recover", constraints: {topic_id: /\d+/}
   get "t/:topic_id/:post_number" => "topics#show", constraints: {topic_id: /\d+/, post_number: /\d+/}
   get "t/:topic_id/last" => "topics#show", post_number: 99999999, constraints: {topic_id: /\d+/}
@@ -550,6 +558,7 @@ Discourse::Application.routes.draw do
   get "t/:topic_id/posts" => "topics#posts", constraints: {topic_id: /\d+/}, format: :json
   post "t/:topic_id/timings" => "topics#timings", constraints: {topic_id: /\d+/}
   post "t/:topic_id/invite" => "topics#invite", constraints: {topic_id: /\d+/}
+  post "t/:topic_id/invite-group" => "topics#invite_group", constraints: {topic_id: /\d+/}
   post "t/:topic_id/move-posts" => "topics#move_posts", constraints: {topic_id: /\d+/}
   post "t/:topic_id/merge-topic" => "topics#merge_topic", constraints: {topic_id: /\d+/}
   post "t/:topic_id/change-owner" => "topics#change_post_owners", constraints: {topic_id: /\d+/}
@@ -577,6 +586,7 @@ Discourse::Application.routes.draw do
     end
   end
   post "invites/reinvite" => "invites#resend_invite"
+  post "invites/reinvite-all" => "invites#resend_all_invites"
   post "invites/link" => "invites#create_invite_link"
   post "invites/disposable" => "invites#create_disposable_invite"
   get "invites/redeem/:token" => "invites#redeem_disposable_invite"
@@ -629,6 +639,12 @@ Discourse::Application.routes.draw do
         get "/c/:category/:tag_id/l/#{filter}" => "tags#show_#{filter}"
         get "/c/:parent_category/:category/:tag_id/l/#{filter}" => "tags#show_#{filter}"
       end
+    end
+  end
+
+  resources :tag_groups, except: [:new, :edit] do
+    collection do
+      get '/filter/search' => 'tag_groups#search'
     end
   end
 

@@ -129,7 +129,7 @@ class Topic < ActiveRecord::Base
   # Return private message topics
   scope :private_messages, -> { where(archetype: Archetype.private_message) }
 
-  scope :listable_topics, -> { where('topics.archetype <> ?', [Archetype.private_message]) }
+  scope :listable_topics, -> { where('topics.archetype <> ?', Archetype.private_message) }
 
   scope :by_newest, -> { order('topics.created_at desc, topics.id desc') }
 
@@ -268,7 +268,7 @@ class Topic < ActiveRecord::Base
 
   # Additional rate limits on topics: per day and private messages per day
   def limit_topics_per_day
-    if user && user.first_day_user?
+    if user && user.new_user_posting_on_first_day?
       limit_first_day_topics_per_day
     else
       apply_per_day_rate_limit_for("topics", :max_topics_per_day)
@@ -546,13 +546,12 @@ class Topic < ActiveRecord::Base
                               topic_id: self.id,
                               skip_validations: true,
                               custom_fields: opts[:custom_fields])
-    new_post = creator.create
-    increment!(:moderator_posts_count) if new_post.persisted?
 
-    if new_post.present?
+    if (new_post = creator.create) && new_post.present?
+      increment!(:moderator_posts_count) if new_post.persisted?
       # If we are moving posts, we want to insert the moderator post where the previous posts were
       # in the stream, not at the end.
-      new_post.update_attributes(post_number: opts[:post_number], sort_order: opts[:post_number]) if opts[:post_number].present?
+      new_post.update_attributes!(post_number: opts[:post_number], sort_order: opts[:post_number]) if opts[:post_number].present?
 
       # Grab any links that are present
       TopicLink.extract_from(new_post)
@@ -577,6 +576,19 @@ class Topic < ActiveRecord::Base
     changed_to_category(cat)
   end
 
+  def remove_allowed_group(removed_by, name)
+    if group = Group.find_by(name: name)
+      group_user = topic_allowed_groups.find_by(group_id: group.id)
+      if group_user
+        group_user.destroy
+        add_small_action(removed_by, "removed_group", group.name)
+        return true
+      end
+    end
+
+    false
+  end
+
   def remove_allowed_user(removed_by, username)
     if user = User.find_by(username: username)
       topic_user = topic_allowed_users.find_by(user_id: user.id)
@@ -590,8 +602,21 @@ class Topic < ActiveRecord::Base
     false
   end
 
+  def invite_group(user, group)
+    TopicAllowedGroup.create!(topic_id: id, group_id: group.id)
+
+    last_post = posts.order('post_number desc').where('not hidden AND posts.deleted_at IS NULL').first
+    if last_post
+      # ensure all the notifications are out
+      PostAlerter.new.after_save_post(last_post)
+      add_small_action(user, "invited_group", group.name)
+    end
+
+    true
+  end
+
   # Invite a user to the topic by username or email. Returns success/failure
-  def invite(invited_by, username_or_email, group_ids=nil)
+  def invite(invited_by, username_or_email, group_ids=nil, custom_message=nil)
     if private_message?
       # If the user exists, add them to the message.
       user = User.find_by_username_or_email(username_or_email)
@@ -616,7 +641,7 @@ class Topic < ActiveRecord::Base
       RateLimiter.new(invited_by, "topic-invitations-per-day", SiteSetting.max_topic_invitations_per_day, 1.day.to_i).performed!
 
       # NOTE callers expect an invite object if an invite was sent via email
-      invite_by_email(invited_by, username_or_email, group_ids)
+      invite_by_email(invited_by, username_or_email, group_ids, custom_message)
     else
       # invite existing member to a topic
       user = User.find_by_username(username_or_email)
@@ -639,8 +664,8 @@ class Topic < ActiveRecord::Base
     end
   end
 
-  def invite_by_email(invited_by, email, group_ids=nil)
-    Invite.invite_by_email(email, invited_by, self, group_ids)
+  def invite_by_email(invited_by, email, group_ids=nil, custom_message=nil)
+    Invite.invite_by_email(email, invited_by, self, group_ids, custom_message)
   end
 
   def email_already_exists_for?(invite)

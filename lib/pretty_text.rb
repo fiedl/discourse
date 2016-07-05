@@ -37,18 +37,11 @@ module PrettyText
       UrlHelper.schemaless UrlHelper.absolute avatar_template
     end
 
-    def mention_lookup(username)
-      return false unless username
-      if Group.exec_sql('SELECT 1 FROM groups WHERE name = ?', username).values.length == 1
-        "group"
-      else
-        username = username.downcase
-        if User.exec_sql('SELECT 1 FROM users WHERE username_lower = ?', username).values.length == 1
-          "user"
-        else
-          nil
-        end
-      end
+    def mention_lookup(name)
+      return false   if name.blank?
+      return "group" if Group.where(name: name).exists?
+      return "user"  if User.where(username_lower: name.downcase).exists?
+      nil
     end
 
     def category_hashtag_lookup(category_slug)
@@ -296,7 +289,7 @@ JS
       add_rel_nofollow_to_user_content(doc)
     end
 
-    if SiteSetting.s3_cdn_url.present? && SiteSetting.enable_s3_uploads
+    if SiteSetting.enable_s3_uploads && SiteSetting.s3_cdn_url.present?
       add_s3_cdn(doc)
     end
 
@@ -306,7 +299,7 @@ JS
   def self.add_s3_cdn(doc)
     doc.css("img").each do |img|
       next unless img["src"]
-      img["src"] = img["src"].sub(Discourse.store.absolute_base_url, SiteSetting.s3_cdn_url)
+      img["src"] = Discourse.store.cdn_url(img["src"])
     end
   end
 
@@ -394,16 +387,31 @@ JS
     fragment.to_html
   end
 
+ # Given a Nokogiri doc, convert all links to absolute
+ def self.make_all_links_absolute(doc)
+   site_uri = nil
+   doc.css("a").each do |link|
+     href = link["href"].to_s
+     begin
+       uri = URI(href)
+       site_uri ||= URI(Discourse.base_url)
+       link["href"] = "#{site_uri}#{link['href']}" unless uri.host.present?
+     rescue URI::InvalidURIError, URI::InvalidComponentError
+       # leave it
+     end
+   end
+ end
+
   def self.strip_image_wrapping(doc)
     doc.css(".lightbox-wrapper .meta").remove
   end
 
-  def self.format_for_email(html, post = nil, style = nil)
-    Email::Styles.new(html, style: style).tap do |doc|
-      DiscourseEvent.trigger(:reduce_cooked, doc, post)
-      doc.make_all_links_absolute
-      doc.send :"format_#{style}" if style
-    end.to_html
+  def self.format_for_email(html, post = nil)
+    doc = Nokogiri::HTML.fragment(html)
+    DiscourseEvent.trigger(:reduce_cooked, doc, post)
+    strip_image_wrapping(doc)
+    make_all_links_absolute(doc)
+    doc.to_html
   end
 
   protected
