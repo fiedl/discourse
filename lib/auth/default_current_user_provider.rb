@@ -1,4 +1,5 @@
 require_dependency "auth/current_user_provider"
+require_dependency "rate_limiter"
 
 class Auth::DefaultCurrentUserProvider
 
@@ -7,6 +8,7 @@ class Auth::DefaultCurrentUserProvider
   API_KEY_ENV ||= "_DISCOURSE_API".freeze
   TOKEN_COOKIE ||= "_t".freeze
   PATH_INFO ||= "PATH_INFO".freeze
+  COOKIE_ATTEMPTS_PER_MIN ||= 10
 
   # do all current user initialization here
   def initialize(env)
@@ -36,7 +38,18 @@ class Auth::DefaultCurrentUserProvider
     current_user = nil
 
     if auth_token && auth_token.length == 32
-      current_user = User.find_by(auth_token: auth_token)
+      current_user = User.where(auth_token: auth_token)
+                         .where('auth_token_updated_at IS NULL OR auth_token_updated_at > ?',
+                                  SiteSetting.maximum_session_age.hours.ago)
+                         .first
+
+      unless current_user
+        begin
+          RateLimiter.new(nil, "cookie_auth_#{request.ip}", COOKIE_ATTEMPTS_PER_MIN ,60).performed!
+        rescue RateLimiter::LimitExceeded
+          raise Discourse::InvalidAccess
+        end
+      end
     end
 
     if current_user && (current_user.suspended? || !current_user.active)
@@ -61,16 +74,26 @@ class Auth::DefaultCurrentUserProvider
     @env[CURRENT_USER_KEY] = current_user
   end
 
+  def refresh_session(user, session, cookies)
+    if user && (!user.auth_token_updated_at || user.auth_token_updated_at <= 1.hour.ago)
+      user.update_column(:auth_token_updated_at, Time.zone.now)
+      cookies[TOKEN_COOKIE] = { value: user.auth_token, httponly: true, expires: SiteSetting.maximum_session_age.hours.from_now }
+    end
+    if !user && cookies.key?(TOKEN_COOKIE)
+      cookies.delete(TOKEN_COOKIE)
+    end
+  end
+
   def log_on_user(user, session, cookies)
-    unless user.auth_token && user.auth_token.length == 32
-      user.auth_token = SecureRandom.hex(16)
-      user.save!
+    legit_token = user.auth_token && user.auth_token.length == 32
+    expired_token = user.auth_token_updated_at && user.auth_token_updated_at < SiteSetting.maximum_session_age.hours.ago
+
+    if !legit_token || expired_token
+      user.update_columns(auth_token: SecureRandom.hex(16),
+                          auth_token_updated_at: Time.zone.now)
     end
-    if SiteSetting.permanent_session_cookie
-      cookies.permanent[TOKEN_COOKIE] = { value: user.auth_token, httponly: true }
-    else
-      cookies[TOKEN_COOKIE] = { value: user.auth_token, httponly: true }
-    end
+
+    cookies[TOKEN_COOKIE] = { value: user.auth_token, httponly: true, expires: SiteSetting.maximum_session_age.hours.from_now }
     make_developer_admin(user)
     enable_bootstrap_mode(user)
     @env[CURRENT_USER_KEY] = user
@@ -97,12 +120,12 @@ class Auth::DefaultCurrentUserProvider
 
       if user.admin && defined?(Rack::MiniProfiler)
         # clear the profiling cookie to keep stuff tidy
-        cookies["__profilin"] = nil
+        cookies.delete("__profilin")
       end
 
       user.logged_out
     end
-    cookies[TOKEN_COOKIE] = nil
+    cookies.delete(TOKEN_COOKIE)
   end
 
 

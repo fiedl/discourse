@@ -1,6 +1,7 @@
 require_dependency 'new_post_manager'
 require_dependency 'post_creator'
 require_dependency 'post_destroyer'
+require_dependency 'post_merger'
 require_dependency 'distributed_memoizer'
 require_dependency 'new_post_result_serializer'
 
@@ -270,6 +271,14 @@ class PostsController < ApplicationController
       posts.each {|p| PostDestroyer.new(current_user, p).destroy }
     end
 
+    render nothing: true
+  end
+
+  def merge_posts
+    params.require(:post_ids)
+    posts = Post.where(id: params[:post_ids]).order(:id)
+    raise Discourse::InvalidParameters.new(:post_ids) if posts.pluck(:id) == params[:post_ids]
+    PostMerger.new(current_user, posts).merge
     render nothing: true
   end
 
@@ -545,10 +554,12 @@ class PostsController < ApplicationController
       :auto_track,
       :typing_duration_msecs,
       :composer_open_duration_msecs,
+      :visible
     ]
 
     # param munging for WordPress
     params[:auto_track] = !(params[:auto_track].to_s == "false") if params[:auto_track]
+    params[:visible] = (params[:unlist_topic].to_s == "false") if params[:unlist_topic]
 
     if api_key_valid?
       # php seems to be sending this incorrectly, don't fight with it

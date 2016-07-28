@@ -301,7 +301,7 @@ Discourse::Application.routes.draw do
   get "users/:username.json" => "users#show", constraints: {username: USERNAME_ROUTE_FORMAT}, defaults: {format: :json}
   get "users/:username" => "users#show", as: 'user', constraints: {username: USERNAME_ROUTE_FORMAT}
   put "users/:username" => "users#update", constraints: {username: USERNAME_ROUTE_FORMAT}
-  put "users/:username/emails" => "users#check_emails", constraints: {username: USERNAME_ROUTE_FORMAT}
+  get "users/:username/emails" => "users#check_emails", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "users/:username/preferences" => "users#preferences", constraints: {username: USERNAME_ROUTE_FORMAT}, as: :email_preferences
   get "users/:username/preferences/email" => "users_email#index", constraints: {username: USERNAME_ROUTE_FORMAT}
   put "users/:username/preferences/email" => "users_email#update", constraints: {username: USERNAME_ROUTE_FORMAT}
@@ -410,6 +410,7 @@ Discourse::Application.routes.draw do
     put "recover"
     collection do
       delete "destroy_many"
+      put "merge_posts"
     end
   end
 
@@ -626,18 +627,18 @@ Discourse::Application.routes.draw do
     get '/check' => 'tags#check_hashtag'
     constraints(tag_id: /[^\/]+?/, format: /json|rss/) do
       get '/:tag_id.rss' => 'tags#tag_feed'
-      get '/:tag_id' => 'tags#show', as: 'list_by_tag'
-      get '/c/:category/:tag_id' => 'tags#show'
-      get '/c/:parent_category/:category/:tag_id' => 'tags#show'
+      get '/:tag_id' => 'tags#show', as: 'tag_show'
+      get '/c/:category/:tag_id' => 'tags#show', as: 'tag_category_show'
+      get '/c/:parent_category/:category/:tag_id' => 'tags#show', as: 'tag_parent_category_category_show'
       get '/:tag_id/notifications' => 'tags#notifications'
       put '/:tag_id/notifications' => 'tags#update_notifications'
       put '/:tag_id' => 'tags#update'
       delete '/:tag_id' => 'tags#destroy'
 
       Discourse.filters.each do |filter|
-        get "/:tag_id/l/#{filter}" => "tags#show_#{filter}"
-        get "/c/:category/:tag_id/l/#{filter}" => "tags#show_#{filter}"
-        get "/c/:parent_category/:category/:tag_id/l/#{filter}" => "tags#show_#{filter}"
+        get "/:tag_id/l/#{filter}" => "tags#show_#{filter}", as: "tag_show_#{filter}"
+        get "/c/:category/:tag_id/l/#{filter}" => "tags#show_#{filter}", as: "tag_category_show_#{filter}"
+        get "/c/:parent_category/:category/:tag_id/l/#{filter}" => "tags#show_#{filter}", as: "tag_parent_category_category_show_#{filter}"
       end
     end
   end

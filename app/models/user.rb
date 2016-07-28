@@ -778,10 +778,11 @@ class User < ActiveRecord::Base
   def associated_accounts
     result = []
 
-    result << "Twitter(#{twitter_user_info.screen_name})" if twitter_user_info
-    result << "Facebook(#{facebook_user_info.username})"  if facebook_user_info
-    result << "Google(#{google_user_info.email})"         if google_user_info
-    result << "Github(#{github_user_info.screen_name})"   if github_user_info
+    result << "Twitter(#{twitter_user_info.screen_name})"               if twitter_user_info
+    result << "Facebook(#{facebook_user_info.username})"                if facebook_user_info
+    result << "Google(#{google_user_info.email})"                       if google_user_info
+    result << "Github(#{github_user_info.screen_name})"                 if github_user_info
+    result << "#{oauth2_user_info.provider}(#{oauth2_user_info.email})" if oauth2_user_info
 
     user_open_ids.each do |oid|
       result << "OpenID #{oid.url[0..20]}...(#{oid.email})"
@@ -979,7 +980,7 @@ class User < ActiveRecord::Base
                      .joins('INNER JOIN user_stats AS us ON us.user_id = users.id')
                      .where("created_at < ?", SiteSetting.purge_unactivated_users_grace_period_days.days.ago)
                      .where('NOT admin AND NOT moderator')
-                     .limit(100)
+                     .limit(200)
 
     destroyer = UserDestroyer.new(Discourse.system_user)
     to_destroy.each do |u|
@@ -1047,6 +1048,7 @@ end
 #  trust_level_locked      :boolean          default(FALSE), not null
 #  staged                  :boolean          default(FALSE), not null
 #  first_seen_at           :datetime
+#  auth_token_updated_at   :datetime
 #
 # Indexes
 #

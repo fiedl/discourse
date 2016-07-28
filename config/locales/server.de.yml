@@ -51,7 +51,6 @@ de:
         topic_not_found_error: "Passiert wenn eine Antwort eintraf aber das verbundene Thema gelöscht wurde."
         topic_closed_error: "Passiert wenn eine Antwort eintraf aber das verbundene Thema geschlossen wurde."
         bounced_email_error: "E-Mail ist ein zurückgekommener Zustellungsbericht."
-        auto_generated_email_reply: "E-Mail enthält eine Antwort auf eine automatisch erzeugte E-Mail."
         screened_email_error: "Passiert, wenn die Absenderadresse schon einmal gefiltert wurde."
   errors: &errors
     format: '%{attribute} %{message}'
@@ -138,7 +137,7 @@ de:
   too_many_mentions:
     one: "Entschuldigung, du kannst nur einen anderen Benutzer in einem Beitrag erwähnen."
     other: "Entschuldigung, du kannst nur %{count} Benutzer in einem Beitrag erwähnen."
-  no_mentions_allowed_newuser: "Entschuldigung, neue Benutzer können andere Nutzer nicht erwähnen."
+  no_mentions_allowed_newuser: "Entschuldigung, neue Benutzer können andere Benutzer nicht erwähnen."
   too_many_mentions_newuser:
     one: "Entschuldige, neue Benutzer können nur einen anderen Benutzer in einem Beitrag erwähnen."
     other: "Entschuldige, neue Benutzer können nur %{count} Benutzer in einem Beitrag erwähnen."
@@ -295,6 +294,9 @@ de:
           attributes:
             hex:
               invalid: "ist keine gültige Farbe"
+        post_reply:
+          base:
+            different_topic: "Beitrag und Antwort müssen zum gleichen Thema gehören."
       <<: *errors
   user_profile:
     no_info_me: "<div class='missing-profile'>Das 'Über mich'-Feld deines Profils ist aktuell leer, <a href='/users/%{username_lower}/preferences/about-me'>möchtest du es ausfüllen?</a></div>"
@@ -308,7 +310,26 @@ de:
   assets_topic_body: "Dies ist ein fester Beitrag, der nur für Mitarbeiter sichtbar ist, um Bilder und Dateien, die im Forum benutzt werden zu speichern. Lösche diese nicht!\n\n\nAnleitung:\n\n\n1. Antworte auf dieses Thema.\n2. Lade alle Bilder, die du für Logos, Favicons und usw. nutzen willst, hier hoch. (Nutze dazu das Symbol für Lade-Symbolleiste im Beitrags-Editor oder ziehe und lasse die Bilder hier fallen oder füge sie eins.)\n3. Sende deine Antwort. \n4. Klicke mit der rechten Maustaste auf die Bilder in deinem neuen Beitrag, um die den Pfad zu bekommen oder klicke das Editier-Symbol, um deinen Beitrag zu editieren und dadurch den Pfad zu den Bildern zu bekommen. Kopiere die Bild-Pfade.\n5. Füge die Bild-Pfade in [basic settings](/admin/site_settings/category/required) ein.\n\n\nWenn du andere Dateityp-Uploads aktivieren willst, editiere `authorized_extensions` in [file settings](/admin/site_settings/category/files)."
   lounge_welcome:
     title: "Willkommen in der Lounge"
-    body: "\nGratuliere! :confetti_ball:\n\nWenn du dieses Thema sehen kannst, wurdest du vor Kurzem zum **Stammgast** (Vertrauensstufe 3) befördert.\n \nDu kannst nun &hellip;\n\n* den Titel eines jeden Themas ändern\n* Themen in andere Kategorien verschieben\n* Links veröffentlichen, die von Suchmaschinen weiterverfolgt werden (das automatische [nofollow](http://de.wikipedia.org/wiki/Nofollow) wird entfernt)\n* auf die private Lounge-Kategorie zugreifen, die für Benutzer mit Vertrauensstufe 3 oder höher sichtbar ist\n\nHier ist die [aktuelle Liste aller Stammgäste](/badges/3/regular). Vergiss nicht, hallo zu sagen!\n\nVielen Dank dafür, dass du ein wichtiger Teil dieser Community bist!\n\n(Wenn du mehr über Vertrauensstufen wissen möchtest, kannst du [dieses Thema lesen][trust]. Beachte bitte, dass nur jene Mitglieder Stammgäste bleiben, die auch im Laufe der Zeit die Anforderungen erfüllen.)\n\n[trust]: https://meta.discourse.org/t/what-do-user-trust-levels-do/4924\n"
+    body: |
+
+      Gratuliere! :confetti_ball:
+
+      Wenn du dieses Thema sehen kannst, wurdest du vor Kurzem zum **Stammgast** (Vertrauensstufe 3) befördert.
+
+      Du kannst nun &hellip;
+
+      * den Titel eines jeden Themas ändern
+      * Themen in andere Kategorien verschieben
+      * Links veröffentlichen, die von Suchmaschinen weiterverfolgt werden (das automatische [nofollow](http://de.wikipedia.org/wiki/Nofollow) wird entfernt)
+      * auf die private Lounge-Kategorie zugreifen, die für Benutzer mit Vertrauensstufe 3 oder höher sichtbar ist
+
+      Hier ist die [aktuelle Liste aller Stammgäste](/badges/3/regular). Vergiss nicht, hallo zu sagen!
+
+      Vielen Dank dafür, dass du ein wichtiger Teil dieser Community bist!
+
+      (Wenn du mehr über Vertrauensstufen wissen möchtest, kannst du [dieses Thema lesen][trust]. Beachte bitte, dass nur jene Mitglieder Stammgäste bleiben, die auch im Laufe der Zeit die Anforderungen erfüllen.)
+
+      [trust]: https://meta.discourse.org/t/what-do-user-trust-levels-do/4924
   category:
     topic_prefix: "Über die Kategorie %{category}"
     replace_paragraph: "(Ersetze diesen ersten Absatz mit einer kurzen Beschreibung deiner neuen Kategorie. Diese Richtlinie wird in der Kategorienauswahl angezeigt, versuche also weniger als 200 Zeichen zu benutzen. **Bis du diese Beschreibung geändert oder Themen angelegt hast, wird diese Kategorie nicht auf der Kategorie-Seite angezeigt.**)"
@@ -530,17 +551,20 @@ de:
         make: "Dieses Thema ist jetzt ein Banner. Es wird auf jeder Seite ganz oben angezeigt, bis es vom Benutzer ausgeblendet wird."
         remove: "Dieses Thema ist jetzt kein Banner mehr. Es wird nicht mehr auf jeder Seite ganz oben angezeigt."
   unsubscribed:
-    title: 'Abo abbestellt'
-    description: "Dein Abo wurde abbestellt. Wir werden dich nicht wieder kontaktieren!"
-    oops: "Bitte klicke unten, falls du das nicht tun wolltest."
-    error: "Beim Löschen des Abonnements trat ein Fehler auf."
-    preferences_link: "Du kannst diese E-Mails in deinen <a href='/my/preferences'>Einstellungen</a> abbestellen."
-    different_user_description: "Du bist gerade als ein anderer Benutzer angemeldet als der, an den die Zusammenfassung gesendet wurde. Bitte melde dich ab und versuche es erneut."
-    not_found_description: "Entschuldige, wir konnten dein Abo nicht abbestellen. Möglicherweise ist der Link aus deiner E-Mail veraltet."
-  resubscribe:
-    action: "Abo wieder aufnehmen"
-    title: "Abo wieder aufgenommen!"
-    description: "Dein Abo wurde wieder aufgenommen."
+    title: "Abbestellt!"
+    description: "Du hast die Benachrichtigungen erfolgreich abbestellt. Um deine E-Mail-Einstellungen zu ändern, <a href='%{url}%'>besuche deine Einstellungen</a>."
+    topic_description: "Um %{link} wieder zu abonnieren, verwende die Benachrichtigungseinstellungen, die du am Ende und rechts von jedem Thema findest."
+  unsubscribe:
+    title: "Abbestellen"
+    stop_watching_topic: "Thema nicht mehr beobachten, %{link}"
+    mute_topic: "Alle Benachrichtigungen für dieses Thema stummschalten, %{link}"
+    unwatch_category: "Themen in %{category} nicht mehr beobachten"
+    mailing_list_mode: "Mailinglisten-Modus ausschalten"
+    disable_digest_emails: "Sende keine E-Mail-Zusammenfassungen mehr"
+    all: "Sende mir keine E-Mail mehr von %{sitename}"
+    different_user_description: "Du bist gerade als ein anderer Benutzer angemeldet als der, an den die Zusammenfassung gesendet wurde. Bitte melde dich ab oder beginne den anonymen Modus und versuche es erneut."
+    not_found_description: "Entschuldige, wir konnten dein Abo nicht abbestellen. Kann es sein, dass der Link aus deiner E-Mail abgelaufen ist?"
+    log_out: "Abmelden"
   reports:
     visits:
       title: "Nutzerbesuche"
@@ -683,7 +707,6 @@ de:
       yaxis: "Anzahl der Besuche"
   dashboard:
     rails_env_warning: "Dein Server läuft im %{env}-Modus."
-    ruby_version_warning: "Du verwendest eine Version von Ruby 2.0.0, die für Probleme bekannt ist. Aktualisiere auf Patchlevel 247 oder höher."
     host_names_warning: "Deine config/database.yml-Datei verwendet localhost als Hostname. Trage hier den Hostnamen deiner Website ein."
     gc_warning: 'Dein Server verwendet die Standardparameter für Rubys Garbage-Collector, die nicht optimal sind. Lese dieses Thema über Performanzeinstellungen (en): <a href="http://meta.discourse.org/t/tuning-ruby-and-rails-for-discourse/4126">Tuning Ruby and Rails for Discourse</a>.'
     sidekiq_warning: 'Sidekiq läuft nicht. Viele Aufgaben, wie zum Beispiel das Versenden von E-Mails, werden asynchron durch Sidekiq ausgeführt. Bitte stell sicher, dass mindestens ein Sidekiq-Prozess läuft. <a href="https://github.com/mperham/sidekiq">Mehr über Sidekiq erfährst du hier (en)</a>.'
@@ -740,6 +763,7 @@ de:
     crawl_images: "Lade Bilder von fremden URLs herunter, um ihre Höhe und Breite zu bestimmen."
     download_remote_images_to_local: "Lade eine Kopie von extern gehosteten Bildern herunter und ersetze Links in Beiträgen entsprechend; dies verhindert defekte Bilder."
     download_remote_images_threshold: "Minimal benötigter freier Festplattenspeicher um externe Bilder lokal herunterzuladen (in Prozent)"
+    download_remote_images_max_days_old: "Externe Bilder nicht herunterladen für Beiträge, die älter als n Tage alt sind."
     disabled_image_download_domains: "Liste von Domänen, von denen verlinkte Bilder niemals heruntergeladen werden sollen."
     editing_grace_period: "Für (n) Sekunden wird nach dem Bearbeiten keine neue Revision im Beitragsverlauf angelegt."
     post_edit_time_limit: "Der Verfasser eines Beitrags kann diesen nur für (n) Minuten nach Absenden des Beitrags bearbeiten. 0 deaktiviert diese Beschränkung."
@@ -754,6 +778,8 @@ de:
     add_rel_nofollow_to_user_content: "Füge mit Ausnahme interner Links (schließt übergeordnete Domains ein) allen benutzergenerierten Inhalten 'rel nofollow' hinzu. Die Änderung dieser Einstellung erfordert, dass du sämtliche Markdown-Beiträge aktualisierst: \"rake posts:rebake\""
     exclude_rel_nofollow_domains: "Eine Liste von Domains auf welchen das Attribut nofollow nicht auf Links gesetzt werden sollte (tld.com erlaubt auch sub.tld.com). Du solltest mindestens die Top-Level Domain dieser Site hinzufügen, damit die Crawler der Suchmaschinen all deinen Content indexieren können. Wenn weitere Teile deiner Website unter anderen Domains zu finden sind, kannst du diese hier ebenfalls hinzufügen."
     post_excerpt_maxlength: "Maximale Länge eines Beitrags-Auszuges bzw. -Zusammfassung."
+    show_pinned_excerpt_mobile: "Zeige einen Auszug hervorgehobener Beiträge in der mobilen Ansicht."
+    show_pinned_excerpt_desktop: "Zeige einen Auszug hervorgehobener Beiträge in der Desktop-Ansicht."
     post_onebox_maxlength: "Maximale Länge eines Onebox-Discourse-Beitrags in Zeichen."
     onebox_domains_whitelist: "Liste von Domains, deren Inhalte für Oneboxen erlaubt sind; diese Domains sollten OpenGraph oder oEmbed unterstützen. Teste ihre Kompatibilität unter http://iframely.com/debug"
     logo_url: "Das Logo oben links auf deiner Site sollte eine breite, rechteckige Form haben. Wenn du kein Logo auswählst, wird stattdessen `title` angezeigt."
@@ -780,13 +806,13 @@ de:
     background_polling_interval: "Polling-Intervall in Millisekunden für Clients, wenn sich das Browser-Fenster im Hintergrund befindet."
     flags_required_to_hide_post: "Anzahl an Meldungen, die dafür sorgen, dass ein Beitrag automatisch versteckt und der Benutzer benachrichtigt wird (0 für nie)"
     cooldown_minutes_after_hiding_posts: "Minuten die ein Benutzer warten muss, bevor ein Beitrag bearbeitet werden kann, der wegen Meldungen anderer Benutzer versteckt wurde"
-    max_topics_in_first_day: "Maximale Zahl an Themen, die ein Benutzer an seinem ersten Tag auf der Site erstellen kann"
-    max_replies_in_first_day: "Maximale Zahl an Antworten, die ein Benutzer an seinem ersten Tag auf der Site erstellen kann"
+    max_topics_in_first_day: "Maximale Anzahl an Themen, die ein Benutzer in den ersten 24 Stunden nach dem Schreiben seines ersten Beitrags erstellen kann."
+    max_replies_in_first_day: "Maximale Anzahl an Beiträgen, die ein Benutzer in den ersten 24 Stunden nach dem Schreiben seines ersten Beitrags erstellen kann."
     tl2_additional_likes_per_day_multiplier: "Limit für \"Gefällt mir\" für Benutzer auf Vertrauensstufe 2 (Mitglied) mit diesem Faktor multiplizieren"
     tl3_additional_likes_per_day_multiplier: "Limit für \"Gefällt mir\" für Benutzer auf Vertrauensstufe 3 (Stammgast) mit diesem Faktor multiplizieren"
     tl4_additional_likes_per_day_multiplier: "Limit für \"Gefällt mir\" für Benutzer auf Vertrauensstufe 4 (Anführer) mit diesem Faktor multiplizieren"
-    num_flags_to_block_new_user: "Verstecke alle Beiträge eines neuen Benutzers und erlaube keine neuen Beiträge mehr, wenn der neue Benutzer die hier angegebene Zahl an Meldungen bezüglich Spam von num_users_to_block_new_user verschiedenen anderen Benutzern erhalten hat. 0 deaktiviert diese Funktion."
-    num_users_to_block_new_user: "Verstecke alle Beiträge eines neuen Benutzers und erlaube keine neuen Beiträge mehr, wenn der neue Benutzer num_flags_to_block_new_user Meldungen bezüglich Spam von der hier angegebenen Zahl verschiedener anderer Benutzer erhalten hat. 0 deaktiviert diese Funktion."
+    num_spam_flags_to_block_new_user: "Verstecke alle Beiträge eines neuen Benutzers und erlaube keine neuen Beiträge mehr, wenn der neue Benutzer die hier angegebene Zahl an Meldungen bezüglich Spam von num_users_to_block_new_user verschiedenen anderen Benutzern erhalten hat. 0 deaktiviert diese Funktion."
+    num_users_to_block_new_user: "Wenn Beiträge eines neuen Benutzers so viele Spam-Meldungen von num_spam_flags_to_block_new_user verschiedenen Benutzern mit Vertrauensstufe 3 erhält, werden alle Beiträge des Benutzers ausgeblendet und weitere Beiträge verhindert. 0, um die Funktion zu deaktivieren."
     num_tl3_flags_to_block_new_user: "Wenn Beiträge eines neuen Benutzers so viele Meldungen von num_tl3_users_to_block_new_user verschiedenen Benutzern mit Vertrauensstufe 3 erhält, werden alle Beiträge des Benutzers ausgeblendet und weitere Beiträge verhindert. 0, um die Funktion zu deaktivieren."
     num_tl3_users_to_block_new_user: "Wenn Beiträge eines neuen Benutzers so viele Meldungen von num_tl3_users_to_block_new_user verschiedenen Benutzern mit Vertrauensstufe 3 erhält, werden alle Beiträge des Benutzers ausgeblendet und weitere Beiträge verhindert. 0, um die Funktion zu deaktivieren."
     notify_mods_when_user_blocked: "Wenn ein Benutzer automatisch gesperrt wird, sende eine Nachricht an alle Moderatoren."
@@ -796,6 +822,7 @@ de:
     post_undo_action_window_mins: "Minuten, die ein Benutzer hat, um Aktionen auf einen Beitrag rückgängig zu machen (Like, Meldung, usw.)."
     must_approve_users: "Mitarbeiter müssen alle neuen Benutzerkonten freischalten, bevor diese Zugriff auf die Website erhalten. ACHTUNG: Das Aktivieren dieser Option für eine Live-Site entfernt den Zugriff auch für alle existierenden Benutzer ausser Mitarbeiter!"
     pending_users_reminder_delay: "Benachrichtige die Moderatoren, falls neue Benutzer mehr als so viele Stunden auf ihre Genehmigung gewartet haben. Stelle -1 ein, um diese Benachrichtigungen zu deaktivieren."
+    permanent_session_cookie: "Verwende einen dauerhaften Cookie, der nach dem Schließen des Browsers fortbesteht. Wenn du dies deaktivierst, möchtest vielleicht alle programmatisch abmelden."
     ga_tracking_code: "Google Analytics Trackingcode, zum Beispiel: UA-12345678-9; siehe http://google.com/analytics"
     ga_domain_name: "Google Analytics Domänenname, zum Beispiel: mysite.com; siehe http://google.com/analytics"
     ga_universal_tracking_code: "Google Universal Analytics (analytics.js) tracking code code, beispielsweise: UA-12345678-9; Siehe http://google.com/analytics"
@@ -905,6 +932,7 @@ de:
     alert_admins_if_errors_per_hour: "Anzahl der Fehler pro Stunde, bei der ein Administrator benachrichtigt werden soll. Ein Wert von 0 deaktiviert diese Funktion. Achtung: Benötigt einen Neustart."
     suggested_topics: "Anzahl der empfohlenen Themen am Ende eines Themas."
     limit_suggested_to_category: "Zeige nur Themen der aktuellen Kategorie in vorgeschlagenen Themen."
+    suggested_topics_max_days_old: "Vorgeschlagene Themen sollten nicht älter als n Tage alt sein."
     clean_up_uploads: "Lösche verwaiste Uploads, um illegales Hosting zu vermeiden. ACHTUNG: du solltest ein Backup deines /uploads-Verzeichnis erstellen, bevor du diese Funktion aktivierst."
     clean_orphan_uploads_grace_period_hours: "Schonfrist (in Stunden), bevor ein verwaister Upload entfernt wird."
     purge_deleted_uploads_grace_period_days: "Schonfrist (in Tagen), bevor ein entfernter Upload endgültig gelöscht wird."
@@ -1116,6 +1144,7 @@ de:
     notify_about_queued_posts_after: "Wenn es Beiträge gibt, die länger als diese Anzahl von Stunden auf ihre Überprüfung gewartet haben, sende eine E-Mail an contact_email. Setze sie auf 0, um diese E-Mails zu deaktivieren."
     auto_close_messages_post_count: "Maximale Anzahl von Beiträgen, die in einer Nachricht erlaubt sind, bevor sie automatisch geschlossen wird (0 = ausgeschaltet)"
     auto_close_topics_post_count: "Maximale Anzahl von Beiträgen, die in einem Thema erlaubt sind, bevor es automatisch geschlossen wird (0 = ausgeschaltet)"
+    code_formatting_style: "Code-Schaltfläche im Editor wird standardmäßig diesen Formatierungsstil anwenden"
     default_email_digest_frequency: "Wie häufig sollen Benutzer standardmäßig E-Mail-Zusammenfassungen erhalten?"
     default_include_tl0_in_digests: "Beiträge von neuen Benutzern in E-Mail-Zusammenfassungen standardmäßig anzeigen. Benutzer können dies in ihren Einstelllungen ändern."
     default_email_private_messages: "Sende einem Benutzer standardmäßig eine E-Mail, wenn dieser eine Nachricht von einem anderen Benutzer erhält."
@@ -1173,21 +1202,6 @@ de:
       reply_by_email_address_is_empty: "Du musst 'reply by email address' definieren, bevor per E-Mail antworten aktiviert wird"
       email_polling_disabled: "Du musst entweder manuelles oder POP3 polling aktivieren, bevor per E-Mail antworten aktiviert wird"
       user_locale_not_enabled: "Du musst zuerst 'allow user locale' aktivieren bevor du dies aktivierst"
-  notification_types:
-    group_mentioned: "%{group_name} wurde auf %{link} erwähnt"
-    mentioned: "%{display_username} hat Dich in %{link} erwähnt."
-    liked: "%{display_username} gefällt deinen Beitrag in %{link}."
-    replied: "%{display_username} hat auf deinen Beitrag in %{link} geantwortet."
-    quoted: "%{display_username} hat deinen Beitrag in %{link} zitiert."
-    edited: "%{display_username} hat deinen Beitrag in %{link} bearbeitet."
-    posted: "%{display_username} hat einen Beitrag in %{link} erstellt."
-    moved_post: "%{display_username} hat deinen Beitrag nach %{link} verschoben."
-    private_message: "%{display_username} hat Dir eine Nachricht geschickt: %{link}"
-    invited_to_private_message: "%{display_username} hat dich zu einer Unterhaltung eingeladen: %{link}"
-    invited_to_topic: "%{display_username} hat dich zu %{link} eingeladen"
-    invitee_accepted: "%{display_username} hat deine Einladung angenommen."
-    linked: "%{display_username} hat dich auf %{link} verlinkt"
-    granted_badge: "Sie haben %{link} verdient"
   search:
     within_post: "#%{post_number} von %{username}"
     types:
@@ -1204,7 +1218,7 @@ de:
   most_recent_poster: "Autor des jüngsten Beitrags"
   frequent_poster: "Autor vieler Beiträge"
   redirected_to_top_reasons:
-    new_user: "Willkommen bei unserer Community! Dies sind die derzeit am beliebtesten Themen."
+    new_user: "Willkommen bei unserer Community! Dies sind die derzeit beliebtesten Themen."
     not_seen_in_a_month: "Willkommen zurück! Wir haben dich länger nicht gesehen. Während deiner Abwesenheit waren dies die beliebtesten Themen."
   move_posts:
     new_topic_moderator_post:
@@ -1396,47 +1410,6 @@ de:
       (Wenn der Link abgelaufen ist, wähle "Passwort vergessen" aus, wenn du dich mit deiner E-Mail-Adresse einloggen möchtest.)
   test_mailer:
     subject_template: "[%{site_name}] Test der E-Mail-Zustellbarkeit"
-    text_body_template: |
-      Dies ist eine Testnachricht von
-
-      [**%{base_url}**][0]
-
-      E-Mail-Zustellung ist kompliziert. Hier sind ein paar wichtige Dinge, die du überprüfen solltest:
-
-      - *Vergewissere* dich, dass du die `notification email` E-Mail-Adresse in deinen Einstellungen korrekt setzt. **Die Domain, die in der "from"-Adresse angegeben wird, ist die Domain, gegen die deine E-Mail geprüft wird**.
-
-      - Lerne, wie du den Quelltext der E-Mail in deinem E-Mail-Client anzeigen kannst, damit du die E-Mail-Kopfzeilen für weitere Schlüsse zu untersuchen. In Google Mail ist dies die Option "Zeige Original" im Dropdown-Menü in der rechten oberen Ecke jeder E-Mail.
-
-      - **WICHTIG:** Hat dein Internetprovider einen Reverse DNS-Record eingetragen, um die Domainnamen und IP-Adressen zu verknüpfen, von denen du E-Mails verschickst? [Prüfe deinen Reverse PTR-Record][2] hier. Wenn dein Internetprovider nicht den richtigen Reverse PTR-Record setzt, ist es unwahrscheinlich, dass eine deiner E-Mails zugestellt wird.
-
-      - Ist der [SPF-Record][8] deiner Domain korrekt? [Prüfe deinen SPF-Record][1] hier. Beachte, dass TXT der offizielle Record-Type für SPF ist.
-
-      - Ist der [DKIM-Record][3] deiner Domain korrekt? Dies wird die Zustellbarkeit von E-Mails signifikant verbessern. [Prüfe deinen DKIM-Record][7] hier.
-
-      - Wenn du deinen eigenen E-Mail-Server betreibst, stelle sicher, dass die IP-Adressen deines E-Mail-Servers auf [keiner E-Mail-Blacklist sind][4]. Stelle auch sicher, dass er in seiner HELO-Nachricht auf jeden Fall einen vollqualifizierten Hostname sendet. Wenn nicht, wird dies dazu führen, dass deine E-Mails von vielen E-Mail-Diensten abgelehnt wird.
-
-      - Wir empfehlen dir sehr, **eine Testnachricht an [mail-tester.com][mt] zu schicken**, um sicherzustellen, dass dies alles korrekt funktioniert.
-
-      (Der *einfache* Weg liegt darin, ein kostenloses Konto bei [SendGrid][sg], [SparkPost][sp], [Mailgun][mg] oder [Mailjet][mj] zu erstellen, die großzügige und kostenlose E-Mail-Angebote haben, die für kleine Communitys ausreichen sollten. Du wirst allerdings trotzdem die SPF- und DKIM-Einträge in deinen DNS-Einstellungen setzen müssen!)
-
-      Wir hoffen, dass du diesen E-Mail-Zustellbarkeits-Test ordentlich erhältst!
-
-      Viel Erfolg,
-
-      Deine Freunde bei [Discourse](http://www.discourse.org)
-
-      [0]: %{base_url}
-      [1]: http://www.kitterman.com/spf/validate.html
-      [2]: http://mxtoolbox.com/ReverseLookup.aspx
-      [3]: http://www.dkim.org/
-      [4]: http://whatismyipaddress.com/blacklist-check
-      [7]: https://www.mail-tester.com/spf-dkim-check
-      [8]: http://www.openspf.org/SPF_Record_Syntax
-      [sg]: https://sendgrid.com/
-      [sp]: https://www.sparkpost.com/
-      [mg]: http://www.mailgun.com/
-      [mj]: https://www.mailjet.com/pricing
-      [mt]: http://www.mail-tester.com/
   new_version_mailer:
     subject_template: "[%{site_name}] Neue Discourse Version, Update verfügbar"
     text_body_template: |
@@ -1489,7 +1462,7 @@ de:
   temporarily_closed_due_to_flags: "Dieses Thema ist vorrübergehend geschlossen. Mehrere User haben dieses Thema gemeldet. "
   system_messages:
     post_hidden:
-      subject_template: "Beitrag wegen Meldungen aus der Community versteckt"
+      subject_template: "Beitrag versteckt wegen Community-Meldungen"
       text_body_template: |
         Hallo,
 
@@ -1846,7 +1819,7 @@ de:
 
         Weitere Hinweise findest du in unseren [Community-Richtlinien](%{base_url}/guidelines).
     user_automatically_blocked:
-      subject_template: "Neuer Benutzer %{username} wegen Gemeinschaftsrichtlinien blockiert."
+      subject_template: "Neuer Benutzer %{username} gesperrt wegen Community-Meldungen"
       text_body_template: |
         Dies ist eine automatisierte Nachricht.
 
@@ -1886,24 +1859,19 @@ de:
       text_body_template: "Die `download_remote_images_to_local` Einstellung wurde deaktiviert, da das Speicherplatz Limit von `download_remote_images_threshold` erreicht wurde."
     dashboard_problems:
       subject_template: "Probleme wurden festgestellt"
-      text_body_template: |+
+      text_body_template: |
         Es wurden Probleme in deinem Admin-Dashboard gemeldet.
 
         [Bitte überprüfe und behebe sie](%{base_url}/admin).
 
   unsubscribe_link: |
-    Um keine weiteren Benachrichtigungen für dieses Thema zu erhalten, [klicke hier](%{unsubscribe_url}).
-
-    Um diese E-Mails abzubestellen, ändere deine [Benutzer-Einstellungen](%{user_preferences_url}).
+    Um diese E-Mails abzubestellen, [klicke hier](%{unsubscribe_url}).
   unsubscribe_link_and_mail: |
-    Um keine weiteren Benachrichtigungen für dieses Thema zu erhalten, [klicke hier](%{unsubscribe_url}).
+    Um diese E-Mails abzubestellen, [klicke hier](%{unsubscribe_url}).
+  unsubscribe_mailing_list: |
+    Du erhältst diese E-Mails, weil du den Mailinglisten-Modus aktiviert hast.
 
-    Um diese E-Mails abzubestellen, ändere deine [Benutzer-Einstellungen](%{user_preferences_url}) oder [klicke hier](mailto:reply@%{hostname}?subject=unsubscribe), um per E-Mail abzubestellen.
-  unsubscribe_mailing_list: |+
-    Du hast den Mailinglisten-Modus aktiviert. Um keine weiteren Benachrichtigungen für dieses Thema zu erhalten, [klicke hier](%{unsubscribe_url}).
-
-    Um diese E-Mails abzubestellen, ändere deine [Benutzer-Einstellungen](%{user_preferences_url}) oder [klicke hier](mailto:reply@%{hostname}?subject=unsubscribe), um per E-Mail abzubestellen.
-
+    Um diese E-Mails abzubestellen, [klicke hier](%{unsubscribe_url}).
   subject_re: "Re: "
   subject_pm: "[PN]"
   user_notifications:
@@ -2035,6 +2003,16 @@ de:
         %{context}
 
         %{respond_instructions}
+    user_watching_first_post:
+      subject_template: "[%{site_name}] %{topic_title}"
+      text_body_template: |
+        %{header_instructions}
+
+        %{message}
+
+        %{context}
+
+        %{respond_instructions}
     user_posted_pm:
       subject_template: "[%{site_name}] [PN] %{topic_title}"
       text_body_template: |
@@ -2047,7 +2025,7 @@ de:
         %{respond_instructions}
     user_posted_pm_staged:
       subject_template: "%{optional_re}%{topic_title}"
-      text_body_template: |2
+      text_body_template: |
 
         %{message}
     digest:
@@ -2656,7 +2634,7 @@ de:
     first_like:
       name: Erster Like
       description: Hat Gefallen an einem Beitrag gefunden
-      long_description: |+
+      long_description: |
         Dieses Abzeichen wird verliehen, wenn du das erste mal auf die :heart:-Schaltfläche unter einem Beitrag klickst. Beiträge mit „Gefällt mir“ zu markieren, ist eine tolle Art, den Community-Kollegen wissen zu lassen, dass sein Beitrag interessant, nützlich, cool oder witzig war. Teile die Liebe!
 
     first_flag:
