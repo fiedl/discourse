@@ -9,7 +9,7 @@ require_dependency "permalink_constraint"
 # and makes Guard not work properly.
 USERNAME_ROUTE_FORMAT = /[\w.\-]+/ unless defined? USERNAME_ROUTE_FORMAT
 
-BACKUP_ROUTE_FORMAT = /.+\.(tar\.gz|tgz)/i unless defined? BACKUP_ROUTE_FORMAT
+BACKUP_ROUTE_FORMAT = /.+\.(sql\.gz|tar\.gz|tgz)/i unless defined? BACKUP_ROUTE_FORMAT
 
 Discourse::Application.routes.draw do
 
@@ -45,6 +45,9 @@ Discourse::Application.routes.draw do
     get "banner"
     get "emoji"
   end
+
+  get "site/basic-info" => 'site#basic_info'
+
   get "site_customizations/:key" => "site_customizations#show"
 
   resources :forums
@@ -203,6 +206,12 @@ Discourse::Application.routes.draw do
       end
     end
 
+    resources :web_hooks, constraints: AdminConstraint.new
+    get 'web_hook_events/:id' => 'web_hooks#list_events', constraints: AdminConstraint.new, as: :web_hook_events
+    get 'web_hooks/:id/events' => 'web_hooks#list_events', constraints: AdminConstraint.new
+    post 'web_hooks/:web_hook_id/events/:event_id/redeliver' => 'web_hooks#redeliver_event', constraints: AdminConstraint.new
+    post 'web_hooks/:id/ping' => 'web_hooks#ping', constraints: AdminConstraint.new
+
     resources :backups, only: [:index, :create], constraints: AdminConstraint.new do
       member do
         get "" => "backups#show", constraints: { id: BACKUP_ROUTE_FORMAT }
@@ -315,9 +324,7 @@ Discourse::Application.routes.draw do
   get "users/:username/preferences/card-badge" => "users#card_badge", constraints: {username: USERNAME_ROUTE_FORMAT}
   put "users/:username/preferences/card-badge" => "users#update_card_badge", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "users/:username/staff-info" => "users#staff_info", constraints: {username: USERNAME_ROUTE_FORMAT}
-
   get "users/:username/summary" => "users#summary", constraints: {username: USERNAME_ROUTE_FORMAT}
-
   get "users/:username/invited" => "users#invited", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "users/:username/invited_count" => "users#invited_count", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "users/:username/invited/:filter" => "users#invited", constraints: {username: USERNAME_ROUTE_FORMAT}
@@ -339,6 +346,9 @@ Discourse::Application.routes.draw do
   get "users/by-external/:external_id" => "users#show", constraints: {external_id: /[^\/]+/}
   get "users/:username/flagged-posts" => "users#show", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "users/:username/deleted-posts" => "users#show", constraints: {username: USERNAME_ROUTE_FORMAT}
+
+  get "users/:username/topic-tracking-state" => "users#topic_tracking_state", constraints: {username: USERNAME_ROUTE_FORMAT}
+
   get "user-badges/:username.json" => "user_badges#username", constraints: {username: USERNAME_ROUTE_FORMAT}, defaults: {format: :json}
   get "user-badges/:username" => "user_badges#username", constraints: {username: USERNAME_ROUTE_FORMAT}
 
@@ -449,6 +459,8 @@ Discourse::Application.routes.draw do
   post "categories/reorder" => "categories#reorder"
   post "category/:category_id/notifications" => "categories#set_notifications"
   put "category/:category_id/slug" => "categories#update_slug"
+
+  get "categories_and_latest" => "categories#categories_and_latest"
 
   get "c/:id/show" => "categories#show"
   get "c/:category_slug/find_by_slug" => "categories#find_by_slug"
@@ -630,6 +642,7 @@ Discourse::Application.routes.draw do
       get '/:tag_id' => 'tags#show', as: 'tag_show'
       get '/c/:category/:tag_id' => 'tags#show', as: 'tag_category_show'
       get '/c/:parent_category/:category/:tag_id' => 'tags#show', as: 'tag_parent_category_category_show'
+      get '/intersection/:tag_id/*additional_tag_ids' => 'tags#show', as: 'tag_intersection'
       get '/:tag_id/notifications' => 'tags#notifications'
       put '/:tag_id/notifications' => 'tags#update_notifications'
       put '/:tag_id' => 'tags#update'
@@ -657,5 +670,11 @@ Discourse::Application.routes.draw do
   # special case for top
   root to: "list#top", constraints: HomePageConstraint.new("top"), :as => "top_lists"
 
+  get "/user-api-key/new" => "user_api_keys#new"
+  post "/user-api-key" => "user_api_keys#create"
+  post "/user-api-key/revoke" => "user_api_keys#revoke"
+  post "/user-api-key/undo-revoke" => "user_api_keys#undo_revoke"
+
   get "*url", to: 'permalinks#show', constraints: PermalinkConstraint.new
+
 end

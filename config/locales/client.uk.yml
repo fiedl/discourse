@@ -238,8 +238,6 @@ uk:
       latest_by: "Останні від"
       toggle_ordering: "показати/сховати елемент керування для впорядкування"
       subcategories: "Підкатегорії"
-      topic_stats: "Кількість нових тем."
-      post_stats: "Кількість нових дописів."
     ip_lookup:
       title: Пошук IP адреси
       hostname: Ім'я хоста
@@ -277,7 +275,6 @@ uk:
         enable: "Увімкнути сповіщення"
       dismiss_notifications_tooltip: "Позначити всі сповіщення як прочитані"
       disable_jump_reply: "Не перескакувати до мого допису коли я відповім"
-      edit_history_public: "Дати іншим дивитися версії мого повідомлення"
       external_links_in_new_tab: "Відкривати всі зовнішні посилання у новій вкладці"
       enable_quoting: "Увімкнути відповіді на цитати для виділеного тексту"
       change: "змінити"
@@ -611,7 +608,6 @@ uk:
         category: "Більше немає тем в категорії {{category}}."
         top: "There are no more top topics."
     topic:
-      filter_to: "Показати {{post_count}} дописів в темі"
       create: 'Нова тема'
       create_long: 'Створити нову тему'
       list: 'Теми'
@@ -648,7 +644,6 @@ uk:
         jump_bottom_with_number: "перейти до допису %{post_number}"
         total: всього дописів
         current: поточний допис
-        position: "допис %{current} із %{total}"
       notifications:
         reasons:
           '3_6': 'Ви будете отримувати сповіщення, бо Ви слідкуєте за цією категорією.'
@@ -746,7 +741,6 @@ uk:
       show_full: "Показати Увесь Допис"
       show_hidden: 'Показати схований зміст.'
       expand_collapse: "розгорнути/згорнути"
-      more_links: "{{count}} ще..."
       unread: "Допис не прочитаний"
       errors:
         create: "Даруйте, під час створення допису трапилася помилка. Будь ласка, спробуйте ще раз."
@@ -778,14 +772,6 @@ uk:
           no_value: "Ні, тільки цей допис"
       actions:
         flag: 'Поскаржитися'
-        it_too:
-          off_topic: "Також поскаржитися"
-          spam: "Також поскаржитися"
-          inappropriate: "Також поскаржитися"
-          custom_flag: "Також поскаржитися"
-          bookmark: "Також лишити закладку"
-          like: "Також вподобати"
-          vote: "Також проголосувати за"
         undo:
           off_topic: "Відкликати скаргу"
           spam: "Відкликати скаргу"
@@ -868,18 +854,12 @@ uk:
       action: 'Поскаржитися на допис'
       take_action: "Вжити заходів"
       delete_spammer: "Видалити спамера"
-      delete_confirm: "Ви збираєтеся видалити <b>%{posts}</b> дописів і <b>%{topics}</b> тем цього користувача, видалити його обліковий запис, заблокувати реєстрації з його IP-адреси <b>%{ip_address}</b> та додати його електронну скриньку <b>%{email}</b> до чорного списку заблокованих адрес. Ви впевнені, що цей користувач дійсно спамер?"
       yes_delete_spammer: "Так, видалити спамера"
       cant: "Даруйте, зараз Ви не можете поскаржитися на цей допис."
-      custom_message:
-        at_least: "введіть принаймні {{n}} символів"
-        more: "ще {{n}}..."
-        left: "залишилось {{n}}"
     flagging_topic:
       action: "Flag Topic"
     topic_map:
       title: "Підсумок теми"
-      links_shown: "показати всі {{totalLinks}} посилання..."
     topic_statuses:
       locked:
         help: "цю тему закрито; нові відповіді більше не приймаються"
@@ -890,7 +870,6 @@ uk:
       pinned:
         title: "Закріплені"
     posts: "Дописи"
-    posts_lowercase: "дописи"
     posts_long: "тема містить {{number}} дописів"
     original_post: "Перший допис"
     views: "Перегляди"
@@ -1224,7 +1203,6 @@ uk:
         suspend_reason: "Причина"
         suspended_by: "Призупинено"
         delete_all_posts: "Видалити всі дописи"
-        delete_all_posts_confirm: "Ви збираєтеся видалити %{posts} дописів і %{topics} тем. Ви впевнені?"
         suspend: "Призупинити"
         unsuspend: "Скасувати призупинення"
         suspended: "Призупинено?"

@@ -43,8 +43,6 @@ vi:
           other: "< %{count}s"
         x_seconds:
           other: "%{count}s"
-        less_than_x_minutes:
-          other: "< %{count}m"
         x_minutes:
           other: "%{count}m"
         about_x_hours:
@@ -84,12 +82,12 @@ vi:
       previous_month: 'Tháng Trước'
       next_month: 'Tháng Sau'
     share:
-      topic: 'chia sẽ chủ đề này'
+      topic: 'chia sẻ chủ đề này'
       post: 'đăng #%{Bài đăng số}'
       close: 'đóng lại'
-      twitter: 'chia sẽ lên Twitter'
-      facebook: 'chia sẽ lên Facebook'
-      google+: 'chia sẽ lên Google+'
+      twitter: 'chia sẻ lên Twitter'
+      facebook: 'chia sẻ lên Facebook'
+      google+: 'chia sẻ lên Google+'
       email: 'Gửi liên kết này qua thư điện tử'
     action_codes:
       split_topic: "chìa chủ đề này lúc %{when}"
@@ -356,12 +354,8 @@ vi:
       latest_by: "mới nhất bởi"
       toggle_ordering: "chuyển lệnh kiểm soát"
       subcategories: "Phân loại phụ"
-      topic_stats: "Số lượng chủ đề mới"
       topic_stat_sentence:
         other: "%{count} số lượng chủ đề mới tỏng quá khứ %{unit}."
-      post_stats: "Số lượng bài viết mới"
-      post_stat_sentence:
-        other: "%{count} số lượng bài viết mới trong quá khứ %{unit}."
     ip_lookup:
       title: Tìm kiếm địa chỉ IP
       hostname: Hostname
@@ -409,7 +403,6 @@ vi:
       dismiss_notifications_tooltip: "Đánh dấu đã đọc cho tất cả các thông báo chưa đọc"
       disable_jump_reply: "Đừng tới bài viết của tôi sau khi tôi trả lời"
       dynamic_favicon: "Hiện số chủ đề mới / cập nhật vào biểu tượng trình duyệt"
-      edit_history_public: "Để thành viên khác xem những sửa chữa bài viết của bạn"
       external_links_in_new_tab: "Mở tất cả liên kết bên ngoài trong thẻ mới"
       enable_quoting: "Bật chế độ làm nổi bật chữ trong đoạn trích dẫn trả lời"
       change: "thay đổi"
@@ -423,7 +416,6 @@ vi:
       github_profile: "Github"
       watched_categories: "Xem"
       tracked_categories: "Theo dõi"
-      tracked_categories_instructions: "Bạn sẽ tự động theo dõi tất cả các chủ đề trong các chuyên mục này. Một số bài viết mới sẽ xuất hiện ở chủ đề kế tiếp."
       muted_categories: "Im lặng"
       muted_categories_instructions: "Bạn sẽ không bao giờ được thông báo về bất cứ điều gì về các chủ đề mới trong các chuyên mục này, và chúng sẽ không hiển thị mới nhất"
       delete_account: "Xoá Tài khoản của tôi"
@@ -795,10 +787,6 @@ vi:
       github:
         title: "với GitHub"
         message: "Chứng thực với GitHub (chắc chắn chặn popup không bật)"
-    apple_international: "Apple/International"
-    google: "Google"
-    twitter: "Twitter"
-    emoji_one: "Emoji One"
     shortcut_modifier_key:
       shift: 'Shift'
       ctrl: 'Ctrl'
@@ -1015,7 +1003,6 @@ vi:
       unsubscribe:
         stop_notifications: "Từ bây giờ bạn sẽ không nhận thông báo từ <strong>{{title}}</strong>"
         change_notification_state: "Tình trạn thông báo của bạn là"
-      filter_to: "{{post_count}} bài đăng trong chủ đề"
       create: 'Chủ đề Mới'
       create_long: 'Tạo một Chủ đề mới'
       private_message: 'Bắt đầu một thông điệp'
@@ -1069,7 +1056,6 @@ vi:
       auto_close_title: 'Tự động-Đóng các Cài đặt'
       auto_close_save: "Lưu"
       auto_close_remove: "Đừng Tự Động-Đóng Chủ Đề Này"
-      auto_close_immediate: "Bài viết cuối cùng trong chủ đề đã xảy ra %{hours} giờ qua, vì vậy chủ đề sẽ tự động đóng."
       progress:
         title: tiến trình của chủ đề
         go_top: "trên cùng"
@@ -1079,7 +1065,6 @@ vi:
         jump_bottom_with_number: "nhảy tới bài viết %{post_number}"
         total: tổng số bài viết
         current: bài viết hiện tại
-        position: "bài viết %{current} trong %{total}"
       notifications:
         reasons:
           '3_6': 'Bạn sẽ nhận được các thông báo bởi vì bạn đang xem chuyên mục nàyotification'
@@ -1263,7 +1248,6 @@ vi:
       expand_collapse: "mở/đóng"
       gap:
         other: "xem {{count}} trả lời bị ẩn"
-      more_links: "hơn {{count}}..."
       unread: "Bài viết chưa đọc"
       has_replies:
         other: "{{count}} Trả lời"
@@ -1323,14 +1307,6 @@ vi:
         flag: 'Gắn cờ'
         defer_flags:
           other: "Đánh dấu hoãn"
-        it_too:
-          off_topic: "Gắn cờ nó"
-          spam: "Gắn cờ nó"
-          inappropriate: "Gắn cờ nó"
-          custom_flag: "Gắn cờ nó"
-          bookmark: "Đánh dấu nó"
-          like: "Thích nó"
-          vote: "Bịnh chọn nó"
         undo:
           off_topic: "Hủy gắn cờ"
           spam: "Hủy gắn cờ"
@@ -1470,10 +1446,8 @@ vi:
       notifications:
         watching:
           title: "Theo dõi"
-          description: "Bạn sẽ tự động xem tất cả các chủ đề mới trong các chuyên mục này. Bạn sẽ được thông báo về tất các các chủ đề mới, và một số bài viết mới sẽ được hiển thị."
         tracking:
           title: "Đang theo dõi"
-          description: "Bạn sẽ tự động theo dõi tất cả các chủ đề mới trong các chuyên mục này. Bạn sẽ được thông báo nếu ai đó đề cập đến @tên của bạn hoặc trả lời bạn, và một số bài viết mới sẽ được hiển thị."
         regular:
           title: "Bình thường"
           description: "Bạn sẽ được thông báo nếu ai đó đề cập đến @tên bạn hoặc trả lời bạn"
@@ -1486,7 +1460,6 @@ vi:
       take_action: "Thực hiện"
       notify_action: 'Tin nhắn'
       delete_spammer: "Xóa người Spam"
-      delete_confirm: "Bạn đang định xóa <b>%{posts}</b> bài đăng và <b>%{topics}</b> chủ đề từ người dùng này,  loại tài khoản, ngăn đăng ký từ địa chỉ IP <b>%{ip_address}</b> của họ, và thêm địa chỉ email <b>%{email}</b> vào danh sách chặn vĩnh viễn. Bạn có chắc người dùng này thật sự là một spammer?"
       yes_delete_spammer: "Có, xóa người spam"
       ip_address_missing: "(N/A)"
       hidden_email_address: "(ẩn)"
@@ -1500,10 +1473,6 @@ vi:
         spam: "Nó là rác"
       custom_placeholder_notify_user: "Phải hảo tâm và mang tính xây dựng."
       custom_placeholder_notify_moderators: "Hãy cho chúng tôi biết cụ thể những gì bạn quan tâm, và cung cấp các liên kết hoặc ví dụ liên quan nếu có thể."
-      custom_message:
-        at_least: "điền ít nhất {{n}} ký tự"
-        more: "còn {{n}}"
-        left: "{{n}} còn lại"
     flagging_topic:
       title: "Cám ơn bạn đã giúp phát triển cộng đồng!"
       action: "Gắn cờ Chủ đề"
@@ -1512,7 +1481,6 @@ vi:
       title: "Tóm tắt Chủ đề"
       participants_title: "Poster thường xuyên"
       links_title: "Liên kết phổ biến"
-      links_shown: "hiện tất cả {{totalLinks}} liên kết..."
       clicks:
         other: "%{count} nhấp chuột"
     topic_statuses:
@@ -1538,7 +1506,6 @@ vi:
       invisible:
         help: "Chủ đề này ẩn, nó sẽ không hiển thị trong danh sách chủ đề, và chỉ có thể truy cập thông qua liên kết trực tiếp"
     posts: "Bài viết"
-    posts_lowercase: "bài viết"
     posts_long: "Có {{number}} bài đăng trong chủ đề này"
     posts_likes_MF: |
       Chủ đề này có {count, plural, one {1 reply} other {# replies}} {ratio, select,
@@ -2174,7 +2141,6 @@ vi:
         suspend_reason: "Lý do"
         suspended_by: "Tạm khóa bởi"
         delete_all_posts: "Xóa tất cả bài viết"
-        delete_all_posts_confirm: "Bạn có chắc chắn muốn xóa %{posts} bài viết và %{topics} chủ đề?"
         suspend: "Tạm khóa"
         unsuspend: "Đã mở khóa"
         suspended: "Đã tạm khóa?"
@@ -2190,7 +2156,7 @@ vi:
         show_public_profile: "Hiển thị hồ sơ công khai"
         impersonate: 'Mạo danh'
         ip_lookup: "Tìm kiếm địa chỉ IP"
-        log_out: "Đăng suất"
+        log_out: "Đăng xuất"
         logged_out: "Thành viên đã đăng xuất trên tất cả thiết bị"
         revoke_admin: 'Thu hồi quản trị'
         grant_admin: 'Cấp quản trị'
@@ -2258,7 +2224,6 @@ vi:
         unlock_trust_level: "Mở khóa độ tin cậy"
         tl3_requirements:
           title: "Yêu cầu Cấp độ tin tưởng 3"
-          table_title: "Trong %{time_period} ngày qua:"
           value_heading: "Giá trị"
           requirement_heading: "Yêu cầu"
           visits: "Lượt xem"

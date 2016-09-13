@@ -114,7 +114,7 @@ class PostsController < ApplicationController
   end
 
   def raw_email
-    post = Post.find(params[:id].to_i)
+    post = Post.unscoped.find(params[:id].to_i)
     guardian.ensure_can_view_raw_email!(post)
     render json: { raw_email: post.raw_email }
   end
@@ -561,7 +561,7 @@ class PostsController < ApplicationController
     params[:auto_track] = !(params[:auto_track].to_s == "false") if params[:auto_track]
     params[:visible] = (params[:unlist_topic].to_s == "false") if params[:unlist_topic]
 
-    if api_key_valid?
+    if is_api?
       # php seems to be sending this incorrectly, don't fight with it
       params[:skip_validations] = params[:skip_validations].to_s == "true"
       permitted << :skip_validations

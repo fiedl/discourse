@@ -56,6 +56,7 @@ module DiscourseTagging
   def self.filter_allowed_tags(query, guardian, opts={})
     term = opts[:term]
     if term.present?
+      term.downcase!
       term.gsub!(/[^a-z0-9\.\-\_]*/, '')
       term.gsub!("_", "\\_")
       query = query.where('tags.name like ?', "%#{term}%")
@@ -185,14 +186,8 @@ module DiscourseTagging
     end
   end
 
-  # TODO: this is unused?
-  def self.notification_key(tag_id)
-    "tags_notification:#{tag_id}"
-  end
-
-  # TODO: this is unused?
   def self.muted_tags(user)
     return [] unless user
-    UserCustomField.where(user_id: user.id, value: TopicUser.notification_levels[:muted]).pluck(:name).map { |x| x[0,17] == "tags_notification" ? x[18..-1] : nil}.compact
+    TagUser.lookup(user, :muted).joins(:tag).pluck('tags.name')
   end
 end

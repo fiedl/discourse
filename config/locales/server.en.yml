@@ -340,6 +340,7 @@ en:
               common: "is one of the 10000 most common passwords. Please use a more secure password."
               same_as_username: "is the same as your username. Please use a more secure password."
               same_as_email: "is the same as your email. Please use a more secure password."
+              same_as_current: "is the same as your current password."
             ip_address:
               signup_not_allowed: "Signup is not allowed from this account."
         color_scheme_color:
@@ -349,7 +350,10 @@ en:
         post_reply:
           base:
             different_topic: "Post and reply must belong to the same topic."
-
+        web_hook:
+          attributes:
+            payload_url:
+              invalid: "URL is invalid. URL should includes http:// or https://. And no blank is allowed."
 
   user_profile:
     no_info_me: "<div class='missing-profile'>the About Me field of your profile is currently blank, <a href='/users/%{username_lower}/preferences/about-me'>would you like to fill it out?</a></div>"
@@ -640,6 +644,15 @@ en:
     not_found_description: "Sorry, we couldn't find this unsubscribe. It's possible the link in your email has expired?"
     log_out: "Log Out"
 
+  user_api_key:
+    title: "Authorize application access"
+    authorize: "Authorize"
+    read: "read"
+    read_write: "read/write"
+    description: "Would you like to grant \"%{application_name}\" %{access} access to your account?"
+    no_trust_level: "Sorry, you do not have the required trust level to access the user API"
+    generic_error: "Sorry, we are unable to issue user API keys, this feature may be disabled by the site admin"
+
   reports:
     visits:
       title: "User Visits"
@@ -828,6 +841,8 @@ en:
     min_private_message_title_length: "Minimum allowed title length for a message in characters"
     min_search_term_length: "Minimum valid search term length in characters"
     search_tokenize_chinese_japanese_korean: "Force search to tokenize Chinese/Japanese/Korean even on non CJK sites"
+    search_prefer_recent_posts: "If searching your large forum is slow, this option tries an index of more recent posts first"
+    search_recent_posts_size: "How many recent posts to keep in the index"
     allow_uncategorized_topics: "Allow topics to be created without a category. WARNING: If there are any uncategorized topics, you must recategorize them before turning this off."
     allow_duplicate_topic_titles: "Allow topics with identical, duplicate titles."
     unique_posts_mins: "How many minutes before a user can make a post with the same content again"
@@ -915,7 +930,6 @@ en:
     ga_universal_tracking_code: "Google Universal Analytics (analytics.js) tracking code code, eg: UA-12345678-9; see http://google.com/analytics"
     ga_universal_domain_name: "Google Universal Analytics (analytics.js) domain name, eg: mysite.com; see http://google.com/analytics"
     gtm_container_id: "Google Tag Manager container id. eg: GTM-ABCDEF"
-    gtm_ua_domain_name: "Universal Analytics via Google Tag manager domain name. 'auto' is recommended."
     enable_escaped_fragments: "Fall back to Google's Ajax-Crawling API if no webcrawler is detected. See https://developers.google.com/webmasters/ajax-crawling/docs/learn-more"
     enable_noscript_support: "Enable standard webcrawler search engine support via the noscript tag"
     allow_moderators_to_create_categories: "Allow moderators to create new categories"
@@ -977,6 +991,7 @@ en:
     enable_sso_provider: "Implement Discourse SSO provider protocol at the /session/sso_provider endpoint, requires sso_secret to be set"
     sso_url: "URL of single sign on endpoint (must include http:// or https://)"
     sso_secret: "Secret string used to cryptographically authenticate SSO information, be sure it is 10 characters or longer"
+    sso_overrides_bio: "Overrides user bio in user profile and prevents user from changing it"
     sso_overrides_email: "Overrides local email with external site email from SSO payload on every login, and prevent local changes. (WARNING: discrepancies can occur due to normalization of local emails)"
     sso_overrides_username: "Overrides local username with external site username from SSO payload on every login, and prevent local changes. (WARNING: discrepancies can occur due to differences in username length/requirements)"
     sso_overrides_name: "Overrides local full name with external site full name from SSO payload on every login, and prevent local changes."
@@ -1027,6 +1042,8 @@ en:
     top_topics_formula_first_post_likes_multiplier: "value of first post likes multiplier (n) in top topics formula: `log(views_count) * 2 + op_likes_count * (n) + LEAST(likes_count / posts_count, 3) + 10 + log(posts_count)`"
     top_topics_formula_least_likes_per_post_multiplier: "value of least likes per post multiplier (n) in top topics formula: `log(views_count) * 2 + op_likes_count * 0.5 + LEAST(likes_count / posts_count, (n)) + 10 + log(posts_count)`"
 
+    rebake_old_posts_count: "Number of old posts to be rebaked every 15 minutes."
+
     rate_limit_create_topic: "After creating a topic, users must wait (n) seconds before creating another topic."
     rate_limit_create_post: "After posting, users must wait (n) seconds before creating another post."
     rate_limit_new_user_create_topic: "After creating a topic, new users must wait (n) seconds before creating another topic."
@@ -1044,6 +1061,7 @@ en:
     alert_admins_if_errors_per_minute: "Number of errors per minute in order to trigger an admin alert. A value of 0 disables this feature. NOTE: requires restart."
     alert_admins_if_errors_per_hour: "Number of errors per hour in order to trigger an admin alert. A value of 0 disables this feature. NOTE: requires restart."
 
+    categories_topics: "Number of topics to show in /categories page."
     suggested_topics: "Number of suggested topics shown at the bottom of a topic."
     limit_suggested_to_category: "Only show topics from the current category in suggested topics."
     suggested_topics_max_days_old: "Suggested topics should not be more than n days old."
@@ -1136,6 +1154,7 @@ en:
     min_title_similar_length: "The minimum length of a title before it will be checked for similar topics."
     min_body_similar_length: "The minimum length of a post's body before it will be checked for similar topics."
 
+    desktop_category_page_style: "Visual style for the /categories page."
     category_colors: "A list of hexadecimal color values allowed for categories."
     category_style: "Visual style for category badges."
 
@@ -1191,7 +1210,7 @@ en:
 
     reply_by_email_enabled: "Enable replying to topics via email."
     reply_by_email_address: "Template for reply by email incoming email address, for example: %{reply_key}@reply.example.com or replies+%{reply_key}@example.com"
-    alternative_reply_by_email_addresses: "List of alternative templates for reply by email incoming email addresses."
+    alternative_reply_by_email_addresses: "List of alternative templates for reply by email incoming email addresses. Example: %{reply_key}@reply.example.com|replies+%{reply_key}@example.com"
     incoming_email_prefer_html: "Use the HTML instead of the text for incoming email. May cause unexpected formatting issues!"
 
     disable_emails: "Prevent Discourse from sending any kind of emails"
@@ -1207,16 +1226,19 @@ en:
     max_emails_per_day_per_user: "Maximum number of emails to send users per day. 0 to disable the limit"
     enable_staged_users: "Automatically create staged users when processing incoming emails."
     maximum_staged_users_per_email: "Maximum number of staged users created when processing an incoming email."
-    auto_generated_whitelist: "List of email addresses that won't be checked for auto-generated content."
+    auto_generated_whitelist: "List of email addresses that won't be checked for auto-generated content. Example: foo@bar.com|discourse@bar.com"
     block_auto_generated_emails: "Block incoming emails identified as being auto generated."
     ignore_by_title: "Ignore incoming emails based on their title."
     mailgun_api_key: "Mailgun Secret API key used to verify webhook messages."
 
-    soft_bounce_score: "Score added to the user when a temporary bounce happens."
-    hard_bounce_score: "Score added to the user when a permanent bounce happens."
-    bounce_score_threshold: "Max score before we will stop emailing a user."
-    bounce_score_threshold_deactivate: "Max score before we will deactive a user."
+    soft_bounce_score: "Bounce score added to the user when a temporary bounce happens."
+    hard_bounce_score: "Bounce score added to the user when a permanent bounce happens."
+    bounce_score_threshold: "Max bounce score before we will stop emailing a user."
+    bounce_score_threshold_deactivate: "Max bounce score before we will deactivate a user."
     reset_bounce_score_after_days: "Automatically reset bounce score after X days."
+
+    attachment_content_type_blacklist: "List of keywords used to blacklist attachments based on the content type."
+    attachment_filename_blacklist: "List of keywords used to blacklist attachments based on the filename."
 
     manual_polling_enabled: "Push emails using the API for email replies."
     pop3_polling_enabled: "Poll via POP3 for email replies."
@@ -1302,6 +1324,7 @@ en:
     feed_polling_url: "EMBEDDING ONLY: URL of RSS/ATOM feed to embed."
     embed_by_username: "Discourse username of the user who creates the embedded topics."
     embed_username_key_from_feed: "Key to pull discourse username from feed."
+    embed_title_scrubber: "Regular expression for scrubbing embeddable titles."
     embed_truncate: "Truncate the embedded posts."
     embed_post_limit: "Maximum number of posts to embed."
     embed_username_required: "The username for topic creation is required."
@@ -1360,6 +1383,16 @@ en:
     default_categories_tracking: "List of categories that are tracked by default."
     default_categories_muted: "List of categories that are muted by default."
 
+    max_user_api_reqs_per_day: "Maximum number of user API requests per key per day"
+    max_user_api_reqs_per_minute: "Maximum number of user API requests per key per minute"
+    allow_read_user_api_keys: "Allow generation of readonly user API keys"
+    allow_write_user_api_keys: "Allow generation of write user API keys"
+    allow_push_user_api_keys: "Allow generation of push user API keys"
+    max_api_keys_per_user: "Maximum number of user API keys per user"
+    min_trust_level_for_user_api_key: "Trust level required for generation of user API keys"
+    allowed_user_api_auth_redirects: "Allowed URL for authentication redirect for user API keys"
+    allowed_user_api_push_urls: "Allowed URLs for server push to user API"
+
     tagging_enabled: "Enable tags on topics?"
     min_trust_to_create_tag: "The minimum trust level required to create a tag."
     max_tags_per_topic: "The maximum tags that can be applied to a topic."
@@ -1371,7 +1404,7 @@ en:
     tag_style: "Visual style for tag badges."
     staff_tags: "A list of tags that can only be applied by staff members"
     min_trust_level_to_tag_topics: "Minimum trust level required to tag topics"
-    suppress_overlapping_tags_in_list: "Hide tags from list views, if they overlap with title"
+    suppress_overlapping_tags_in_list: "If tags match exact words in topic titles, don't show the tag"
     remove_muted_tags_from_latest: "Don't show topics tagged with muted tags in the latest topic list."
 
     errors:
@@ -1688,7 +1721,7 @@ en:
 
       - See what's new in the [GitHub changelog](https://github.com/discourse/discourse/commits/master)
 
-      - Visit [meta.discourse.org](http://meta.discourse.org) for news, discussion, and support for Discourse
+      - Visit [meta.discourse.org](https://meta.discourse.org) for news, discussion, and support for Discourse
 
   new_version_mailer_with_notes:
     subject_template: "[%{site_name}] update available"
@@ -1702,7 +1735,7 @@ en:
 
       - See what's new in the [GitHub changelog](https://github.com/discourse/discourse/commits/master)
 
-      - Visit [meta.discourse.org](http://meta.discourse.org) for news, discussion, and support for Discourse
+      - Visit [meta.discourse.org](https://meta.discourse.org) for news, discussion, and support for Discourse
 
       ### Release notes
 
@@ -1796,9 +1829,9 @@ en:
 
         Your reply can be formatted using simple HTML, BBCode, or [Markdown](http://commonmark.org/help/):
 
-            This is **bold**.
             This is <b>bold</b>.
             This is [b]bold[/b].
+            This is **bold**.
 
         For more formatting tips, [try our fun 10 minute interactive tutorial!](http://commonmark.org/help/tutorial/)
 
@@ -1882,9 +1915,16 @@ en:
 
     backup_succeeded:
       subject_template: "Backup completed successfully"
-      text_body_template: "The backup was successful.
+      text_body_template: |
+        The backup was successful.
 
-      Visit the [admin > backup section](%{base_url}/admin/backups) to download your new backup."
+        Visit the [admin > backup section](%{base_url}/admin/backups) to download your new backup.
+
+        Here's the log:
+
+        ```text
+        %{logs}
+        ```
 
     backup_failed:
       subject_template: "Backup failed"
@@ -1893,13 +1933,20 @@ en:
 
         Here's the log:
 
-        ```
+        ```text
         %{logs}
         ```
 
     restore_succeeded:
       subject_template: "Restore completed successfully"
-      text_body_template: "The restore was successful."
+      text_body_template: |
+        The restore was successful.
+
+        Here's the log:
+
+        ```text
+        %{logs}
+        ```
 
     restore_failed:
       subject_template: "Restore failed"
@@ -1908,7 +1955,7 @@ en:
 
         Here's the log:
 
-        ```
+        ```text
         %{logs}
         ```
 
@@ -1976,7 +2023,7 @@ en:
         Your account associated with this email address has been blocked.
 
     email_reject_reply_user_not_matching:
-      subject_template: "[%{site_name}] Email issue -- Reply User Not Matching"
+      subject_template: "[%{site_name}] Email issue -- Unexpected Reply Address"
       text_body_template: |
         We're sorry, but your email message to %{destination} (titled %{former_title}) didn't work.
 
@@ -1999,7 +2046,7 @@ en:
         If you're getting this and you _did_ include a reply, try again with simpler formatting.
 
     email_reject_parsing:
-      subject_template: "[%{site_name}] Email issue -- Content unrecognized"
+      subject_template: "[%{site_name}] Email issue -- Content Unrecognized"
       text_body_template: |
         We're sorry, but your email message to %{destination} (titled %{former_title}) didn't work.
 
@@ -2036,13 +2083,6 @@ en:
         %{post_error}
 
         If you can correct the problem, please try again.
-
-    email_reject_rate_limit_specified:
-      subject_template: "[%{site_name}] Email issue -- Rate limited"
-      text_body_template: |
-        We're sorry, but your email message to %{destination} (titled %{former_title}) didn't work.
-
-        Reason: %{rate_limit_description}
 
     email_reject_invalid_post_action:
       subject_template: "[%{site_name}] Email issue -- Invalid Post Action"
@@ -2184,7 +2224,7 @@ en:
     To unsubscribe from these emails, [click here](%{unsubscribe_url}).
 
   unsubscribe_mailing_list: |
-    You are receiving these emails cause you have enabled mailing list mode.
+    You are receiving this because you enabled mailing list mode.
 
     To unsubscribe from these emails, [click here](%{unsubscribe_url}).
 
@@ -2376,6 +2416,28 @@ en:
       read_more: "Read More"
       more_topics: "There were %{new_topics_since_seen} other new topics."
       more_topics_category: "More new topics:"
+      custom:
+        html:
+          header: ''
+          below_post_1: ''
+          below_post_2: ''
+          below_post_3: ''
+          below_post_4: ''
+          below_post_5: ''
+          above_popular_topics: ''
+          below_popular_topics: ''
+          above_footer: ''
+          below_footer: ''
+        text:
+          below_post_1: ''
+          below_post_2: ''
+          below_post_3: ''
+          below_post_4: ''
+          below_post_5: ''
+          above_popular_topics: ''
+          below_popular_topics: ''
+          above_footer: ''
+          below_footer: ''
 
     mailing_list:
       why: "All activity on %{site_link} for %{date}"

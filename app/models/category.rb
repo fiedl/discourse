@@ -27,6 +27,8 @@ class Category < ActiveRecord::Base
   has_many :category_groups, dependent: :destroy
   has_many :groups, through: :category_groups
 
+  has_and_belongs_to_many :web_hooks
+
   validates :user_id, presence: true
   validates :name, if: Proc.new { |c| c.new_record? || c.name_changed? },
                    presence: true,
@@ -35,6 +37,9 @@ class Category < ActiveRecord::Base
   validate :parent_category_validator
 
   validate :email_in_validator
+
+  validates :logo_url, upload_url: true, if: :logo_url_changed?
+  validates :background_url, upload_url: true, if: :background_url_changed?
 
   validate :ensure_slug
   before_save :apply_permissions
@@ -184,9 +189,7 @@ SQL
     self.topic_id ? query.where(['topics.id <> ?', self.topic_id]) : query
   end
 
-
-  # Internal: Generate the text of post prompting to enter category
-  # description.
+  # Internal: Generate the text of post prompting to enter category description.
   def self.post_template
     I18n.t("category.post_template", replace_paragraph: I18n.t("category.replace_paragraph"))
   end
@@ -216,7 +219,6 @@ SQL
     @@cache.getset(self.description) do
       Nokogiri::HTML(self.description).text
     end
-
   end
 
   def duplicate_slug?
@@ -329,12 +331,14 @@ SQL
   def email_in_validator
     return if self.email_in.blank?
     email_in.split("|").each do |email|
+
+      escaped = Rack::Utils.escape_html(email)
       if !Email.is_valid?(email)
-        self.errors.add(:base, I18n.t('category.errors.invalid_email_in', email: email))
+        self.errors.add(:base, I18n.t('category.errors.invalid_email_in', email: escaped))
       elsif group = Group.find_by_email(email)
-        self.errors.add(:base, I18n.t('category.errors.email_already_used_in_group', email: email, group_name: group.name))
+        self.errors.add(:base, I18n.t('category.errors.email_already_used_in_group', email: escaped, group_name: Rack::Utils.escape_html(group.name)))
       elsif category = Category.where.not(id: self.id).find_by_email(email)
-        self.errors.add(:base, I18n.t('category.errors.email_already_used_in_category', email: email, category_name: category.name))
+        self.errors.add(:base, I18n.t('category.errors.email_already_used_in_category', email: escaped, category_name: Rack::Utils.escape_html(category.name)))
       end
     end
   end
