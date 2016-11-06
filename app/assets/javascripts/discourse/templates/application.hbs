@@ -1,12 +1,12 @@
-
+{{plugin-outlet "above-site-header"}}
 {{site-header canSignUp=canSignUp
               showCreateAccount="showCreateAccount"
               showLogin="showLogin"
               showKeyboard="showKeyboardShortcutsHelp"
               toggleMobileView="toggleMobileView"
               toggleAnonymous="toggleAnonymous"
-              logout="logout"
-              showSearchHelp="showSearchHelp"}}
+              logout="logout"}}
+{{plugin-outlet "below-site-header"}}
 
 <div id="main-outlet" class="wrap">
   <div class="container">
@@ -17,7 +17,7 @@
     {{create-topics-notice}}
   </div>
   {{outlet}}
-  {{render "user-card"}}
+  {{outlet "user-card"}}
 </div>
 
 {{plugin-outlet "above-footer"}}
@@ -26,6 +26,6 @@
 {{/if}}
 {{plugin-outlet "below-footer"}}
 
-{{render "modal"}}
-{{render "topic-entrance"}}
-{{render "composer"}}
+{{outlet "modal"}}
+{{outlet "topic-entrance"}}
+{{outlet "composer"}}

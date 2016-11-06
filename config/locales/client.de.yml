@@ -136,6 +136,7 @@ de:
         enabled: 'sichtbar gemacht, %{when}'
         disabled: 'unsichtbar gemacht, %{when}'
     topic_admin_menu: "Thema administrieren"
+    wizard_required: "Es ist an der Zeit, Dein Forum einzurichten! <a href='%{url}' data-auto-route='true'>Einrichtungs-Assistenten starten</a>!"
     emails_are_disabled: "Die ausgehende E-Mail-Kommunikation wurde von einem Administrator global deaktiviert. Es werden keinerlei Benachrichtigungen per E-Mail verschickt."
     bootstrap_mode_enabled: "Damit du mit deiner Site einfacher loslegen kannst, befindest du dich im Bootstrapping-Modus. Alle neuen Benutzer erhalten die Vertrauensstufe 1 und bekommen eine tägliche Zusammenfassung per E-Mail. Der Modus wird automatisch deaktiviert, sobald sich mindestens %{min_users} Benutzer angemeldet haben."
     bootstrap_mode_disabled: "Der Bootstrapping-Modus wird innerhalb der nächsten 24 Stunden deaktiviert."
@@ -167,7 +168,7 @@ de:
     admin_title: "Administration"
     flags_title: "Meldungen"
     show_more: "mehr anzeigen"
-    show_help: "Optionen"
+    show_help: "Erweiterte Suche"
     links: "Links"
     links_lowercase:
       one: "Link"
@@ -507,10 +508,7 @@ de:
       apps: "Apps"
       revoke_access: "Entziehe Zugriffsrecht"
       undo_revoke_access: "Entziehe Zugriffsrecht widerrufen"
-      api_permissions: "Berechtigungen:"
       api_approved: "Genehmigt:"
-      api_read: "Lesen"
-      api_read_write: "Lesen und Schreiben"
       staff_counters:
         flags_given: "hilfreiche Meldungen"
         flagged_posts: "gemeldete Beiträge"
@@ -656,6 +654,7 @@ de:
         after_4_minutes: "nach 4 Minuten"
         after_5_minutes: "nach 5 Minuten"
         after_10_minutes: "nach 10 Minuten"
+      notification_level_when_replying: "Wenn ich in einem Thema antworte, setze das Thema auf"
       invited:
         search: "zum Suchen nach Einladungen hier eingeben…"
         title: "Einladungen"
@@ -796,6 +795,7 @@ de:
         one: "ein Fehler/%{duration}"
         other: "%{count} Fehler/%{duration}"
     learn_more: "mehr erfahren…"
+    all_time: 'gesamt'
     all_time_desc: 'Erstellte Themen'
     year: 'Jahr'
     year_desc: 'Themen, die in den letzten 365 Tagen erstellt wurden'
@@ -1086,7 +1086,6 @@ de:
       title: "suche nach Themen, Beiträgen, Benutzern oder Kategorien"
       no_results: "Keine Ergebnisse gefunden."
       no_more_results: "Es wurde keine weiteren Ergebnisse gefunden."
-      search_help: Hilfe zur Suche
       searching: "Suche …"
       post_format: "#{{post_number}} von {{username}}"
       context:
@@ -1094,12 +1093,28 @@ de:
         category: "Kategorie #{{category}} durchsuchen"
         topic: "Dieses Thema durchsuchen"
         private_messages: "Nachrichten durchsuchen"
+      advanced:
+        title: Erweiterte Suche
+        posted_by:
+          label: Verfasst von
+        in_category:
+          label: In der Kategorie
+        in_group:
+          label: In der Gruppe
+        with_badge:
+          label: Mit dem Abzeichen
+        with_tags:
+          label: Mit den Schlagwörtern
+        filters:
+          label: Zeige nur Beiträge an, die...
+          likes: Mir gefallen
     hamburger_menu: "zu einer anderen Themenliste oder Kategorie wechseln"
     new_item: "neu"
     go_back: 'zurückgehen'
     not_logged_in_user: 'Benutzerseite mit einer Zusammenfassung der Benutzeraktivitäten und Einstellungen'
     current_user: 'zu deiner Benutzerseite gehen'
     topics:
+      new_messages_marker: "letzter Besuch"
       bulk:
         unlist_topics: "Themen unsichtbar machen"
         reset_read: "Gelesene zurücksetzen"
@@ -1626,8 +1641,8 @@ de:
       create: 'Neue Kategorie'
       create_long: 'Eine neue Kategorie erstellen'
       save: 'Kategorie speichern'
-      slug: 'Sprechender Name für URL'
-      slug_placeholder: '(Optional) mit Bindestrich getrennte Wörter für URL'
+      slug: 'Sprechender Name für URL (optional)'
+      slug_placeholder: 'Bindestrich getrennte Wörter für URL'
       creation_error: Beim Erstellen der Kategorie ist ein Fehler aufgetreten.
       save_error: Beim Speichern der Kategorie ist ein Fehler aufgetreten.
       name: "Name der Kategorie"
@@ -1645,18 +1660,18 @@ de:
       list: "Kategorien auflisten"
       no_description: "Bitte füge eine Beschreibung für diese Kategorie hinzu."
       change_in_category_topic: "Beschreibung bearbeiten"
-      already_used: 'Diese Farbe wird bereits für eine andere Kategorie verwendet'
+      already_used: 'Diese Farbe wird bereits für eine andere Kategorie verwendet.'
       security: "Sicherheit"
-      special_warning: "Warnung: Diese Kategorie is eine pre-seeded Kategorie und die Sicherheitseinstellungen können nicht bearbeitet werden. Wenn du wünschst nicht diese Kategorie zu benutzen dann lösche sie anstatt sie zu wiederverwenden"
+      special_warning: "Warnung: Diese Kategorie wurde bei der Installation angelegt. Die Sicherheitseinstellungen können daher nicht verändert werden. Wenn du diese Kategorie nicht benötigst, dann solltest du sie löschen anstatt sie für andere Zwecke zu verwenden."
       images: "Bilder"
       auto_close_label: "Themen automatisch schließen nach:"
       auto_close_units: "Stunden"
       email_in: "Benutzerdefinierte Adresse für eingehende E-Mails:"
-      email_in_allow_strangers: "Akzeptiere E-Mails von nicht registrierten, anonymen Benutzern"
+      email_in_allow_strangers: "Akzeptiere E-Mails von anonymen Benutzern."
       email_in_disabled: "Das Erstellen von neuen Themen per E-Mail ist in den Website-Einstellungen deaktiviert. Um das Erstellen von neuen Themen per E-Mail zu erlauben,"
       email_in_disabled_click: 'aktiviere die Einstellung „email in“.'
-      suppress_from_homepage: "Löse diese Kategorie von der Website."
-      allow_badges_label: "Erlaube das Verleihen von Abzeichen in dieser Kategorie"
+      suppress_from_homepage: "Löse diese Kategorie von der Startseite."
+      allow_badges_label: "Erlaube das Verleihen von Abzeichen in dieser Kategorie."
       edit_permissions: "Berechtigungen bearbeiten"
       add_permission: "Berechtigung hinzufügen"
       this_year: "dieses Jahr"
@@ -1671,7 +1686,7 @@ de:
           description: "Du wirst automatisch alle neuen Themen in diesen Kategorien beobachten. Du wirst über alle neuen Beiträge in allen Themen benachrichtigt und die Anzahl der neuen Antworten wird angezeigt."
         watching_first_post:
           title: "Ersten Beitrag beobachten"
-          description: "Du erhältst eine Benachrichtigung fnur ür den ersten Beitrag in jedem neuen Thema in diesen Kategorien."
+          description: "Du erhältst eine Benachrichtigung nur für den ersten Beitrag in jedem neuen Thema in diesen Kategorien."
         tracking:
           title: "Verfolgen"
           description: "Du wirst automatisch alle neuen Themen in diesen Kategorien verfolgen. Du wirst benachrichtigt, wenn jemand deinen @name erwähnt oder dir antwortet, und die Anzahl der neuen Antworten wird angezeigt."
@@ -1861,8 +1876,6 @@ de:
       readonly: "Ansehen"
     lightbox:
       download: "herunterladen"
-    search_help:
-      title: 'Suche'
     keyboard_shortcuts_help:
       title: 'Tastenkombinationen'
       jump_to:
@@ -2198,6 +2211,15 @@ de:
         info_html: "Dein API-Key erlaubt dir das Erstellen und Bearbeiten von Themen via JSON-Aufrufen."
         all_users: "Alle Benutzer"
         note_html: "Halte diesen Schlüssel <strong>geheim</strong>. Alle Benutzer, die diesen Schlüssel besitzen, können beliebige Beiträge als jeder Benutzer erstellen."
+      web_hooks:
+        save: "Speichern"
+        destroy: "Löschen"
+        description: "Beschreibung"
+        go_back: "Zurück zur Liste"
+        delivery_status:
+          inactive: "Inaktiv"
+          failed: "Fehlgeschlagen"
+          successful: "Erfolgreich"
       plugins:
         title: "Plug-ins"
         installed: "Installierte Plug-ins"
@@ -2861,7 +2883,7 @@ de:
         image: "Bild"
         delete_confirm: "Möchtest du wirklich das :%{name}: Emoji löschen?"
       embedding:
-        get_started: "Wenn du Discourse in einer anderen Website einbetten möchtest, beginne mit dem hinzufügen des host. "
+        get_started: "Wenn du Discourse in einer anderen Website einbetten möchtest, beginne mit dem hinzufügen des Host. "
         confirm_delete: "Möchtest du wirklich  diesen Host löschen?"
         sample: "Benutze den folgenden HTML code für deine Site um Discourse Beiträge zu erstellen und einzubetten. Ersetze <b>REPLACE_ME</b> mit der URL der Site in die du sie einbetten möchtest."
         title: "Einbettung"
@@ -2900,3 +2922,12 @@ de:
           label: "Neu:"
           add: "Hinzufügen"
           filter: "Suche (URL oder externe URL)"
+  wizard_js:
+    wizard:
+      done: "Erledigt"
+      back: "Zurück"
+      invites:
+        roles:
+          admin: "Administration"
+          moderator: "Moderator"
+          regular: "Normaler Anwender"

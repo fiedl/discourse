@@ -16,12 +16,12 @@ class TagsController < ::ApplicationController
                          .where("id in (?)", guardian.allowed_category_ids)
                          .preload(:tags)
     category_tag_counts = categories.map do |c|
-      h = Tag.category_tags_by_count_query(c, limit: 300).count
+      h = Tag.category_tags_by_count_query(c, limit: 300).count(Tag::COUNT_ARG)
       h.merge!(c.tags.where.not(name: h.keys).inject({}) { |sum,t| sum[t.name] = 0; sum }) # unused tags
       {id: c.id, tags: self.class.tag_counts_json(h)}
     end
 
-    tag_counts = self.class.tags_by_count(guardian, limit: 300).count
+    tag_counts = self.class.tags_by_count(guardian, limit: 300).count(Tag::COUNT_ARG)
     @tags = self.class.tag_counts_json(tag_counts)
 
     @description_meta = I18n.t("tags.title")
@@ -43,8 +43,8 @@ class TagsController < ::ApplicationController
   # TODO: move all this to ListController
   Discourse.filters.each do |filter|
     define_method("show_#{filter}") do
-      @tag_id = DiscourseTagging.clean_tag(params[:tag_id])
-      @additional_tags = params[:additional_tag_ids].to_s.split('/').map { |tag| DiscourseTagging.clean_tag(tag) }
+      @tag_id = params[:tag_id]
+      @additional_tags = params[:additional_tag_ids].to_s.split('/')
 
       page = params[:page].to_i
       list_opts = build_topic_list_options
@@ -78,7 +78,7 @@ class TagsController < ::ApplicationController
       canonical_url "#{Discourse.base_url_no_prefix}#{public_send(url_method(params.slice(:category, :parent_category)))}"
 
       if @list.topics.size == 0 && params[:tag_id] != 'none' && !Tag.where(name: @tag_id).exists?
-        raise Discourse::NotFound
+        permalink_redirect_or_not_found
       else
         respond_with_list(@list)
       end
@@ -118,7 +118,7 @@ class TagsController < ::ApplicationController
   def tag_feed
     discourse_expires_in 1.minute
 
-    tag_id = DiscourseTagging.clean_tag(params[:tag_id])
+    tag_id = params[:tag_id]
     @link = "#{Discourse.base_url}/tags/#{tag_id}"
     @description = I18n.t("rss_by_tag", tag: tag_id)
     @title = "#{SiteSetting.title} - #{@description}"
@@ -145,22 +145,11 @@ class TagsController < ::ApplicationController
       }
     )
 
-    tags = tags_with_counts.count.map {|t, c| { id: t, text: t, count: c } }
-
-    unused_tags = DiscourseTagging.filter_allowed_tags(
-      Tag.where(topic_count: 0),
-      guardian,
-      { for_input: params[:filterForInput], term: params[:q], category: category, selected_tags: params[:selected_tags] }
-    )
-
-    unused_tags.each do |t|
-      tags << { id: t.name, text: t.name, count: 0 }
-    end
+    tags = tags_with_counts.count(Tag::COUNT_ARG).map {|t, c| { id: t, text: t, count: c } }
 
     json_response = { results: tags }
 
-    t = DiscourseTagging.clean_tag(params[:q])
-    if Tag.where(name: t).exists? && !tags.find { |h| h[:id] == t }
+    if Tag.where(name: params[:q]).exists? && !tags.find { |h| h[:id] == t }
       # filter_allowed_tags determined that the tag entered is not allowed
       json_response[:forbidden] = t
     end
@@ -220,13 +209,13 @@ class TagsController < ::ApplicationController
         parent_category_id = nil
         if parent_slug_or_id.present?
           parent_category_id = Category.query_parent_category(parent_slug_or_id)
-          redirect_or_not_found and return if parent_category_id.blank?
+          category_redirect_or_not_found and return if parent_category_id.blank?
         end
 
         @filter_on_category = Category.query_category(slug_or_id, parent_category_id)
       end
 
-      redirect_or_not_found and return if !@filter_on_category
+      category_redirect_or_not_found and return if !@filter_on_category
 
       guardian.ensure_can_see!(@filter_on_category)
     end
@@ -281,7 +270,7 @@ class TagsController < ::ApplicationController
         page: params[:page],
         topic_ids: param_to_integer_list(:topic_ids),
         exclude_category_ids: params[:exclude_category_ids],
-        category: params[:category],
+        category: @filter_on_category ? @filter_on_category.id : params[:category],
         order: params[:order],
         ascending: params[:ascending],
         min_posts: params[:min_posts],
@@ -305,7 +294,7 @@ class TagsController < ::ApplicationController
       options
     end
 
-    def redirect_or_not_found
+    def category_redirect_or_not_found
       # automatic redirects for renamed categories
       url = params[:parent_category] ? "c/#{params[:parent_category]}/#{params[:category]}" : "c/#{params[:category]}"
       permalink = Permalink.find_by_url(url)

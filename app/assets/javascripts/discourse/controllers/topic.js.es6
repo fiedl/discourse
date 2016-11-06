@@ -11,19 +11,26 @@ import { categoryBadgeHTML } from 'discourse/helpers/category-link';
 import Post from 'discourse/models/post';
 
 export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
-  needs: ['modal', 'composer', 'quote-button', 'application'],
+  composer: Ember.inject.controller(),
+  quoteButton: Ember.inject.controller('quote-button'),
+  application: Ember.inject.controller(),
+
   multiSelect: false,
   allPostsSelected: false,
   editingTopic: false,
   selectedPosts: null,
   selectedReplies: null,
-  queryParams: ['filter', 'username_filters', 'show_deleted'],
+  queryParams: ['filter', 'username_filters'],
   loadedAllPosts: Ember.computed.or('model.postStream.loadedAllPosts', 'model.postStream.loadingLastPost'),
   enteredAt: null,
   enteredIndex: null,
   retrying: false,
   userTriggeredProgress: null,
   _progressIndex: null,
+  hasScrolled: null,
+
+  username_filters: null,
+  filter: null,
 
   topicDelegated: [
     'toggleMultiSelect',
@@ -39,10 +46,20 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
     'convertToPrivateMessage',
     'jumpTop',
     'jumpToPost',
+    'jumpToPostPrompt',
     'jumpToIndex',
     'jumpBottom',
-    'replyToPost'
+    'replyToPost',
+    'toggleArchiveMessage',
+    'showInvite',
+    'toggleBookmark',
+    'showFlagTopic'
   ],
+
+  updateQueryParams() {
+    const postStream = this.get('model.postStream');
+    this.setProperties(postStream.get('streamFilters'));
+  },
 
   _titleChanged: function() {
     const title = this.get('model.title');
@@ -68,32 +85,6 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
   @computed('model.postStream.loadingFilter')
   androidLoading(loading) {
     return this.capabilities.isAndroid && loading;
-  },
-
-  @computed('model.postStream.summary')
-  show_deleted: {
-    set(value) {
-      const postStream = this.get('model.postStream');
-      if (!postStream) { return; }
-      postStream.set('show_deleted', value);
-      return postStream.get('show_deleted') ? true : undefined;
-    },
-    get() {
-      return this.get('postStream.show_deleted') ? true : undefined;
-    }
-  },
-
-  @computed('model.postStream.summary')
-  filter: {
-    set(value) {
-      const postStream = this.get('model.postStream');
-      if (!postStream) { return; }
-      postStream.set('summary', value === "summary");
-      return postStream.get('summary') ? "summary" : undefined;
-    },
-    get() {
-      return this.get('postStream.summary') ? "summary" : undefined;
-    }
   },
 
   @computed('model', 'topicTrackingState.messageCount')
@@ -146,19 +137,6 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
     return model.get('isPrivateMessage') ?
       `<a href="${this.get('pmPath')}"><i class='private-message-glyph fa fa-envelope'></i></a> ${I18n.t("suggested_topics.pm_title")}` :
       I18n.t("suggested_topics.title");
-  },
-
-  @computed('model.postStream.streamFilters.username_filters')
-  username_filters: {
-    set(value) {
-      const postStream = this.get('model.postStream');
-      if (!postStream) { return; }
-      postStream.set('streamFilters.username_filters', value);
-      return postStream.get('streamFilters.username_filters');
-    },
-    get() {
-      return this.get('postStream.streamFilters.username_filters');
-    }
   },
 
   _clearSelected: function() {
@@ -250,7 +228,9 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
     },
 
     toggleSummary() {
-      return this.get('model.postStream').toggleSummary();
+      return this.get('model.postStream').toggleSummary().then(() => {
+        this.updateQueryParams();
+      });
     },
 
     removeAllowedUser(user) {
@@ -265,24 +245,26 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
       this.deleteTopic();
     },
 
-    archiveMessage() {
+    // Archive a PM (as opposed to archiving a topic)
+    toggleArchiveMessage() {
       const topic = this.get('model');
-      topic.archiveMessage().then(()=>{
-        this.gotoInbox(topic.get("inboxGroupName"));
-      });
-    },
+      if (topic.get('archiving')) { return; }
 
-    moveToInbox() {
-      const topic = this.get('model');
-      topic.moveToInbox().then(()=>{
-        this.gotoInbox(topic.get("inboxGroupName"));
-      });
+      if (topic.get('message_archived')) {
+        topic.moveToInbox().then(()=>{
+          this.gotoInbox(topic.get("inboxGroupName"));
+        });
+      } else {
+        topic.archiveMessage().then(()=>{
+          this.gotoInbox(topic.get("inboxGroupName"));
+        });
+      }
     },
 
     // Post related methods
     replyToPost(post) {
-      const composerController = this.get('controllers.composer'),
-          quoteController = this.get('controllers.quote-button'),
+      const composerController = this.get('composer'),
+          quoteController = this.get('quoteButton'),
           quotedText = Quote.build(quoteController.get('post'), quoteController.get('buffer')),
           topic = post ? post.get('topic') : this.get('model');
 
@@ -379,7 +361,7 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
         return false;
       }
 
-      const composer = this.get('controllers.composer'),
+      const composer = this.get('composer'),
             composerModel = composer.get('model'),
             opts = {
               post: post,
@@ -415,6 +397,14 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
       this._jumpToPostId(this.get('model.postStream.stream')[index-1]);
     },
 
+    jumpToPostPrompt() {
+      const postText = prompt(I18n.t('topic.progress.jump_prompt_long'));
+      if (postText === null) { return; }
+      const postNumber = parseInt(postText, 10);
+      if (postNumber === 0) { return; }
+      this._jumpToPostId(this.get('model.postStream').findPostIdForPostNumber(postNumber));
+    },
+
     jumpToPost(postNumber) {
       this._jumpToPostId(this.get('model.postStream').findPostIdForPostNumber(postNumber));
     },
@@ -445,7 +435,10 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
     },
 
     toggleParticipant(user) {
-      this.get('model.postStream').toggleParticipant(Em.get(user, 'username'));
+      const postStream = this.get('model.postStream');
+      postStream.toggleParticipant(Ember.get(user, 'username')).then(() => {
+        this.updateQueryParams();
+      });
     },
 
     editTopic() {
@@ -601,8 +594,8 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
     },
 
     replyAsNewTopic(post) {
-      const composerController = this.get('controllers.composer');
-      const quoteController = this.get('controllers.quote-button');
+      const composerController = this.get('composer');
+      const quoteController = this.get('quoteButton');
       post = post || quoteController.get('post');
       const quotedText = Quote.build(post, quoteController.get('buffer'));
 
@@ -670,6 +663,8 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
       return;
     }
 
+    this.appEvents.trigger('topic:jump-to-post', postId);
+
     const topic = this.get('model');
     const postStream = topic.get('postStream');
     const post = postStream.findLoadedPost(postId);
@@ -685,6 +680,12 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
 
   togglePinnedState() {
     this.send('togglePinnedForUser');
+  },
+
+  print() {
+    if (this.siteSettings.max_prints_per_hour_per_user > 0) {
+      window.open(this.get('model.printUrl'), '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,width=600,height=315');
+    }
   },
 
   canMergeTopic: function() {
@@ -753,7 +754,7 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
     const selectedReplies = this.get('selectedReplies');
     selectedReplies.removeObject(post);
 
-    const selectedReply = selectedReplies.findProperty('post_number', post.get('reply_to_post_number'));
+    const selectedReply = selectedReplies.findBy('post_number', post.get('reply_to_post_number'));
     if (selectedReply) { selectedReplies.removeObject(selectedReply); }
 
     this.set('allPostsSelected', false);
@@ -762,7 +763,7 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
   postSelected(post) {
     if (this.get('allPostsSelected')) { return true; }
     if (this.get('selectedPosts').contains(post)) { return true; }
-    if (this.get('selectedReplies').findProperty('post_number', post.get('reply_to_post_number'))) { return true; }
+    if (this.get('selectedReplies').findBy('post_number', post.get('reply_to_post_number'))) { return true; }
 
     return false;
   },
@@ -896,7 +897,7 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
 
   _showFooter: function() {
     const showFooter = this.get("model.postStream.loaded") && this.get("model.postStream.loadedAllPosts");
-    this.set("controllers.application.showFooter", showFooter);
+    this.set("application.showFooter", showFooter);
   }.observes("model.postStream.{loaded,loadedAllPosts}")
 
 });

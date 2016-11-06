@@ -569,6 +569,15 @@ describe TopicsController do
       expect(response).to redirect_to(topic.relative_url)
     end
 
+    it 'can find a topic when a slug has a number in front' do
+      another_topic = Fabricate(:post).topic
+
+      topic.update_column(:slug, "#{another_topic.id}-reasons-discourse-is-awesome")
+      xhr :get, :show, id: "#{another_topic.id}-reasons-discourse-is-awesome"
+
+      expect(response).to redirect_to(topic.relative_url)
+    end
+
     it 'keeps the post_number parameter around when redirecting' do
       xhr :get, :show, id: topic.slug, post_number: 42
       expect(response).to redirect_to(topic.relative_url + "/42")
@@ -736,6 +745,21 @@ describe TopicsController do
       get :show, topic_id: topic.id, slug: topic.slug, u: user.username
 
       expect(IncomingLink.count).to eq(1)
+    end
+
+    context 'print' do
+
+      it "doesn't renders the print view when disabled" do
+        SiteSetting.max_prints_per_hour_per_user = 0
+        get :show, topic_id: topic.id, slug: topic.slug, print: true
+        expect(response).to be_forbidden
+      end
+
+      it 'renders the print view when enabled' do
+        SiteSetting.max_prints_per_hour_per_user = 10
+        get :show, topic_id: topic.id, slug: topic.slug, print: true
+        expect(response).to be_successful
+      end
     end
 
     it 'records redirects' do

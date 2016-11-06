@@ -14,6 +14,7 @@ import Group from 'discourse/models/group';
 import Topic from 'discourse/models/topic';
 import { emojiUnescape } from 'discourse/lib/text';
 import PreloadStore from 'preload-store';
+import { defaultHomepage } from 'discourse/lib/utilities';
 
 const User = RestModel.extend({
 
@@ -63,7 +64,7 @@ const User = RestModel.extend({
 
   @computed('profile_background')
   profileBackground(bgUrl) {
-    if (Em.isEmpty(bgUrl) || !Discourse.SiteSettings.allow_profile_backgrounds) { return; }
+    if (Em.isEmpty(bgUrl) || !Discourse.SiteSettings.allow_profile_backgrounds) { return "".htmlSafe(); }
     return ('background-image: url(' + Discourse.getURLWithCDN(bgUrl) + ')').htmlSafe();
   },
 
@@ -135,9 +136,15 @@ const User = RestModel.extend({
 
   adminPath: url('id', 'username_lower', "/admin/users/%@1/%@2"),
 
-  mutedTopicsPath: url('/latest?state=muted'),
+  @computed()
+  mutedTopicsPath() {
+    return defaultHomepage() === "latest" ? Discourse.getURL('/?state=muted') : Discourse.getURL('/latest?state=muted');
+  },
 
-  watchingTopicsPath: url('/latest?state=watching'),
+  @computed()
+  watchingTopicsPath() {
+    return defaultHomepage() === "latest" ? Discourse.getURL('/?state=watching') : Discourse.getURL('/latest?state=watching');
+  },
 
   @computed("username")
   username_lower(username) {
@@ -146,7 +153,7 @@ const User = RestModel.extend({
 
   @computed("trust_level")
   trustLevel(trustLevel) {
-    return Discourse.Site.currentProp('trustLevels').findProperty('id', parseInt(trustLevel, 10));
+    return Discourse.Site.currentProp('trustLevels').findBy('id', parseInt(trustLevel, 10));
   },
 
   isBasic: Em.computed.equal('trust_level', 0),
@@ -222,6 +229,7 @@ const User = RestModel.extend({
      'digest_after_minutes',
      'new_topic_duration_minutes',
      'auto_track_topics_after_msecs',
+     'notification_level_when_replying',
      'like_notification_frequency',
      'include_tl0_in_digests'
     ].forEach(s => {
@@ -314,7 +322,7 @@ const User = RestModel.extend({
   @computed("stats.@each.isPM")
   statsExcludingPms() {
     if (Ember.isEmpty(this.get('stats'))) return [];
-    return this.get('stats').rejectProperty('isPM');
+    return this.get('stats').rejectBy('isPM');
   },
 
   findDetails(options) {
@@ -517,12 +525,12 @@ User.reopenClass(Singleton, {
       action_type: UserAction.TYPES.replies
     });
 
-    stats.filterProperty('isResponse').forEach(stat => {
+    stats.filterBy('isResponse').forEach(stat => {
       responses.set('count', responses.get('count') + stat.get('count'));
     });
 
     const result = Em.A();
-    result.pushObjects(stats.rejectProperty('isResponse'));
+    result.pushObjects(stats.rejectBy('isResponse'));
 
     let insertAt = 0;
     result.forEach((item, index) => {

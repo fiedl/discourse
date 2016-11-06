@@ -58,6 +58,12 @@ describe User do
       user.approve(admin)
     end
 
+    it 'triggers a extensibility event' do
+      user && admin # bypass the user_created event
+      DiscourseEvent.expects(:trigger).with(:user_approved, user).once
+      user.approve(admin)
+    end
+
     context 'after approval' do
       before do
         user.approve(admin)
@@ -153,8 +159,13 @@ describe User do
       expect(subject.approved_by_id).to be_blank
     end
 
+    it 'triggers an extensibility event' do
+      DiscourseEvent.expects(:trigger).with(:user_created, subject).once
+      subject.save!
+    end
+
     context 'after_save' do
-      before { subject.save }
+      before { subject.save! }
 
       it "has correct settings" do
         expect(subject.email_tokens).to be_present
@@ -1235,6 +1246,7 @@ describe User do
 
       SiteSetting.default_other_new_topic_duration_minutes = -1 # not viewed
       SiteSetting.default_other_auto_track_topics_after_msecs = 0 # immediately
+      SiteSetting.default_other_notification_level_when_replying = 3 # immediately
       SiteSetting.default_other_external_links_in_new_tab = true
       SiteSetting.default_other_enable_quoting = false
       SiteSetting.default_other_dynamic_favicon = true
@@ -1262,6 +1274,7 @@ describe User do
       expect(options.email_direct).to eq(false)
       expect(options.new_topic_duration_minutes).to eq(-1)
       expect(options.auto_track_topics_after_msecs).to eq(0)
+      expect(options.notification_level_when_replying).to eq(3)
 
       expect(CategoryUser.lookup(user, :watching).pluck(:category_id)).to eq([1])
       expect(CategoryUser.lookup(user, :tracking).pluck(:category_id)).to eq([2])

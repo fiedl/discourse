@@ -165,6 +165,7 @@ en:
 
     topic_admin_menu: "topic admin actions"
 
+    wizard_required: "It's time to configure your forum! <a href='%{url}' data-auto-route='true'>Start the Setup Wizard</a>!"
     emails_are_disabled: "All outgoing email has been globally disabled by an administrator. No email notifications of any kind will be sent."
 
     bootstrap_mode_enabled: "To make launching your new site easier, you are in bootstrap mode. All new users will be granted trust level 1 and have daily email digest updates enabled. This will be automatically turned off when total user count exceeds %{min_users} users."
@@ -534,6 +535,7 @@ en:
           Muted topics and categories are not included in these emails.
         daily: "Send daily updates"
         individual: "Send an email for every new post"
+        individual_no_echo: "Send an email for every new post except my own"
         many_per_day: "Send me an email for every new post (about {{dailyEmailEstimate}} per day)"
         few_per_day: "Send me an email for every new post (about 2 per day)"
       tag_settings: "Tags"
@@ -569,10 +571,7 @@ en:
       apps: "Apps"
       revoke_access: "Revoke Access"
       undo_revoke_access: "Undo Revoke Access"
-      api_permissions: "Permissions:"
       api_approved: "Approved:"
-      api_read: "read"
-      api_read_write: "read and write"
 
       staff_counters:
         flags_given: "helpful flags"
@@ -673,6 +672,7 @@ en:
         title: "Interface language"
         instructions: "User interface language. It will change when you refresh the page."
         default: "(default)"
+        any: "any"
 
       password_confirmation:
         title: "Password Again"
@@ -737,6 +737,8 @@ en:
         after_4_minutes: "after 4 minutes"
         after_5_minutes: "after 5 minutes"
         after_10_minutes: "after 10 minutes"
+
+      notification_level_when_replying: "When I post in a topic, set that topic to"
 
       invited:
         search: "type to search invites..."
@@ -1206,7 +1208,6 @@ en:
       title: "search topics, posts, users, or categories"
       no_results: "No results found."
       no_more_results: "No more results found."
-      search_help: Search help
       searching: "Searching ..."
       post_format: "#{{post_number}} by {{username}}"
 
@@ -1216,6 +1217,45 @@ en:
         topic: "Search this topic"
         private_messages: "Search messages"
 
+      advanced:
+        title: Advanced Search
+        posted_by:
+          label: Posted by
+        in_category:
+          label: In Category
+        in_group:
+          label: In Group
+        with_badge:
+          label: With Badge
+        with_tags:
+          label: With Tags
+        filters:
+          label: Only return topics/posts that...
+          likes: I liked
+          posted: I posted in
+          watching: I'm watching
+          tracking: I'm tracking
+          private: are in my messages
+          bookmarks: I've bookmarked
+          first: are the very first post
+          pinned: are pinned
+          unpinned: are not pinned
+          wiki: are wiki
+        statuses:
+          label: Where topics
+          open: are open
+          closed: are closed
+          archived: are archived
+          noreplies: have zero replies
+          single_user: contain a single user
+        post:
+          count:
+            label: Minimum Post Count
+          time:
+            label: Posted
+            before: before
+            after: after
+
     hamburger_menu: "go to another topic list or category"
     new_item: "new"
     go_back: 'go back'
@@ -1223,6 +1263,7 @@ en:
     current_user: 'go to your user page'
 
     topics:
+      new_messages_marker: "last visit"
       bulk:
         unlist_topics: "Unlist Topics"
         reset_read: "Reset Read"
@@ -1457,6 +1498,10 @@ en:
       share:
         title: 'Share'
         help: 'share a link to this topic'
+
+      print:
+        title: 'Print'
+        help: 'Open a printer friendly version of this topic'
 
       flag_topic:
         title: 'Flag'
@@ -1838,6 +1883,7 @@ en:
       email_in_disabled: "Posting new topics via email is disabled in the Site Settings. To enable posting new topics via email, "
       email_in_disabled_click: 'enable the "email in" setting.'
       suppress_from_homepage: "Suppress this category from the homepage."
+      sort_order: "Default Sort:"
       allow_badges_label: "Allow badges to be awarded in this category"
       edit_permissions: "Edit Permissions"
       add_permission: "Add Permission"
@@ -1863,6 +1909,18 @@ en:
         muted:
           title: "Muted"
           description: "You will never be notified of anything about new topics in these categories, and they will not appear in latest."
+      sort_options:
+        default: "default"
+        likes: "Likes"
+        op_likes: "Original Post Likes"
+        views: "Views"
+        posts: "Posts"
+        activity: "Activity"
+        posters: "Posters"
+        category: "Category"
+        created: "Created"
+      sort_ascending: 'Ascending'
+      sort_descending: 'Descending'
 
     flagging:
       title: 'Thanks for helping to keep our community civil!'
@@ -2063,9 +2121,6 @@ en:
     lightbox:
       download: "download"
 
-    search_help:
-      title: 'Search Help'
-
     keyboard_shortcuts_help:
       title: 'Keyboard Shortcuts'
       jump_to:
@@ -2117,6 +2172,7 @@ en:
         mark_regular: '<b>m</b>, <b>r</b> Regular (default) topic'
         mark_tracking: '<b>m</b>, <b>t</b> Track topic'
         mark_watching: '<b>m</b>, <b>w</b> Watch topic'
+        print: '<b>ctrl</b>+<b>p</b> Print topic'
 
     badges:
       earned_n_times:
@@ -2411,7 +2467,7 @@ en:
         flair_color: "Avatar Flair Color"
         flair_color_placeholder: "(Optional) Hex color value"
         flair_preview: "Preview"
-
+        flair_note: "Note: Flair will only show for a user's primary group."
 
       api:
         generate_master: "Generate Master API Key"
@@ -2466,12 +2522,9 @@ en:
         post_event:
           name: "Post Event"
           details: "When there is a new reply, edit, deleted or recovered."
-        invitation_event:
-          name: "Invitation Event"
-          details: "When a invitation is sent or accepted."
         user_event:
           name: "User Event"
-          details: "When there is a user is created or changed."
+          details: "When a user is created or approved."
         delivery_status:
           title: "Delivery Status"
           inactive: "Inactive"
@@ -2480,7 +2533,12 @@ en:
         events:
           none: "There are no related events."
           redeliver: "Redeliver"
-          completion: "Completed in %{seconds} seconds."
+          incoming:
+            one: "There is a new event."
+            other: "There are {{count}} new events."
+          completed_in:
+            one: "Completed in 1 second."
+            other: "Completed in {{count}} seconds."
           request: "Request"
           response: "Response"
           redeliver_confirm: "Are you sure you want to redeliver the same payload?"
@@ -2491,6 +2549,11 @@ en:
           go_details: "Edit webhook"
           go_events: "Go to events"
           ping: "Ping"
+          status: "Status Code"
+          event_id: "ID"
+          timestamp: "Created"
+          completion: "Completion Time"
+          actions: "Actions"
       plugins:
         title: "Plugins"
         installed: "Installed Plugins"
@@ -3218,5 +3281,26 @@ en:
           add: "Add"
           filter: "Search (URL or External URL)"
 
-# WARNING! Keys added here will be in the admin_js section.
-#          Keys that don't belong in admin should be placed earlier in the file.
+  wizard_js:
+    wizard:
+      done: "Done"
+      back: "Back"
+      next: "Next"
+      step: "%{current} of %{total}"
+      upload: "Upload"
+      uploading: "Uploading..."
+      quit: "Maybe Later"
+
+      staff_count:
+        one: "Your community has 1 staff member. "
+        other: "Your community has %{count} staff members."
+
+      invites:
+        add_user: "add"
+        none_added: "You haven’t invited any staff. Are you sure you want to continue?"
+        roles:
+          admin: "Admin"
+          moderator: "Moderator"
+          regular: "Regular User"
+
+

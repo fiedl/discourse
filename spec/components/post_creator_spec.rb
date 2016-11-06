@@ -64,6 +64,7 @@ describe PostCreator do
     end
 
     context "success" do
+      before { creator }
 
       it "doesn't return true for spam" do
         creator.create
@@ -71,6 +72,7 @@ describe PostCreator do
       end
 
       it "triggers extensibility events" do
+        creator # bypass a user_created event, can be removed when there is a UserCreator
         DiscourseEvent.expects(:trigger).with(:before_create_post, anything).once
         DiscourseEvent.expects(:trigger).with(:validate_post, anything).once
         DiscourseEvent.expects(:trigger).with(:topic_created, anything, anything, user).once
@@ -793,6 +795,42 @@ describe PostCreator do
       topic_user = TopicUser.find_by(user_id: staged.id, topic_id: post.topic_id)
       expect(topic_user.notification_level).to eq(TopicUser.notification_levels[:watching])
       expect(topic_user.notifications_reason_id).to eq(TopicUser.notification_reasons[:auto_watch])
+    end
+  end
+
+  context "topic tracking" do
+    it "automatically watches topic based on preference" do
+      user.user_option.notification_level_when_replying = 3
+
+      admin = Fabricate(:admin)
+      topic = PostCreator.create(admin,
+                                 title: "this is the title of a topic created by an admin for watching notification",
+                                 raw: "this is the content of a topic created by an admin for keeping a watching notification state on a topic ;)"
+      )
+
+      post = PostCreator.create(user,
+                                topic_id: topic.topic_id,
+                                raw: "this is a reply to set the tracking state to watching ;)"
+      )
+      topic_user = TopicUser.find_by(user_id: user.id, topic_id: post.topic_id)
+      expect(topic_user.notification_level).to eq(TopicUser.notification_levels[:watching])
+    end
+
+    it "topic notification level remains tracking based on preference" do
+      user.user_option.notification_level_when_replying = 2
+
+      admin = Fabricate(:admin)
+      topic = PostCreator.create(admin,
+                                 title: "this is the title of a topic created by an admin for tracking notification",
+                                 raw: "this is the content of a topic created by an admin for keeping a tracking notification state on a topic ;)"
+      )
+
+      post = PostCreator.create(user,
+                                topic_id: topic.topic_id,
+                                raw: "this is a reply to set the tracking state to tracking ;)"
+      )
+      topic_user = TopicUser.find_by(user_id: user.id, topic_id: post.topic_id)
+      expect(topic_user.notification_level).to eq(TopicUser.notification_levels[:tracking])
     end
   end
 

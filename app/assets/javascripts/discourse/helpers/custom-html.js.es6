@@ -1,4 +1,4 @@
-import { registerHelper } from 'discourse/lib/helpers';
+import { registerHelper } from 'discourse-common/lib/helpers';
 import PreloadStore from 'preload-store';
 
 const _customizations = {};
@@ -20,15 +20,7 @@ export function setCustomHTML(key, html) {
   _customizations[key] = html;
 }
 
-registerHelper('custom-html', function(params, hash, options, env) {
-  const name = params[0];
-  const html = getCustomHTML(name);
+registerHelper('custom-html', function([id]) {
+  const html = getCustomHTML(id);
   if (html) { return html; }
-
-  const contextString = params[1];
-  const target = (env || contextString);
-  const container = target.container || target.data.view.container;
-  if (container.lookup('template:' + name)) {
-    return env.helpers.partial.helperFunction.apply(this, arguments);
-  }
 });

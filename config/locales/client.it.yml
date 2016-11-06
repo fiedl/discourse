@@ -136,6 +136,7 @@ it:
         enabled: 'listato %{when}'
         disabled: 'delistato %{when}'
     topic_admin_menu: "azioni amministrative sull'argomento"
+    wizard_required: "E' il momento di configurare il tuo forum! <a href='%{url}' data-auto-route='true'>Avvia la configurazione guidata</a>!"
     emails_are_disabled: "Tutte le email in uscita sono state disabilitate a livello globale da un amministratore. Non sarà inviata nessun tipo di notifica via email."
     bootstrap_mode_enabled: "Per aiutarti ad avviare il tuo nuovo sito, adesso sei in modalità bootstrap. Tutti i nuovi utenti saranno automaticamente promossi al livello 1 e riceveranno il riassunto quotidiano degli aggiornamenti via email. Questa modalità sarà disattivata automaticamente quando avrai più di %{min_users} utenti."
     bootstrap_mode_disabled: "La modalità bootstrap sarà disattivata entro 24 ore."
@@ -464,8 +465,13 @@ it:
       suspended_notice: "Questo utente è sospeso fino al {{date}}."
       suspended_reason: "Motivo: "
       github_profile: "Github"
+      mailing_list_mode:
+        individual: "Invia una email per ogni nuovo messaggio"
+        many_per_day: "Inviamo una email per ogni nuovo messaggio (circa {{dailyEmailEstimate}} al giorno)"
+        few_per_day: "Inviami una email per ogni nuovo messaggio (circa 2 al giorno)"
       tag_settings: "Etichette"
       watched_tags: "Osservate"
+      watched_tags_instructions: "Osserverai automaticamente tutti gli argomenti con queste etichette. Verrai notificato di tutti i  nuovi messaggi e argomenti, e accanto all'argomento apparirà anche un conteggio dei nuovi messaggi."
       tracked_tags: "Seguite"
       tracked_tags_instructions: "Seguirai automaticamente tutti gli argomenti con queste etichette. Accanto all'argomento apparirà il conteggio dei nuovi messaggi."
       muted_tags: "Silenziati"
@@ -474,6 +480,8 @@ it:
       watched_categories_instructions: "Osserverai automaticamente tutti gli argomenti in queste categorie. Riceverai notifiche su tutti i nuovi messaggi e argomenti e, accanto all'argomento, apparirà il conteggio dei nuovi messaggi."
       tracked_categories: "Seguite"
       tracked_categories_instructions: "Seguirai automaticamente tutti gli argomenti appartenenti a queste categorie. Accanto all'argomento comparirà il conteggio dei nuovi messaggi."
+      watched_first_post_categories: "Osservando Primo Messaggio"
+      watched_first_post_tags: "Osservando Primo Messaggio"
       muted_categories: "Silenziate"
       muted_categories_instructions: "Non ti verrà notificato nulla sui nuovi argomenti in queste categorie, e non compariranno nell'elenco Ultimi."
       delete_account: "Cancella il mio account"
@@ -486,11 +494,10 @@ it:
       muted_users: "Silenziati"
       muted_users_instructions: "Occulta tutte le notifiche da questi utenti."
       muted_topics_link: "Mostra argomenti silenziati"
+      watched_topics_link: "Mostra argomenti osservati"
       automatically_unpin_topics: "Spunta automaticamente gli argomenti quando arrivi in fondo."
-      api_permissions: "Permessi:"
+      revoke_access: "Revoca Accesso"
       api_approved: "Approvato:"
-      api_read: "lettura"
-      api_read_write: "lettura e scrittura"
       staff_counters:
         flags_given: "segnalazioni utili"
         flagged_posts: "messaggi segnalati"
@@ -656,7 +663,9 @@ it:
         rescind: "Rimuovi"
         rescinded: "Invito revocato"
         reinvite: "Rinvia Invito"
+        reinvite_all: "Rispedisci tutti gli Inviti"
         reinvited: "Invito rinviato"
+        reinvited_all: "Tutti gli inviti sono stati rispediti!"
         time_read: "Ora di Lettura"
         days_visited: "Presenza (giorni)"
         account_age_days: "Età dell'utente in giorni"
@@ -1018,7 +1027,6 @@ it:
       title: "cerca argomenti, messaggi, utenti o categorie"
       no_results: "Nessun risultato trovato."
       no_more_results: "Nessun altro risultato trovato."
-      search_help: Cerca aiuto
       searching: "Ricerca in corso..."
       post_format: "#{{post_number}} da {{username}}"
       context:
@@ -1031,6 +1039,7 @@ it:
     not_logged_in_user: 'pagina utente con riassunto delle attività correnti e delle impostazioni'
     current_user: 'vai alla pagina utente'
     topics:
+      new_messages_marker: "ultima visita"
       bulk:
         unlist_topics: "Deselezione Topics"
         reset_read: "Reimposta Lettura"
@@ -1303,6 +1312,10 @@ it:
         instructions:
           one: "Per favore scegli l'argomento dove spostare il messaggio."
           other: "Per favore scegli l'argomento di destinazione dove spostare i <b>{{count}}</b> messaggi."
+      merge_posts:
+        title: "Unisci Messaggi Selezionati"
+        action: "unisci messaggi selezionati"
+        error: "Si è verificato un errore nell'unire i messaggi selezionati."
       change_owner:
         title: "Cambia Proprietario dei Messaggi"
         action: "cambia proprietà"
@@ -1495,6 +1508,10 @@ it:
         confirm:
           one: "Sei sicuro di voler cancellare questo messaggio?"
           other: "Sei sicuro di voler cancellare tutti questi messaggi?"
+      merge:
+        confirm:
+          one: "Sicuro di voler unire questi messaggi?"
+          other: "Sicuro di voler unire questi {{count}} messaggi?"
       revisions:
         controls:
           first: "Prima revisione"
@@ -1746,8 +1763,6 @@ it:
       readonly: "Visualizza"
     lightbox:
       download: "scarica"
-    search_help:
-      title: 'Aiuto Ricerca'
     keyboard_shortcuts_help:
       title: 'Scorciatorie Tastiera'
       jump_to:
@@ -1765,7 +1780,7 @@ it:
         jump: '<b>#</b> Vai al messaggio n°'
         back: '<b>u</b> Indietro'
         up_down: '<b>k</b>/<b>j</b> Sposta la selezione &uarr; &darr;'
-        open: '<b>o</b> o <b>Enter</b> Apri l''argomento selezionato'
+        open: '<b>o</b> o <b>Invio</b> Apri argomento selezionato'
         next_prev: '<b>shift</b>+<b>j</b>/<b>shift</b>+<b>k</b> Prossima/precedente sezione'
       application:
         title: 'Applicazione'
@@ -1781,6 +1796,23 @@ it:
         log_out: '<b>shift</b>+<b>z</b> <b>shift</b>+<b>z</b> Disconnetti'
       actions:
         title: 'Azioni'
+        bookmark_topic: '<b>f</b> Aggiungi/togli argomento nei segnalibri'
+        pin_unpin_topic: '<b>shift</b>+<b>p</b> Appunta/Spunta argomento'
+        share_topic: '<b>shift</b>+<b>s</b> Condividi argomento'
+        share_post: '<b>s</b> Condividi messaggio'
+        reply_as_new_topic: '<b>t</b> Rispondi come argomento collegato'
+        reply_topic: '<b>shift</b>+<b>r</b> Rispondi all''argomento'
+        reply_post: '<b>r</b> Rispondi al messaggio'
+        quote_post: '<b>q</b> Cita messaggio'
+        like: '<b>l</b> Metti "Mi piace" al messaggio'
+        flag: '<b>!</b> Segnala messaggio'
+        bookmark: '<b>b</b> Aggiungi un segnalibro al messaggio'
+        edit: '<b>e</b> Modifica messaggio'
+        delete: '<b>d</b> Cancella messaggio'
+        mark_muted: '<b>m</b>, <b>m</b> Silenzia argomento'
+        mark_regular: '<b>m</b>, <b>r</b> Argomento normale (default)'
+        mark_tracking: '<b>m</b>, <b>t</b> Segui argomento'
+        mark_watching: '<b>m</b>, <b>w</b> Osserva argomento'
     badges:
       earned_n_times:
         one: "Guadagnato questo distintivo 1 volta"
@@ -1789,10 +1821,32 @@ it:
       others_count: "Altri utenti con questo distintivo (%{count})"
       title: Distintivi
       allow_title: "titolo disponibile"
+      multiple_grant: "assegnato più volte"
       badge_count:
         one: "1 Distintivo"
         other: "%{count} Distintivi"
       select_badge_for_title: Seleziona un distintivo da usare come tuo titolo
+      none: "<nessuno>"
+      badge_grouping:
+        getting_started:
+          name: Iniziali
+        community:
+          name: Comunità
+        trust_level:
+          name: Livello Esperienza
+        other:
+          name: Altri
+        posting:
+          name: Pubblicazione
+    google_search: |
+      <h3>Cerca con Google</h3>
+      <p>
+      <form action='//google.com/search' id='google-search' onsubmit="document.getElementById('google-query').value = 'site:' + window.location.host + ' ' + document.getElementById('user-query').value; return true;">
+      <input type="text" id='user-query' value="">
+      <input type='hidden' id='google-query' name="q">
+      <button class="btn btn-primary">Google</button>
+      </form>
+      </p>
     tagging:
       all_tags: "Etichette"
       selector_all_tags: "tutte le etichette"
@@ -1804,6 +1858,7 @@ it:
       delete_confirm: "Sicuro di voler cancellare questa etichetta?"
       rename_tag: "Rinomina Etichetta"
       rename_instructions: "Scegli un altro nome per l'etichetta:"
+      sort_by_name: "nome"
       manage_groups: "Gestisci Gruppi Etichette"
       manage_groups_description: "Definisci gruppi per organizzare le etichette"
       filters:
@@ -1811,6 +1866,22 @@ it:
         with_category: "%{filter} %{tag} argomenti in %{category}"
         untagged_without_category: "%{filter} argomenti non etichettati"
         untagged_with_category: "%{filter} argomenti non etichettati in %{category}"
+      notifications:
+        watching:
+          title: "In osservazione"
+          description: "Visualizzerai automaticamente tutti gli argomenti con questa etichetta. Riceverai una notifica per tutti i nuovi messaggi e argomenti. Inoltre, accanto all'argomento apparirà il conteggio dei messaggi non letti e di quelli nuovi."
+        watching_first_post:
+          title: "Osservando Primo Messaggio"
+          description: "Riceverai solo la notifica per il primo messaggio di ogni nuovo argomenti con questa etichetta."
+        tracking:
+          title: "Seguiti"
+          description: "Seguirai automaticamente tutti gli argomenti con questa etichetta. Accanto all'argomento apparirà un conteggio dei messaggi non letti e di quelli nuovi."
+        regular:
+          title: "Normale"
+          description: "Riceverai una notifica se qualcuno menziona il tuo @nome o risponde al tuo messaggio."
+        muted:
+          title: "Silenziato"
+          description: "Non riceverai alcuna notifica per nuovi argomenti con questa etichetta, e non compariranno nella tab dei messaggi non letti."
       groups:
         title: "Gruppi Etichette"
         about: "Aggiungi etichette a gruppi per poterle gestire più facilmente."
@@ -1845,6 +1916,11 @@ it:
           top: "Non ci sono ulteriori argomenti di punta."
           bookmarks: "Non ci sono ulteriori argomenti nei segnalibri."
           search: "Non ci sono ulteriori risultati di ricerca."
+    invite:
+      custom_message: "Rendi l'invito un po' più personale scrivendo un"
+      custom_message_link: "messaggio personalizzato"
+      custom_message_placeholder: "Inserisci il tuo messaggio personalizzato"
+      custom_message_template_forum: "Ehi, unisciti a questo forum!"
   admin_js:
     type_to_filter: "digita per filtrare..."
     admin:
@@ -1994,6 +2070,14 @@ it:
         add_owners: Aggiungi proprietari
         incoming_email: "Indirizzo email personalizzato"
         incoming_email_placeholder: "inserisci l'indirizzo e-mail"
+        flair_url: "Immagine Avatar"
+        flair_url_placeholder: "(Facoltativo) URL Immagine o categoria Font Awesome"
+        flair_bg_color: "Colore di sfondo Avatar"
+        flair_bg_color_placeholder: "(Facoltativo) Codice Hex colore"
+        flair_color: "Colore Avatar"
+        flair_color_placeholder: "(Facoltativo) Codice Hex colore"
+        flair_preview: "Anteprima"
+        flair_note: "Nota: l'Avatar verrà mostrato solo per il gruppo principale dell'utente."
       api:
         generate_master: "Genera una Master API Key"
         none: "Non ci sono chiavi API attive al momento."
@@ -2008,6 +2092,20 @@ it:
         info_html: "La tua chiave API ti permetterà di creare e aggiornare gli argomenti usando chiamate JSON."
         all_users: "Tutti gli Utenti"
         note_html: "Mantieni <strong>segreta</strong> questa chiave, tutti gli utenti che la possiedono possono creare messaggi per conto di altri."
+      web_hooks:
+        title: "Webhook"
+        none: "Non ci sono webhook disponibili adesso."
+        instruction: "Webhook consente a Discourse di notificare servizi esterni quando sul tuo sito si verificano determinati eventi. Quando un webhook viene innescato, una richiesta di MESSAGGIO viene inviata agli URL forniti."
+        detailed_instruction: "Una richiesta di MESSAGGIO verrà inviata agli URL forniti quando si verifica un evento scelto."
+        new: "Nuovo Webhook"
+        create: "Crea"
+        save: "Salva"
+        destroy: "Elimina"
+        description: "Descrizione"
+        controls: "Componenti"
+        go_back: "Torna all'elenco"
+        payload_url: "Aggiungi URL"
+        payload_url_placeholder: "https://example.com/postreceive"
       plugins:
         title: "Plugin"
         installed: "Plugin Installati"
@@ -2693,3 +2791,21 @@ it:
           label: "Nuovo:"
           add: "Aggiungi"
           filter: "Cerca (URL o URL Esterna)"
+  wizard_js:
+    wizard:
+      done: "Fatto"
+      back: "Indietro"
+      next: "Avanti"
+      step: "%{current} di %{total}"
+      upload: "Carica"
+      uploading: "Caricamento..."
+      quit: "Forse Dopo"
+      staff_count:
+        one: "La tua comunità ha 1 membro dello staff."
+        other: "La tua comunità ha %{count} membri dello staff."
+      invites:
+        add_user: "aggiungi"
+        roles:
+          admin: "Amministratore"
+          moderator: "Moderatore"
+          regular: "Utente Normale"

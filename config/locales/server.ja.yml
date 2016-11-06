@@ -153,19 +153,19 @@ ja:
     until_posts:
       other: "%{count} 投稿"
     new-topic: |
-      %{site_name} へようこそ！&mdash; ** 新たなトピックの作成ありがとうございます！**
+      %{site_name} へようこそ！&mdash; **新たなトピックの作成ありがとうございます!**
 
       - タイトルはトピックの内容を正しく説明していますか？他の人にとって興味深いタイトルになっていますか？
 
       - このトピックは何をカバーするものですか？このトピックに興味を示しそうなのは誰でしょう？なぜこのトピックは重要なのでしょうか？コミュニティよりどのような回答を期待していますか？
 
-      - トピックに適切な検索用ワードを含めると、他の人がトピックを *発見* しやすくなります。詳細は [コミュニティガイドライン](/guidelines) を参照してください。このパネルは最初から %{education_posts_text} 回目までの投稿のときにだけ表示されます。
+      - トピックに適切な検索用ワードを含めると、他の人がトピックを *発見* しやすくなります。詳細は [コミュニティガイドライン](/guidelines) を参照してください。このメッセージは最初の %{education_posts_text} まで表示されます。
     new-reply: |
       %{site_name} へようこそ &mdash; **コミュニティへの貢献ありがとうございます!**
       - あなたの回答は議論に何らかの形で貢献していますか?
-      - コミュニティメンバー同士のやりとりは礼儀正しく、マナーを保ちましょう。
-      - 建設的な批判は歓迎します。ただし批判は「人」に対してではなく「アイデア」に対して行いましょう。
-      詳細は[コミュニティガイドライン](/guidelines)を参照してください。このパネルは最初の %{education_posts_text} のみに表示されます。
+      - 会話は礼儀正しく、マナーを守りましょう。
+      - しっかりとした批判は良いかと思います。ただし「その人」に対してでは無く、「そのアイディア」に対してしましょう。
+      詳細は[コミュニティガイドライン](/guidelines)を参照してください。このメッセージは最初の %{education_posts_text} のみに表示されます。
     sequential_replies: |+
       ### 一度に複数の投稿に返信する
 
@@ -567,14 +567,6 @@ ja:
     s3_config_warning: 'サーバが S3 にファイルをアップロードするように設定されていますが、次のうち少なくとも1つが設定されていません: s3_access_key_id, s3_secret_access_key or s3_upload_bucket。<a href="/admin/site_settings">サイトの設定</a> にて設定を更新してください。<a href="http://meta.discourse.org/t/how-to-set-up-image-uploads-to-s3/7229" target="_blank">詳しくは "How to set up image uploads to S3?" を参考にしてください</a>。'
     s3_backup_config_warning: 'サーバが S3 にバックアップをアップロードするように設定されていますが、次のうち少なくとも1つが設定されていません: s3_access_key_id, s3_secret_access_key or s3_upload_bucket。<a href="/admin/site_settings">サイトの設定</a> にて設定を更新してください。<a href="http://meta.discourse.org/t/how-to-set-up-image-uploads-to-s3/7229" target="_blank">詳しくは "How to set up image uploads to S3?" を参考にしてください</a>'
     image_magick_warning: 'サーバが大きな画像のサムネイルを作成する設定になっていますが、ImageMagick がインストールされていません。お好きなパッケージマネージャを使って ImageMagick をインストールするか、<a href="http://www.imagemagick.org/script/binary-releases.php" target="_blank">最新のリリースをダウンロードしてください</a>。'
-    default_logo_warning: "あなたのサイトのロゴを設定しましょう。<a href='/admin/site_settings'>サイトの設定</a>で logo_url, logo_small_url, favicon_url を更新してください。"
-    contact_email_missing: "サイトに関する緊急連絡が行えるように、連絡先メールアドレスを入力してください。<a href='/admin/site_settings'>サイトの設定</a>で更新できます"
-    contact_email_invalid: "サイトの連絡先メールアドレスが正しくありません。<a href='/admin/site_settings'>サイトの設定</a>で更新してください"
-    title_nag: "サイトの名前が正しくありません。<a href='/admin/site_settings'>サイトの設定</a>で更新してください"
-    site_description_missing: "検索結果に表示される説明文を入力してください。<a href='/admin/site_settings'>サイトの設定</a>で更新してください"
-    consumer_email_warning: "サイトはメール送信に Gmail (または他のカスタムメールサービス) を利用するように設定されています。<a href='http://support.google.com/a/bin/answer.py?hl=en&answer=166852' target='_blank'>Gmail で送信可能なメール数には制限があります</a>。メールを確実に送信するために mandrill.com などのメールサービスプロバイダーの利用を検討してください。"
-    site_contact_username_warning: "重要なメッセージを送るために、スタッフユーザの名前を入力してください。<a href='/admin/site_settings'>サイト設定</a> のsite_contact_username を更新してください。"
-    notification_email_warning: "通知用メールがあなたのドメインで有効なメールアドレスから送信されていません。メール配信が不安定になり、信頼性が低くなります。\n<a href='/admin/site_settings'>サイトの設定</a>で更新してください"
   site_settings:
     censored_words: "自動的に &#9632;&#9632;&#9632;&#9632; で置換されます"
     delete_old_hidden_posts: "30日以上非表示になっている投稿を自動で削除します"
@@ -614,7 +606,6 @@ ja:
     exclude_rel_nofollow_domains: "nofollowを付与すべきではないドメインのリスト。tld.comは、sub.tld.com も許可します。最低でもクローラーが全てのコンテンツを見つけるために、このサイトのトップレベルドメインを追加する必要があります。このサイトの他の部分が別ドメインに存在している場合、それも追加します"
     post_excerpt_maxlength: "投稿の引用/サマリの最大文字数"
     post_onebox_maxlength: "Discourse OneBox投稿の最大文字数"
-    onebox_domains_whitelist: "OneBoxを許可するドメインのリスト。これらのドメインはOpenGraphかoEmbedをサポートしている必要があります。http://iframely.com/debug でテストできます"
     logo_url: "サイトの左上に表示されるロゴ画像です。横幅の大きい長方形にする必要があります。空欄の場合、サイトタイトルが表示されます"
     logo_small_url: "サイトの左上に表示される小さいロゴ画像です。正方形である必要があります。下にスクロールすると表示されます。空欄の場合、ホームアイコンが表示されます"
     mobile_logo_url: "モバイルサイトの左上に固定で表示されるロゴ画像です。正方形である必要があります。空欄の場合 `logo_url` が利用されます 例: http://example.com/uploads/default/logo.png"
@@ -1285,39 +1276,10 @@ ja:
     title: "利用規約"
   privacy_topic:
     title: "プライバシーポリシー"
-  static:
-    search_help: |
-      <h3>Tips</h3>
-      <p>
-      <ul>
-      <li>タイトルが優先されます &ndash; わからない時はタイトルで調べてみましょう</li>
-      <li>かぶりにくい単語、調べたいものに近い言葉を使うとピッタリな検索結果が出てきます。</li>
-      <li>カテゴリ、トピック、またはユーザ単位で検索してみましょう</li>
-      </ul>
-      </p>
-      <h3>オプション</h3>
-      <p>
-      <table>
-      <tr><td><code>order:views</code></td><td><code>order:latest</code></td><td><code>order:likes</code></td><td><code>@username</code></td><td><code>user:foo</code></td></tr>
-      <tr><td><code>status:open</code></td><td><code>status:closed</code></td><td><code>status:archived</code></td><td><code>status:noreplies</code></td><td><code>status:single_user</code></td></tr>
-      <tr><td><code>#category-slug</code></td><td><code>category:foo</code></td><td><code>group:foo</code></td><td><code>badge:foo</code></td><td></td></tr>
-      <tr><td><code>in:likes</code></td><td><code>in:posted</code></td><td><code>in:watching</code></td><td><code>in:tracking</code></td><td><code>in:private</code></td></tr>
-      <tr><td><code>in:bookmarks</code></td><td><code>in:first</code></td><td><code>in:pinned</code></td><td><code>in:unpinned</code></td><td><code>in:wiki</code></td></tr>
-      <tr><td><code>posts_count:num</code></td><td><code>before:days or date</code></td><td><code>after:days or date</code></td><td><code>tags:one,two</code></td><td></td></tr>
-      </table>
-      </p>
-      <h3>例</h3>
-      <p>
-      <ul>
-      <li><code>rainbows #parks</code> では"parks"のカテゴリから"rainbows"という単語を検索します。</li>
-      <li><code>rainbows category:parks status:open order:latest</code> では"parks"のカテゴリ、"rainbows"という単語を検索し、最後の投稿の日付順に並べ、クローズ/アーカイブされていないトピックを検索します。</li>
-      <li><code>rainbows category:"parks and gardens" in:bookmarks</code> では、ブックマークしている"parks and gardens"カテゴリから、"rainbows"という単語を含むトピックを検索します。</li>
-      </ul>
-      </p>
   badges:
     editor:
       name: 編集者
-      description: 最初の投稿を編集する
+      description: はじめて投稿を編集する
     autobiographer:
       name: あなたはだれ？
       description: <a href="/my/preferences">プロフィール</a>をすべて書く

@@ -20,6 +20,7 @@ Discourse::Application.routes.draw do
   post "webhooks/sendgrid" => "webhooks#sendgrid"
   post "webhooks/mailjet"  => "webhooks#mailjet"
   post "webhooks/mandrill" => "webhooks#mandrill"
+  post "webhooks/sparkpost" => "webhooks#sparkpost"
 
   if Rails.env.development?
     mount Sidekiq::Web => "/sidekiq"
@@ -36,6 +37,12 @@ Discourse::Application.routes.draw do
     end
   end
 
+  get "finish-installation" => "finish_installation#index"
+  get "finish-installation/register" => "finish_installation#register"
+  post "finish-installation/register" => "finish_installation#register"
+  get "finish-installation/confirm-email" => "finish_installation#confirm_email"
+  put "finish-installation/resend-email" => "finish_installation#resend_email"
+
   resources :directory_items
 
   get "site" => "site#site"
@@ -50,8 +57,13 @@ Discourse::Application.routes.draw do
 
   get "site_customizations/:key" => "site_customizations#show"
 
-  resources :forums
   get "srv/status" => "forums#status"
+
+  get "wizard" => "wizard#index"
+  get "wizard/qunit" => "wizard#qunit"
+  get 'wizard/steps' => 'steps#index'
+  get 'wizard/steps/:id' => "wizard#index"
+  put 'wizard/steps/:id' => "steps#update"
 
   namespace :admin, constraints: StaffConstraint.new do
     get "" => "admin#index"
@@ -163,6 +175,7 @@ Discourse::Application.routes.draw do
     get "customize/permalinks" => "permalinks#index", constraints: AdminConstraint.new
     get "customize/embedding" => "embedding#show", constraints: AdminConstraint.new
     put "customize/embedding" => "embedding#update", constraints: AdminConstraint.new
+
     get "flags" => "flags#index"
     get "flags/:filter" => "flags#index"
     post "flags/agree/:id" => "flags#agree"
@@ -200,17 +213,19 @@ Discourse::Application.routes.draw do
 
     resources :api, only: [:index], constraints: AdminConstraint.new do
       collection do
+        get "keys" => "api#index"
         post "key" => "api#create_master_key"
         put "key" => "api#regenerate_key"
         delete "key" => "api#revoke_key"
+
+        resources :web_hooks
+        get 'web_hook_events/:id' => 'web_hooks#list_events', as: :web_hook_events
+        get 'web_hooks/:id/events' => 'web_hooks#list_events'
+        get 'web_hooks/:id/events/bulk' => 'web_hooks#bulk_events'
+        post 'web_hooks/:web_hook_id/events/:event_id/redeliver' => 'web_hooks#redeliver_event'
+        post 'web_hooks/:id/ping' => 'web_hooks#ping'
       end
     end
-
-    resources :web_hooks, constraints: AdminConstraint.new
-    get 'web_hook_events/:id' => 'web_hooks#list_events', constraints: AdminConstraint.new, as: :web_hook_events
-    get 'web_hooks/:id/events' => 'web_hooks#list_events', constraints: AdminConstraint.new
-    post 'web_hooks/:web_hook_id/events/:event_id/redeliver' => 'web_hooks#redeliver_event', constraints: AdminConstraint.new
-    post 'web_hooks/:id/ping' => 'web_hooks#ping', constraints: AdminConstraint.new
 
     resources :backups, only: [:index, :create], constraints: AdminConstraint.new do
       member do
@@ -248,6 +263,8 @@ Discourse::Application.routes.draw do
   get "email/unsubscribe/:key" => "email#unsubscribe", as: "email_unsubscribe"
   get "email/unsubscribed" => "email#unsubscribed", as: "email_unsubscribed"
   post "email/unsubscribe/:key" => "email#perform_unsubscribe", as: "email_perform_unsubscribe"
+
+  get "extra-locales/:bundle" => "extra_locales#show"
 
   resources :session, id: USERNAME_ROUTE_FORMAT, only: [:create, :destroy, :become] do
     get 'become'
@@ -379,7 +396,9 @@ Discourse::Application.routes.draw do
   get "posts/:username/deleted" => "posts#deleted_posts", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "posts/:username/flagged" => "posts#flagged_posts", constraints: {username: USERNAME_ROUTE_FORMAT}
 
-  resources :groups do
+  get "groups/:id.json" => 'groups#show', constraints: {id: USERNAME_ROUTE_FORMAT}, defaults: {format: 'json'}
+  
+  resources :groups, id: USERNAME_ROUTE_FORMAT do
     get "posts.rss" => "groups#posts_feed", format: :rss
     get "mentions.rss" => "groups#mentions_feed", format: :rss
 
@@ -426,6 +445,9 @@ Discourse::Application.routes.draw do
 
   get 'notifications' => 'notifications#index'
   put 'notifications/mark-read' => 'notifications#mark_read'
+  # creating an alias cause the api was extended to mark a single notification
+  # this allows us to cleanly target it
+  put 'notifications/read' => 'notifications#mark_read'
 
   match "/auth/:provider/callback", to: "users/omniauth_callbacks#complete", via: [:get, :post]
   match "/auth/failure", to: "users/omniauth_callbacks#failure", via: [:get, :post]
@@ -502,7 +524,6 @@ Discourse::Application.routes.draw do
 
   # Topics resource
   get "t/:id" => "topics#show"
-  post "t" => "topics#create"
   put "t/:id" => "topics#update"
   delete "t/:id" => "topics#destroy"
   put "t/:id/archive-message" => "topics#archive_message"
@@ -540,6 +561,7 @@ Discourse::Application.routes.draw do
 
   # Topic routes
   get "t/id_for/:slug" => "topics#id_for_slug"
+  get "t/:slug/:topic_id/print" => "topics#show", format: :html, print: true, constraints: {topic_id: /\d+/}
   get "t/:slug/:topic_id/wordpress" => "topics#wordpress", constraints: {topic_id: /\d+/}
   get "t/:topic_id/wordpress" => "topics#wordpress", constraints: {topic_id: /\d+/}
   get "t/:slug/:topic_id/moderator-liked" => "topics#moderator_liked", constraints: {topic_id: /\d+/}
@@ -669,6 +691,8 @@ Discourse::Application.routes.draw do
   root to: "categories#index", constraints: HomePageConstraint.new("categories"), :as => "categories_index"
   # special case for top
   root to: "list#top", constraints: HomePageConstraint.new("top"), :as => "top_lists"
+
+  root to: 'finish_installation#index', constraints: HomePageConstraint.new("finish_installation"), as: 'installation_redirect'
 
   get "/user-api-key/new" => "user_api_keys#new"
   post "/user-api-key" => "user_api_keys#create"

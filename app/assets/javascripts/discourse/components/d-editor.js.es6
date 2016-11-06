@@ -123,7 +123,7 @@ class Toolbar {
   }
 
   addButton(button) {
-    const g = this.groups.findProperty('group', button.group);
+    const g = this.groups.findBy('group', button.group);
     if (!g) {
       throw `Couldn't find toolbar group ${button.group}`;
     }
@@ -201,18 +201,23 @@ export default Ember.Component.extend({
     return null;
   },
 
-  @on('didInsertElement')
-  _startUp() {
+  _readyNow() {
+    this.set('ready', true);
+  },
+
+  didInsertElement() {
+    this._super();
+
     const container = this.get('container'),
           $editorInput = this.$('.d-editor-input');
 
     this._applyEmojiAutocomplete(container, $editorInput);
     this._applyCategoryHashtagAutocomplete(container, $editorInput);
 
-    this.set('ready', true);
+
+    Ember.run.scheduleOnce('afterRender', this, this._readyNow);
 
     const mouseTrap = Mousetrap(this.$('.d-editor-input')[0]);
-
     const shortcuts = this.get('toolbar.shortcuts');
     Object.keys(shortcuts).forEach(sc => {
       const button = shortcuts[sc];
@@ -232,7 +237,6 @@ export default Ember.Component.extend({
 
     this.appEvents.on('composer:insert-text', text => this._addText(this._getSelected(), text));
     this.appEvents.on('composer:replace-text', (oldVal, newVal) => this._replaceText(oldVal, newVal));
-
     this._mouseTrap = mouseTrap;
   },
 
@@ -267,7 +271,6 @@ export default Ember.Component.extend({
       if (this._state !== "inDOM") { return; }
       const $preview = this.$('.d-editor-preview');
       if ($preview.length === 0) return;
-
       this.sendAction('previewUpdated', $preview);
     });
   },
@@ -275,7 +278,13 @@ export default Ember.Component.extend({
   @observes('ready', 'value')
   _watchForChanges() {
     if (!this.get('ready')) { return; }
-    Ember.run.debounce(this, this._updatePreview, 30);
+
+    // Debouncing in test mode is complicated
+    if (Ember.testing) {
+      this._updatePreview();
+    } else {
+      Ember.run.debounce(this, this._updatePreview, 30);
+    }
   },
 
   _applyCategoryHashtagAutocomplete(container) {
@@ -441,7 +450,7 @@ export default Ember.Component.extend({
     }).join("\n");
   },
 
-  _applySurround(sel, head, tail, exampleKey) {
+  _applySurround(sel, head, tail, exampleKey, opts) {
     const pre = sel.pre;
     const post = sel.post;
 
@@ -453,6 +462,16 @@ export default Ember.Component.extend({
       const example = I18n.t(`composer.${exampleKey}`);
       this.set('value', `${pre}${hval}${example}${tail}${post}`);
       this._selectText(pre.length + hlen, example.length);
+    } else if (opts && !opts.multiline) {
+      const [hval, hlen] = getHead(head);
+
+      if (pre.slice(-hlen) === hval && post.slice(0, tail.length) === tail) {
+        this.set('value', `${pre.slice(0, -hlen)}${sel.value}${post.slice(tail.length)}`);
+        this._selectText(sel.start - hlen, sel.value.length);
+      } else {
+        this.set('value', `${pre}${hval}${sel.value}${tail}${post}`);
+        this._selectText(sel.start + hlen, sel.value.length);
+      }
     } else {
       const lines = sel.value.split("\n");
 
@@ -521,7 +540,7 @@ export default Ember.Component.extend({
       const toolbarEvent = {
         selected,
         selectText: (from, length) => this._selectText(from, length),
-        applySurround: (head, tail, exampleKey) => this._applySurround(selected, head, tail, exampleKey),
+        applySurround: (head, tail, exampleKey, opts) => this._applySurround(selected, head, tail, exampleKey, opts),
         applyList: (head, exampleKey) => this._applyList(selected, head, exampleKey),
         addText: text => this._addText(selected, text),
         getText: () => this.get('value'),

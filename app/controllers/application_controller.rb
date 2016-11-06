@@ -53,7 +53,7 @@ class ApplicationController < ActionController::Base
   end
 
   def use_crawler_layout?
-    @use_crawler_layout ||= (has_escaped_fragment? || CrawlerDetection.crawler?(request.user_agent))
+    @use_crawler_layout ||= (has_escaped_fragment? || CrawlerDetection.crawler?(request.user_agent) || params.key?("print"))
   end
 
   def add_readonly_header
@@ -172,10 +172,7 @@ class ApplicationController < ActionController::Base
 
       if notifications.present?
         notification_ids = notifications.split(",").map(&:to_i)
-        count = Notification.where(user_id: current_user.id, id: notification_ids, read: false).update_all(read: true)
-        if count > 0
-          current_user.publish_notifications_state
-        end
+        Notification.read(current_user, notification_ids)
         cookies.delete('cn')
       end
     end
@@ -332,6 +329,25 @@ class ApplicationController < ActionController::Base
     request.session_options[:skip] = true
   end
 
+  def permalink_redirect_or_not_found
+    url = request.fullpath
+    permalink = Permalink.find_by_url(url)
+
+    if permalink.present?
+      # permalink present, redirect to that URL
+      if permalink.external_url
+        redirect_to permalink.external_url, status: :moved_permanently
+      elsif permalink.target_url
+        redirect_to "#{Discourse::base_uri}#{permalink.target_url}", status: :moved_permanently
+      else
+        raise Discourse::NotFound
+      end
+    else
+      # redirect to 404
+      raise Discourse::NotFound
+    end
+  end
+
   private
 
     def locale_from_header
@@ -462,6 +478,14 @@ class ApplicationController < ActionController::Base
 
     def ensure_staff
       raise Discourse::InvalidAccess.new unless current_user && current_user.staff?
+    end
+
+    def ensure_admin
+      raise Discourse::InvalidAccess.new unless current_user && current_user.admin?
+    end
+
+    def ensure_wizard_enabled
+      raise Discourse::InvalidAccess.new unless SiteSetting.wizard_enabled?
     end
 
     def destination_url
