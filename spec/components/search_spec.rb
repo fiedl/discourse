@@ -10,7 +10,7 @@ describe Search do
   end
 
   before do
-    ActiveRecord::Base.observers.enable :search_observer
+    SearchIndexer.enable
   end
 
   context 'post indexing observer' do
@@ -532,6 +532,7 @@ describe Search do
       expect(Search.execute('test status:closed').posts.length).to eq(0)
       expect(Search.execute('test status:open').posts.length).to eq(1)
       expect(Search.execute('test posts_count:1').posts.length).to eq(1)
+      expect(Search.execute('test min_post_count:1').posts.length).to eq(1)
 
       topic.closed = true
       topic.save

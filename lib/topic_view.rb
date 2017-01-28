@@ -184,7 +184,7 @@ class TopicView
         @desired_post.image_url
       elsif @desired_post.user
         # show poster avatar
-        @desired_post.user.avatar_template_url.gsub("{size}", "100")
+        @desired_post.user.avatar_template_url.gsub("{size}", "200")
       end
     else
       @topic.image_url
@@ -280,7 +280,7 @@ class TopicView
   def participants
     @participants ||= begin
       participants = {}
-      User.where(id: post_counts_by_user.map {|k,v| k}).each {|u| participants[u.id] = u}
+      User.where(id: post_counts_by_user.map {|k,v| k}).includes(:primary_group).each {|u| participants[u.id] = u}
       participants
     end
   end

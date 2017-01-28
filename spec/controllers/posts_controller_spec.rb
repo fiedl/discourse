@@ -426,13 +426,12 @@ describe PostsController do
     include_examples 'action requires login', :put, :bookmark, post_id: 2
 
     describe 'when logged in' do
-
       let(:post) { Fabricate(:post, user: log_in) }
+      let(:private_message) { Fabricate(:private_message_post) }
 
       it "raises an error if the user doesn't have permission to see the post" do
-        Guardian.any_instance.expects(:can_see?).with(post).returns(false).once
-
-        xhr :put, :bookmark, post_id: post.id, bookmarked: 'true'
+        post
+        xhr :put, :bookmark, post_id: private_message.id, bookmarked: 'true'
         expect(response).to be_forbidden
       end
 
@@ -464,6 +463,23 @@ describe PostsController do
         xhr :put, :wiki, post_id: post.id, wiki: 'true'
 
         expect(response).to be_forbidden
+      end
+
+      it "toggle wiki status should create a new version" do
+        admin = log_in(:admin)
+        another_user = Fabricate(:user)
+        another_post = Fabricate(:post, user: another_user)
+
+        expect { xhr :put, :wiki, post_id: another_post.id, wiki: 'true' }
+          .to change { another_post.reload.version }.by(1)
+
+        expect { xhr :put, :wiki, post_id: another_post.id, wiki: 'false' }
+          .to change { another_post.reload.version }.by(-1)
+
+        another_admin = log_in(:admin)
+
+        expect { xhr :put, :wiki, post_id: another_post.id, wiki: 'true' }
+          .to change { another_post.reload.version }.by(1)
       end
 
       it "can wiki a post" do
@@ -578,10 +594,6 @@ describe PostsController do
       let!(:user) { log_in }
       let(:moderator) { log_in(:moderator) }
       let(:new_post) { Fabricate.build(:post, user: user) }
-
-      it "raises an exception without a raw parameter" do
-	      expect { xhr :post, :create }.to raise_error(ActionController::ParameterMissing)
-      end
 
       context "fast typing" do
         before do
@@ -771,8 +783,8 @@ describe PostsController do
         end
 
         it "passes category through" do
-          xhr :post, :create, {raw: 'hello', category: 'cool'}
-          expect(assigns(:manager_params)['category']).to eq('cool')
+          xhr :post, :create, {raw: 'hello', category: 1}
+          expect(assigns(:manager_params)['category']).to eq('1')
         end
 
         it "passes target_usernames through" do

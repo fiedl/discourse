@@ -25,6 +25,11 @@ export default Ember.Controller.extend(CanCheckEmails, {
     return (!indexStream || viewingSelf) && !forceExpand;
   },
 
+  @computed('model.isSuspended', 'currentUser.staff')
+  isNotSuspendedOrIsStaff(isSuspended, isStaff) {
+    return !isSuspended || isStaff;
+  },
+
   linkWebsite: Em.computed.not('model.isBasic'),
 
   @computed("model.trust_level")
@@ -82,7 +87,7 @@ export default Ember.Controller.extend(CanCheckEmails, {
     if (!Ember.isEmpty(siteUserFields)) {
       const userFields = this.get('model.user_fields');
       return siteUserFields.filterBy('show_on_profile', true).sortBy('position').map(field => {
-        field.dasherized_name = field.get('name').dasherize();
+        Ember.set(field, 'dasherized_name', field.get('name').dasherize());
         const value = userFields ? userFields[field.get('id').toString()] : null;
         return Ember.isEmpty(value) ? null : Ember.Object.create({ value, field });
       }).compact();

@@ -46,10 +46,12 @@ module ApplicationHelper
   end
 
   def script(*args)
-    if SiteSetting.enable_cdn_js_debugging && GlobalSetting.cdn_url
-      tags = javascript_include_tag(*args, "crossorigin" => "anonymous")
-      tags.gsub!("/assets/", "/cdn_asset/#{Discourse.current_hostname.tr(".","_")}/")
-      tags.gsub!(".js\"", ".js?v=1&origin=#{CGI.escape request.base_url}\"")
+    if  GlobalSetting.cdn_url &&
+        GlobalSetting.cdn_url.start_with?("https") &&
+        ENV["COMPRESS_BROTLI"] == "1" &&
+        request.env["HTTP_ACCEPT_ENCODING"] =~ /br/
+      tags = javascript_include_tag(*args)
+      tags.gsub!("#{GlobalSetting.cdn_url}/assets/", "#{GlobalSetting.cdn_url}/brotli_asset/")
       tags.html_safe
     else
       javascript_include_tag(*args)
@@ -91,8 +93,7 @@ module ApplicationHelper
   end
 
   def format_topic_title(title)
-    PrettyText.unescape_emoji(title)
-    strip_tags(title)
+    PrettyText.unescape_emoji strip_tags(title)
   end
 
   def with_format(format, &block)
@@ -105,6 +106,14 @@ module ApplicationHelper
 
   def age_words(secs)
     AgeWords.age_words(secs)
+  end
+
+  def short_date(dt)
+    if dt.year == Time.now.year
+      I18n.l(dt, format: :short_no_year)
+    else
+      I18n.l(dt, format: :date_only)
+    end
   end
 
   def guardian
@@ -128,7 +137,7 @@ module ApplicationHelper
   end
 
   def rtl?
-    ["ar", "fa_IR", "he"].include? I18n.locale.to_s
+    ["ar", "ur", "fa_IR", "he"].include? I18n.locale.to_s
   end
 
   def user_locale
@@ -232,8 +241,35 @@ module ApplicationHelper
     MobileDetection.mobile_device?(request.user_agent)
   end
 
+  NO_CUSTOM = "no_custom".freeze
+  NO_PLUGINS = "no_plugins".freeze
+  ONLY_OFFICIAL = "only_official".freeze
+  SAFE_MODE = "safe_mode".freeze
+
   def customization_disabled?
-    session[:disable_customization]
+    safe_mode = params[SAFE_MODE]
+    session[:disable_customization] || (safe_mode && safe_mode.include?(NO_CUSTOM))
+  end
+
+  def allow_plugins?
+    safe_mode = params[SAFE_MODE]
+    !(safe_mode && safe_mode.include?(NO_PLUGINS))
+  end
+
+  def allow_third_party_plugins?
+    safe_mode = params[SAFE_MODE]
+    !(safe_mode && (safe_mode.include?(NO_PLUGINS) || safe_mode.include?(ONLY_OFFICIAL)))
+  end
+
+  def normalized_safe_mode
+    mode_string = params["safe_mode"]
+    safe_mode = nil
+    (safe_mode ||= []) << NO_CUSTOM if mode_string.include?(NO_CUSTOM)
+    (safe_mode ||= []) << NO_PLUGINS if mode_string.include?(NO_PLUGINS)
+    (safe_mode ||= []) << ONLY_OFFICIAL if mode_string.include?(ONLY_OFFICIAL)
+    if safe_mode
+      safe_mode.join(",").html_safe
+    end
   end
 
   def loading_admin?
@@ -262,4 +298,15 @@ module ApplicationHelper
     result.html_safe
   end
 
+  def topic_featured_link_domain(link)
+    begin
+      uri = URI.encode(link)
+      uri = URI.parse(uri)
+      uri = URI.parse("http://#{uri}") if uri.scheme.nil?
+      host = uri.host.downcase
+      host.start_with?('www.') ? host[4..-1] : host
+    rescue
+      ''
+    end
+  end
 end

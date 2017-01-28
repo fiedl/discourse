@@ -155,10 +155,6 @@ nav.post-controls {
       box-shadow: none;
     }
 
-    &.wikied {
-      color: green;
-    }
-
     &.bookmark {padding: 8px 11px; }
 
     .read-icon {
@@ -333,7 +329,7 @@ a.star {
     }
     .post-count {
       position: absolute;
-      right: 3px;
+      right: 0;
       border-radius: 100px;
       padding: 4px 5px 2px 5px;
       text-align: center;
@@ -505,13 +501,13 @@ video {
 .extra-info-wrapper {
   overflow: hidden;
 
-  .badge-wrapper, i,  .topic-link {
+  .badge-wrapper, i, .topic-link {
     -webkit-animation: fadein .7s;
     animation: fadein .7s;
   }
 
   .topic-statuses {
-    i  { color: $header_primary; }
+    i { color: $header_primary; }
     i.fa-envelope { color: $danger; }
     .unpinned { color: $header_primary; }
   }
@@ -522,6 +518,11 @@ video {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .topic-header-extra {
+    margin: 0 0 0 5px;
+    padding-top: 5px;
   }
 }
 

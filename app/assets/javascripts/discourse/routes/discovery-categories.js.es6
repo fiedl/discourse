@@ -114,11 +114,12 @@ const DiscoveryCategoriesRoute = Discourse.Route.extend(OpenComposer, {
       const model = this.store.createRecord('category', {
         color: "AB9364", text_color: "FFFFFF", group_permissions: [{group_name: everyoneName, permission_type: 1}],
         available_groups: groups.map(g => g.name),
-        allow_badges: true
+        allow_badges: true,
+        topic_featured_link_allowed: true
       });
 
-      showModal("editCategory", { model });
-      this.controllerFor("editCategory").set("selectedTab", "general");
+      showModal("edit-category", { model });
+      this.controllerFor("edit-category").set("selectedTab", "general");
     },
 
     reorderCategories() {

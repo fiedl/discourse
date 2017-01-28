@@ -152,7 +152,7 @@ class UsersController < ApplicationController
     user = fetch_user_from_params
     guardian.ensure_can_edit!(user)
 
-    report = TopicTrackingState.report(user.id)
+    report = TopicTrackingState.report(user)
     serializer = ActiveModel::ArraySerializer.new(report, each_serializer: TopicTrackingStateSerializer)
 
     render json: MultiJson.dump(serializer)
@@ -242,11 +242,20 @@ class UsersController < ApplicationController
     usernames -= groups
     usernames.each(&:downcase!)
 
+    # Create a New Topic Scenario is not supported (per conversation with codinghorror)
+    # https://meta.discourse.org/t/taking-another-1-7-release-task/51986/7
+    cannot_see = []
+    topic_id = params[:topic_id]
+    unless topic_id.blank?
+      topic = Topic.find_by(id: topic_id)
+      usernames.each{ |username| cannot_see.push(username) unless Guardian.new(User.find_by_username(username)).can_see?(topic) }
+    end
+
     result = User.where(staged: false)
                  .where(username_lower: usernames)
                  .pluck(:username_lower)
 
-    render json: {valid: result, valid_groups: groups, mentionable_groups: mentionable_groups}
+    render json: {valid: result, valid_groups: groups, mentionable_groups: mentionable_groups, cannot_see: cannot_see}
   end
 
   def render_available_true
@@ -380,19 +389,21 @@ class UsersController < ApplicationController
   def password_reset
     expires_now
 
-    if EmailToken.valid_token_format?(params[:token])
+    token = params[:token]
+
+    if EmailToken.valid_token_format?(token)
       if request.put?
-        @user = EmailToken.confirm(params[:token])
+        @user = EmailToken.confirm(token)
       else
-        email_token = EmailToken.confirmable(params[:token])
+        email_token = EmailToken.confirmable(token)
         @user = email_token.try(:user)
       end
 
       if @user
-        session["password-#{params[:token]}"] = @user.id
+        secure_session["password-#{token}"] = @user.id
       else
-        user_id = session["password-#{params[:token]}"]
-        @user = User.find(user_id) if user_id
+        user_id = secure_session["password-#{token}"].to_i
+        @user = User.find(user_id) if user_id > 0
       end
     else
       @invalid_token = true
@@ -411,7 +422,7 @@ class UsersController < ApplicationController
         @user.auth_token = nil
         if @user.save
           Invite.invalidate_for_email(@user.email) # invite link can't be used to log in anymore
-          session["password-#{params[:token]}"] = nil
+          secure_session["password-#{token}"] = nil
           logon_after_password_reset
 
           return redirect_to(wizard_path) if Wizard.user_requires_completion?(@user)
@@ -557,7 +568,7 @@ class UsersController < ApplicationController
 
     if params[:include_groups] == "true"
       to_render[:groups] = Group.search_group(term).map do |m|
-        {name: m.name, usernames: []}
+        { name: m.name, full_name: m.full_name }
       end
     end
 
@@ -565,7 +576,7 @@ class UsersController < ApplicationController
       to_render[:groups] = Group.mentionable(current_user)
                                 .where("name ILIKE :term_like", term_like: "#{term}%")
                                 .map do |m|
-        {name: m.name, usernames: []}
+        { name: m.name, full_name: m.full_name }
       end
     end
 
@@ -697,7 +708,7 @@ class UsersController < ApplicationController
     end
 
     def user_params
-      result = params.permit(:name, :email, :password, :username)
+      result = params.permit(:name, :email, :password, :username, :date_of_birth)
                      .merge(ip_address: request.remote_ip,
                             registration_ip_address: request.remote_ip,
                             locale: user_locale)

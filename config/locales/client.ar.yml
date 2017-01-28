@@ -208,6 +208,7 @@ ar:
         enabled: 'أدرجه في %{when}'
         disabled: 'أزال إدراجه في %{when}'
     topic_admin_menu: "عمليات المدير"
+    wizard_required: "حان وقت اعداد منتداك! <a href='%{url}' data-auto-route='true'>شغل معالج الإعداد</a>!"
     emails_are_disabled: "لقد عطّل أحد المدراء الرّسائل الصادرة للجميع. لن تُرسل إشعارات عبر البريد الإلكتروني أيا كان نوعها."
     bootstrap_mode_enabled: "الموقع اﻷن مفعل بالطريقة التمهيدية لكى تتمكن من اطلاق موقعك الجديد بسهولة. سيسجل كل الأعضاء الجدد بمستوى ثقة 1 وسيكون اختيار ارسال الملخص اليومى عن طريق البريد الالكترونى مفعل. سيتم الغاء تفعيل الطريقة التمهيدية تلقائيا عندما يتخطى عدد اﻷعضاء %{min_users} عضو."
     bootstrap_mode_disabled: "سيتم الغاء تفعيل الطريقة التمهيدية خلال ال 24 ساعة القادمة"
@@ -424,18 +425,59 @@ ar:
         few: "%{count} أعضاء"
         many: "%{count} عضوًا"
         other: "%{count} عضو"
+    group_histories:
+      actions:
+        change_group_setting: "تغيير إعدادات المجموعة"
+        add_user_to_group: "إضافة مستخدم"
+        remove_user_from_group: "حذف العضو"
+        make_user_group_owner: "تعيين كمالك"
+        remove_user_as_group_owner: "سحب صلاحية المالك"
     groups:
+      logs:
+        title: "السجلات"
+        when: "حين"
+        action: "إجراء"
+        acting_user: "العضو المسؤول"
+        target_user: "العضو المستهدف"
+        subject: "الموضوع"
+        details: "التفاصيل"
+        from: "من"
+        to: "إلى"
+      edit:
+        title: 'تعديل المجموعة'
+        full_name: 'الإسم الكامل'
+        add_members: "إضافة أعضاء"
+        delete_member_confirm: "إزالة '%{username}' من المجموعة '%{group}'؟"
+      request_membership_pm:
+        title: "طلب العضوية"
+        body: "أود تسجيل العضوية في المجموعة @%{groupName}"
+      name_placeholder: "اسم المجموعة، بدون مسافات. يتبع قواعد اسم المستخدم"
+      public: "السماح للأعضاء للإنضمام / ترك المجموعة (يطبق على المجموعات الظاهرة)"
       empty:
-        posts: "لا مشاركات من أعضاء هذه المجموعة."
+        posts: "لا مواضيع لأعضاء هذه المجموعة."
         members: "لا أعضاء في هذه المجموعة."
-        mentions: "لم يُشر أحد إلى هذه المجموعة."
-        messages: "لا رسائل لهذه المجموعة."
-        topics: "لا مواضيع لأعضاء هذه المجموعة."
+        mentions: "لا توجد إشارات في هذه المجموعة."
+        messages: "لا توجد رسائل في هذه المجموعة."
+        topics: "لا توجد مواضيع لأعضاء هذه المجموعة."
+        logs: "لا توجد سجلات في هذ المجموعة."
       add: "أضف"
+      join: "إنضمام للمجموعة"
+      leave: "ترك المجموعة"
+      request: "طلب الإنضمام للمجموعة"
+      automatic_group: مجموعة تلقائية
+      closed_group: مجموعة مغلقة
+      is_group_user: "أنت عضو في هذه المجموعة."
+      allow_membership_requests: "السماح للأعضاء لإرسال طلبات الإنضمام إلى أصحاب المجموعات (يجب أن يسمح للجميع بذكر هذه المجموعة)"
+      membership: "العضوية"
+      name: "الاسم"
+      user_count: "عدد اﻷعضاء"
+      bio: "عن المجموعة"
       selector_placeholder: "أضف أعضاء"
       owner: "المالك"
       visible: "المجموعة مرئية لكل المستخدمين"
-      index: "المجموعات"
+      index:
+        title: "المجموعات"
+        empty: "لا توجد مجموعات ظاهرة"
       title:
         zero: "مجموعات"
         one: "مجموعات"
@@ -443,6 +485,7 @@ ar:
         few: "مجموعات"
         many: "مجموعات"
         other: "مجموعات"
+      activity: "نشاط"
       members: "الأعضاء"
       topics: "المواضيع"
       posts: "المشاركات"
@@ -474,6 +517,15 @@ ar:
         muted:
           title: "مكتوم"
           description: "لن نرسل لك أي إشعار لأي من المواضيع الجديدة في هذه المجموعة."
+      flair_url: "الصورة الرمزية المميزة"
+      flair_url_placeholder: "(إختياري) رابط الصورة أو صنف Font Awesome"
+      flair_bg_color: "خلفية الصورة الرمزية المميزة"
+      flair_bg_color_placeholder: "(إختياري) اللون برقم الهكس"
+      flair_color: "لون الصورة الرمزية"
+      flair_color_placeholder: "(إختياري) اللون برقم الهكس"
+      flair_preview_icon: "معاينة الأيقونة"
+      flair_preview_image: "معاينة الصورة"
+      flair_note: "ملاحظة: الصورة المميزة تظهر فقط لمجموعة العضو الرئيسية."
     user_action_groups:
       '1': "الإعجابات المعطاة"
       '2': "الإعجابات المستلمة"
@@ -507,6 +559,13 @@ ar:
       latest_by: "الاحدث بـ"
       toggle_ordering: "تبديل التحكم في الترتيب"
       subcategories: "تصنيفات فرعية"
+      topic_sentence:
+        zero: "%{count} موضوع"
+        one: "1 موضوع"
+        two: "موضوعين"
+        few: "%{count} مواضيع"
+        many: "%{count} موضوع"
+        other: "%{count} موضوع"
       topic_stat_sentence:
         zero: "لا مواضيع جديدة في ال%{unit} الماضي."
         one: "موضوع واحد جديد في ال%{unit} الماضي."
@@ -536,7 +595,11 @@ ar:
       profile: "الصفحة الشخصية"
       mute: "كتم"
       edit: "تعديل التفضيلات"
-      download_archive: "تحميل مواضيعي"
+      download_archive:
+        button_text: "تحميل مواضيعي"
+        confirm: "هل أنت متأكد من رغبتك في تحميل جميع مشاركاتك ؟"
+        success: "بدأ التحميل, سيتم إعلامك برسالة عند اكتمال العملية."
+        rate_limit_error: "المشاركات يمكن تحميلها لمرة واحدة في اليوم , الرجاء المحاولة غدا."
       new_private_message: "رسالة جديدة"
       private_message: "رسالة"
       private_messages: "الرسائل"
@@ -560,6 +623,7 @@ ar:
         each_browser_note: "ملاحظة: عليك تغيير هذا الإعداد في كل متصفح تستخدمه."
       dismiss_notifications: "تجاهل الكل"
       dismiss_notifications_tooltip: "جعل جميع اشعارات غيرمقروء الى مقروء"
+      first_notification: "إشعارك الأول! قم بإختياره للبدء."
       disable_jump_reply: "لا تنتقل إلى مشاركتي بعد ما أردّ"
       dynamic_favicon: "إعرض عدد المواضيع الجديدة والمحدثة في أيقونة المتصفح"
       external_links_in_new_tab: "فتح الروابط الخارجية في ألسنة جديدة"
@@ -582,6 +646,7 @@ ar:
           هذه الرسائل لا تشمل المواضيع والفئات المكتومة.
         daily: "أرسل تحديثات يومية"
         individual: "أرسل لي بريدا لكل مشاركة جديدة"
+        individual_no_echo: "ارسل بريد الكتروني لكل مشاركة جديدة ما عدا مواضيعي"
         many_per_day: "أرسل لي بريدا لكل مشاركة جديدة (تقريبا {{dailyEmailEstimate}} يوميا)"
         few_per_day: "أرسل لي بريدا لكل مشاركة جديدة (تقريبا إثنتان يوميا)"
       tag_settings: "الوسوم"
@@ -613,6 +678,10 @@ ar:
       muted_topics_link: "أظهر المواضيع المكتومة"
       watched_topics_link: "أظهر المواضيع المراقبة"
       automatically_unpin_topics: "ألغِ تثبيت المواضيع آليا عندما أصل إلى أسفلها."
+      apps: "برامج"
+      revoke_access: "توقيف صلاحيات الوصول"
+      undo_revoke_access: "رفع توقيف صلاحيات الوصول"
+      api_approved: "موافق عليه:"
       staff_counters:
         flags_given: "علامات مساعدة"
         flagged_posts: "# مشاركات"
@@ -705,6 +774,7 @@ ar:
         title: "لغة الواجهة"
         instructions: "لغة الواجهة الرسومية. ستتغير عندما تنعش الصفحة."
         default: "(الافتراضية)"
+        any: "أي"
       password_confirmation:
         title: "اعد كلمة المرور"
       last_posted: " أخر موضوع"
@@ -762,6 +832,7 @@ ar:
         after_4_minutes: "بعد 4 دقائق"
         after_5_minutes: "بعد 5 دقائق"
         after_10_minutes: "بعد 10 دقائق"
+      notification_level_when_replying: "عندما أشارك في موضوع، اجعل ذلك الموضوع"
       invited:
         search: "نوع البحث عن الدعوات"
         title: "دعوة"
@@ -796,13 +867,11 @@ ar:
         account_age_days: "عمر الحساب بالأيام"
         create: "أرسل دعوة"
         generate_link: "انسخ رابط الدعوة"
-        generated_link_message: '<p>رابط الدعوة منح بنجاح!</p><p><input class="invite-link-input" style="width: 75%;" type="text" value="%{inviteLink}"></p><p>رابط الدعوة صالح فقط لعنوان البريد الإلكتروني هذا: <b>%{invitedEmail}</b></p>'
+        link_generated: "تم إنشاء رابط الدعوة بنجاح!"
+        valid_for: "رابط الدعوة صحيح فقط للبريد الإلكتروني %{email}"
         bulk_invite:
-          none: "لم تقم بدعوة اي احد حتى الان. تستطيع ارسال دعوة , أو ارسال عدة دعوات عن طريق<a href='https://meta.discourse.org/t/send-bulk-invites/16468'>uploading a bulk invite file</a>."
           text: "الدعوة من ملف"
-          uploading: "يرفع..."
           success: "رُفع الملف بنجاح. سيصلك إشعارا عبر رسالة عند اكتمال العملية."
-          error: "حدثت مشكلة في رفع '{{filename}}': {{message}}"
       password:
         title: "كلمة المرور"
         too_short: "كلمة المرور قصيرة جدا."
@@ -815,6 +884,34 @@ ar:
         title: "ملخص"
         stats: "إحصائيات"
         time_read: "وقت القراءة"
+        topic_count:
+          zero: "تم إنشاء المواضيع"
+          one: "تم إنشاء الموضوع"
+          two: "تم إنشاء المواضيع"
+          few: "تم إنشاء المواضيع"
+          many: "تم إنشاء المواضيع"
+          other: "تم إنشاء المواضيع"
+        post_count:
+          zero: "تم إنشاء المشاركات"
+          one: "تم إنشاء المشاركة"
+          two: "تم إنشاء المشاركات"
+          few: "تم إنشاء المشاركات"
+          many: "تم إنشاء المشاركات"
+          other: "تم إنشاء المشاركات"
+        likes_given:
+          zero: "<i class='fa fa-heart'></i> معطاة"
+          one: "<i class='fa fa-heart'></i> معطاة"
+          two: "<i class='fa fa-heart'></i> معطاة"
+          few: "<i class='fa fa-heart'></i> معطاة"
+          many: "<i class='fa fa-heart'></i> معطاة"
+          other: "<i class='fa fa-heart'></i> معطاة"
+        likes_received:
+          zero: "<i class='fa fa-heart'></i> حصّلت"
+          one: "<i class='fa fa-heart'></i> حصّلت"
+          two: "<i class='fa fa-heart'></i> حصّلت"
+          few: "<i class='fa fa-heart'></i> حصّلت"
+          many: "<i class='fa fa-heart'></i> حصّلت"
+          other: "<i class='fa fa-heart'></i> حصّلت"
         top_replies: "أفضل الردود"
         no_replies: "لا ردود بعد."
         more_replies: "ردود أخرى"
@@ -879,6 +976,8 @@ ar:
     too_few_topics_notice: "دعونا <a href='http://blog.discourse.org/2014/08/building-a-discourse-community/'>الحصول على هذه المناقشة التي!</a> وهناك حاليا <strong>%{currentTopics} / %{requiredTopics}</strong> المواضيع. الزوار الجديدة بحاجة إلى بعض الأحاديث قراءة والرد عليها."
     too_few_posts_notice: "دعونا <a href='http://blog.discourse.org/2014/08/building-a-discourse-community/'>الحصول على هذه المناقشة التي بدأت!</a> يوجد حاليا <strong>%{currentPosts} / %{requiredPosts}</strong> مشاركات. الزوار الجديدة بحاجة إلى بعض الأحاديث قراءة والرد عليها."
     learn_more: "تعلم المزيد..."
+    all_time: 'المجموع'
+    all_time_desc: 'عدد المواضيع المنشأة'
     year: 'عام'
     year_desc: 'المواضيع المكتوبة خلال 365 يوم الماضية'
     month: 'شهر'
@@ -993,6 +1092,9 @@ ar:
       twitter: "تويتر"
       emoji_one: "إموجي واحد"
       win10: "وندوز10"
+    category_page_style:
+      categories_only: "الفئات فقط"
+      categories_with_featured_topics: "فئات ذات مواضيع متميزة"
     shortcut_modifier_key:
       shift: 'Shift'
       ctrl: 'Ctrl'
@@ -1166,13 +1268,50 @@ ar:
         category: "ابحث في فئة #{{category}}"
         topic: "ابحث في هذا الموضوع"
         private_messages: "البحث في الرسائل الخاصة"
+      advanced:
+        title: البحث التفصيلي
+        posted_by:
+          label: المشارك
+        in_category:
+          label: في الفئة
+        in_group:
+          label: في المجموعة
+        with_badge:
+          label: مع الشعارات
+        with_tags:
+          label: مع أوسمة
+        filters:
+          label: استرجع فقط المواضيع/المشاركات التي...
+          likes: أعجبني
+          posted: شاركت في
+          watching: أنا اراقب
+          tracking: أنا اتابع
+          private: من ضمن رسائلي
+          bookmarks: أضفت للمفضلات
+          first: تلك المشاركة الاولى
+        statuses:
+          label: عندما المواضيع
+          open: مفتوحة
+          closed: مغلقة
+          archived: محفوظة
+          noreplies: لا تحتوي على رد
+          single_user: تحتوي على مستخدم واحد
+        post:
+          count:
+            label: عدد المشاركات الأدنى
+          time:
+            label: ا’رْسِلت
+            before: قبل
+            after: بعد
     hamburger_menu: "انتقل إلى قائمة مواضيع أو فئة أخرى"
     new_item: "جديد"
     go_back: 'الرجوع'
     not_logged_in_user: 'صفحة المستخدم مع ملخص عن نشاطه و إعداداته'
     current_user: 'الذهاب إلى صفحتك الشخصية'
     topics:
+      new_messages_marker: "آخر مشاهدة"
       bulk:
+        clear_all: "مسح الكل"
         unlist_topics: "ازالة المواضيع من القائمة"
         reset_read: "تصفير القراءات"
         delete: "المواضيع المحذوفة"
@@ -1321,7 +1460,6 @@ ar:
         go_bottom: "أسفل"
         go: "اذهب"
         jump_bottom: "انتقل لآخر مشاركة"
-        jump_prompt: "اقفز الى المشاركة"
         jump_prompt_long: "إلى أي مشاركة تريد الانتقال؟"
         jump_bottom_with_number: "انتقل إلى المشاركة %{post_number}"
         total: مجموع المشاركات
@@ -1392,8 +1530,11 @@ ar:
         make_banner: "موضوع دعائي"
         remove_banner: "إزالة موضوع دعائي"
       reply:
-        title: 'ردّ'
-        help: 'ابدأ بكتابة رد على هذا الموضوع'
+        post:
+          title: 'ردّ'
+        topic:
+          title: 'ردّ'
+          help: 'ابدأ بكتابة رد على هذا الموضوع'
       clear_pin:
         title: "إلغاء التثبيت"
         help: "إلغاء تثبيت الموضوع حتى لا يظهر في أعلى القائمة"
@@ -1540,7 +1681,6 @@ ar:
     post:
       reply: "<i class='fa fa-mail-forward'></i> {{replyAvatar}} {{usernameLink}}"
       reply_topic: "<i class='fa fa-mail-forward'></i> {{link}}"
-      quote_reply: "اقتبس للرد"
       edit: "أنت تعدّل {{link}} {{replyAvatar}} {{username}} ."
       edit_reason: "السبب:"
       post_number: "المشاركة {{number}}"
@@ -1602,7 +1742,6 @@ ar:
         file_too_large: "آسفون، الملف هذا كبير جدا (أقصى حجم هو {{max_size_kb}}ك.بايت). ما رأيك برفع الملف على خدمة سحابيّة، ومن ثمّ تشارك الوصلة؟"
         too_many_uploads: "آسفون، يمكنك فقط رفع ملفّ واحد كلّ مرة."
         too_many_dragged_and_dropped_files: "آسفون، يمكنك فقط رفع 10 ملفّات كلّ مرة."
-        upload_not_authorized: "المعذرة، الملف الذي تحاول رفعه غير مسموح به، الامتدادات المسموح بها هي {{authorized_extensions}}."
         image_upload_not_allowed_for_new_user: "آسفون، لا يمكن للمستخدمين الجدد رفع الصور."
         attachment_upload_not_allowed_for_new_user: "آسفون، لا يمكن للمستخدمين الجدد رفع المرفقات."
         attachment_download_requires_login: "آسفون، عليك الولوج لتنزيل المرفقات."
@@ -1991,7 +2130,6 @@ ar:
       many: "المشاهدات"
       other: "المشاهدات"
     replies: "الردود"
-    views_long: "هذا الموضوع قد تمت مشاهدته  {{number}} مرات"
     activity: "النشاط"
     likes: "اعجابات"
     likes_lowercase:
@@ -2320,8 +2458,6 @@ ar:
         backups: "النسخ الاحتياطية"
         traffic_short: "المرور"
         traffic: "طلبات تطبيقات الويب"
-        page_views: "طلبات API "
-        page_views_short: "طلبات API "
         show_traffic_report: "عرض تقرير مرور مفصل"
         reports:
           today: "اليوم"
@@ -2431,15 +2567,12 @@ ar:
         refresh: "تحديث"
         new: "جديد"
         selector_placeholder: "أدخل اسم المستخدم"
-        name_placeholder: "اسم المجموعة، بدون مسافات. يتبع قواعد اسم المستخدم"
         about: "هنا عدّل على عضوية المجموعة والاسماء"
         group_members: "أعضاء المجموعة"
         delete: "حذف"
         delete_confirm: "أأحذف هذه المجموعة؟"
         delete_failed: "تعذّر حذف المجموعة. إن كانت مجموعة آليّة، فلا يمكن تدميرها."
-        delete_member_confirm: "أأزيل '%{username}' من المجموعة '%{group}'؟"
         delete_owner_confirm: "هل تريد إزالة صلاحيات الإدارة من '%{username} ؟"
-        name: "الاسم"
         add: "اضافة"
         add_members: "اضافة عضو"
         custom: "مخصص"
@@ -2540,10 +2673,8 @@ ar:
             title: "Rollback the database to previous working state"
             confirm: "هل انت متاكد انك تريد اعاده قواعد البيانات الى الحاله السابقه؟"
       export_csv:
-        user_archive_confirm: "هل أنت متأكد من رغبتك في تحميل جميع مشاركاتك ؟"
         success: "بدأ التصدير, سيتم إعلامك برسالة عند اكتمال العملية."
         failed: "فشل التصدير. من فضلك افحص السجلات."
-        rate_limit_error: "المشاركات يمكن تحميلها لمرة واحدة في اليوم , الرجاء المحاولة غدا."
         button_text: "التصدير"
         button_title:
           user: "تصدير قائمة المستخدمين على شكل CSV"
@@ -3195,7 +3326,24 @@ ar:
           filter: "بحث  ( رابط داخلي أو خارجي )"
   wizard_js:
     wizard:
+      done: "انتهى"
       back: "الى الخلف"
       next: "التالي"
+      step: "%{current} من %{total}"
+      upload: "رفع"
+      uploading: "جاري رفع الملفات.."
+      quit: "ربما لاحقا"
+      staff_count:
+        zero: "شركتك لديها %{count} من الموظفين"
+        one: "شركتك لديها 1 موظف فقط"
+        two: "شركتك لديها %{count} من الموظفين"
+        few: "شركتك لديها %{count} من الموظفين"
+        many: "شركتك لديها %{count} من الموظفين"
+        other: "شركتك لديها %{count} من الموظفين"
       invites:
         add_user: "أضف"
+        none_added: "لم تقم بدعوة أي موظفين. هل أنت متأكد انك تريد المتابعة؟"
+        roles:
+          admin: "مدير"
+          moderator: "مشرف"
+          regular: "مستخدم عادي"

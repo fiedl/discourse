@@ -3,8 +3,29 @@ require_dependency 'user'
 
 describe User do
 
-  it { is_expected.to validate_presence_of :username }
-  it { is_expected.to validate_presence_of :email }
+  context 'validations' do
+    it { is_expected.to validate_presence_of :username }
+
+    describe 'emails' do
+      let(:user) { Fabricate.build(:user) }
+
+      it { is_expected.to validate_presence_of :email }
+
+      describe 'when record has a valid email' do
+        it "should be valid" do
+          user.email = 'test@gmail.com'
+          expect(user).to be_valid
+        end
+      end
+
+      describe 'when record has an invalid email' do
+        it 'should not be valid' do
+          user.email = 'test@gmailcom'
+          expect(user).to_not be_valid
+        end
+      end
+    end
+  end
 
   describe '#count_by_signup_date' do
     before(:each) do
@@ -922,6 +943,7 @@ describe User do
     before do
       # To make testing easier, say 1 reply is too much
       SiteSetting.stubs(:newuser_max_replies_per_topic).returns(1)
+      UserActionCreator.enable
     end
 
     context "for a user who didn't create the topic" do
@@ -938,7 +960,10 @@ describe User do
 
       context "with a reply" do
         before do
-          PostCreator.new(Fabricate(:user), raw: 'whatever this is a raw post', topic_id: topic.id, reply_to_post_number: post.post_number).create
+          PostCreator.new(Fabricate(:user),
+                            raw: 'whatever this is a raw post',
+                            topic_id: topic.id,
+                            reply_to_post_number: post.post_number).create
         end
 
         it "resets the `posted_too_much` threshold" do
@@ -1163,8 +1188,36 @@ describe User do
       user = Fabricate(:user, email: "foo@bar.com")
       group.reload
       expect(group.users.include?(user)).to eq(true)
+
+      group_history = GroupHistory.last
+
+      expect(group_history.action).to eq(GroupHistory.actions[:add_user_to_group])
+      expect(group_history.acting_user).to eq(Discourse.system_user)
+      expect(group_history.target_user).to eq(user)
     end
 
+    it "get attributes from the group" do
+      group = Fabricate(:group,
+        automatic_membership_email_domains: "bar.com|wat.com",
+        grant_trust_level: 1,
+        title: "bars and wats",
+        primary_group: true
+      )
+
+      user = Fabricate.build(:user,
+        trust_level: 0,
+        email: "foo@bar.com",
+        password: "strongpassword4Uguys"
+      )
+
+      user.password_required!
+      user.save!
+      user.reload
+
+      expect(user.title).to eq("bars and wats")
+      expect(user.trust_level).to eq(1)
+      expect(user.trust_level_locked).to eq(true)
+    end
   end
 
   describe "number_of_flags_given" do
@@ -1257,6 +1310,7 @@ describe User do
       SiteSetting.default_categories_watching = "1"
       SiteSetting.default_categories_tracking = "2"
       SiteSetting.default_categories_muted = "3"
+      SiteSetting.default_categories_watching_first_post = "4"
     end
 
     it "has overriden preferences" do
@@ -1279,6 +1333,7 @@ describe User do
       expect(CategoryUser.lookup(user, :watching).pluck(:category_id)).to eq([1])
       expect(CategoryUser.lookup(user, :tracking).pluck(:category_id)).to eq([2])
       expect(CategoryUser.lookup(user, :muted).pluck(:category_id)).to eq([3])
+      expect(CategoryUser.lookup(user, :watching_first_post).pluck(:category_id)).to eq([4])
     end
 
     it "does not set category preferences for staged users" do
@@ -1286,6 +1341,7 @@ describe User do
       expect(CategoryUser.lookup(user, :watching).pluck(:category_id)).to eq([])
       expect(CategoryUser.lookup(user, :tracking).pluck(:category_id)).to eq([])
       expect(CategoryUser.lookup(user, :muted).pluck(:category_id)).to eq([])
+      expect(CategoryUser.lookup(user, :watching_first_post).pluck(:category_id)).to eq([])
     end
   end
 
@@ -1314,4 +1370,51 @@ describe User do
     end
   end
 
+  describe '#read_first_notification?' do
+    let(:user) { Fabricate(:user, trust_level: TrustLevel[0]) }
+    let(:notification) { Fabricate(:private_message_notification) }
+
+    describe 'when first notification has not been seen' do
+      it 'should return the right value' do
+        expect(user.read_first_notification?).to eq(false)
+      end
+    end
+
+    describe 'when first notification has been seen' do
+      it 'should return the right value' do
+        user.update_attributes!(seen_notification_id: notification.id)
+        expect(user.reload.read_first_notification?).to eq(true)
+      end
+    end
+
+    describe 'when user is not trust level 0' do
+      it 'should return the right value' do
+        user.update_attributes!(trust_level: TrustLevel[1])
+
+        expect(user.read_first_notification?).to eq(true)
+      end
+    end
+
+    describe 'when user is an old user' do
+      it 'should return the right value' do
+        user.update_attributes!(created_at: 1.year.ago)
+
+        expect(user.read_first_notification?).to eq(true)
+      end
+    end
+  end
+
+  describe "#featured_user_badges" do
+    let(:user) { Fabricate(:user) }
+    let!(:user_badge_tl1) { UserBadge.create(badge_id: 1, user: user, granted_by: Discourse.system_user, granted_at: Time.now) }
+    let!(:user_badge_tl2) { UserBadge.create(badge_id: 2, user: user, granted_by: Discourse.system_user, granted_at: Time.now) }
+
+    it 'should display highest trust level badge first' do
+      expect(user.featured_user_badges[0].badge_id).to eq(2)
+    end
+
+    it 'should display only 1 trust level badge' do
+      expect(user.featured_user_badges.length).to eq(1)
+    end
+  end
 end

@@ -4,8 +4,10 @@ import Draft from 'discourse/models/draft';
 import Composer from 'discourse/models/composer';
 import { default as computed, observes } from 'ember-addons/ember-computed-decorators';
 import { relativeAge } from 'discourse/lib/formatter';
-import { escapeExpression } from 'discourse/lib/utilities';
 import InputValidation from 'discourse/models/input-validation';
+import { getOwner } from 'discourse-common/lib/get-owner';
+import { escapeExpression } from 'discourse/lib/utilities';
+import { emojiUnescape } from 'discourse/lib/text';
 
 function loadDraft(store, opts) {
   opts = opts || {};
@@ -55,6 +57,7 @@ export default Ember.Controller.extend({
   application: Ember.inject.controller(),
 
   replyAsNewTopicDraft: Em.computed.equal('model.draftKey', Composer.REPLY_AS_NEW_TOPIC_KEY),
+  replyAsNewPrivateMessageDraft: Em.computed.equal('model.draftKey', Composer.REPLY_AS_NEW_PRIVATE_MESSAGE_KEY),
   checkedMessages: false,
   messageCount: null,
   showEditReason: false,
@@ -85,8 +88,8 @@ export default Ember.Controller.extend({
   },
 
   showToolbar: Em.computed({
-    get(){
-      const keyValueStore = this.container.lookup('key-value-store:main');
+    get() {
+      const keyValueStore = getOwner(this).lookup('key-value-store:main');
       const storedVal = keyValueStore.get("toolbar-enabled");
       if (this._toolbarEnabled === undefined && storedVal === undefined) {
         // iPhone 6 is 375, anything narrower and toolbar should
@@ -97,7 +100,7 @@ export default Ember.Controller.extend({
       return this._toolbarEnabled || storedVal === "true";
     },
     set(key, val){
-      const keyValueStore = this.container.lookup('key-value-store:main');
+      const keyValueStore = getOwner(this).lookup('key-value-store:main');
       this._toolbarEnabled = val;
       keyValueStore.set({key: "toolbar-enabled", value: val ? "true" : "false"});
       return val;
@@ -195,7 +198,23 @@ export default Ember.Controller.extend({
     return this.get('model.creatingPrivateMessage');
   }.property('model.creatingPrivateMessage', 'model.targetUsernames'),
 
+  @computed('model.topic')
+  draftTitle(topic) {
+    return emojiUnescape(escapeExpression(topic.get('title')));
+  },
+
   actions: {
+
+    typed() {
+      this.checkReplyLength();
+      this.get('model').typing();
+    },
+
+    cancelled() {
+      this.send('hitEsc');
+      this.send('hideOptions');
+    },
+
     addLinkLookup(linkLookup) {
       this.set('linkLookup', linkLookup);
     },
@@ -344,6 +363,22 @@ export default Ember.Controller.extend({
           });
         });
       }
+    },
+
+    cannotSeeMention(mentions) {
+      mentions.forEach(mention => {
+        const translation = (this.get('topic.isPrivateMessage')) ?
+          'composer.cannot_see_mention.private' :
+          'composer.cannot_see_mention.category';
+        const body = I18n.t(translation, {
+          username: "@" + mention.name
+        });
+        this.appEvents.trigger('composer-messages:create', {
+          extraClass: 'custom-body',
+          templateName: 'custom-body',
+          body
+        });
+      });
     }
 
   },
@@ -354,19 +389,14 @@ export default Ember.Controller.extend({
 
   toggle() {
     this.closeAutocomplete();
-    switch (this.get('model.composeState')) {
-      case Composer.OPEN:
-        if (Ember.isEmpty(this.get('model.reply')) && Ember.isEmpty(this.get('model.title'))) {
-          this.close();
-        } else {
-          this.shrink();
-        }
-        break;
-      case Composer.DRAFT:
-        this.set('model.composeState', Composer.OPEN);
-        break;
-      case Composer.SAVING:
+    if (this.get('model.composeState') === Composer.OPEN) {
+      if (Ember.isEmpty(this.get('model.reply')) && Ember.isEmpty(this.get('model.title'))) {
         this.close();
+      } else {
+        this.shrink();
+      }
+    } else {
+      this.close();
     }
     return false;
   },
@@ -375,7 +405,6 @@ export default Ember.Controller.extend({
 
   save(force) {
     const composer = this.get('model');
-    const self = this;
 
     // Clear the warning state if we're not showing the checkbox anymore
     if (!this.get('showWarning')) {
@@ -406,22 +435,20 @@ export default Ember.Controller.extend({
 
         if (currentTopic) {
           buttons.push({
-            "label": I18n.t("composer.reply_here") + "<br/><div class='topic-title overflow-ellipsis'>" + escapeExpression(currentTopic.get('title')) + "</div>",
+            "label": I18n.t("composer.reply_here") + "<br/><div class='topic-title overflow-ellipsis'>" + currentTopic.get('fancyTitle') + "</div>",
             "class": "btn btn-reply-here",
-            "callback": function() {
+            callback: () => {
               composer.set('topic', currentTopic);
               composer.set('post', null);
-              self.save(true);
+              this.save(true);
             }
           });
         }
 
         buttons.push({
-          "label": I18n.t("composer.reply_original") + "<br/><div class='topic-title overflow-ellipsis'>" + escapeExpression(this.get('model.topic.title')) + "</div>",
+          "label": I18n.t("composer.reply_original") + "<br/><div class='topic-title overflow-ellipsis'>" + this.get('model.topic.fancyTitle') + "</div>",
           "class": "btn-primary btn-reply-on-original",
-          "callback": function() {
-            self.save(true);
-          }
+          callback: () => this.save(true)
         });
 
         bootbox.dialog(message, buttons, { "classes": "reply-where-modal" });
@@ -442,29 +469,32 @@ export default Ember.Controller.extend({
       }
     });
 
-    const promise = composer.save({ imageSizes, editReason: this.get("editReason")}).then(function(result) {
+    const promise = composer.save({ imageSizes, editReason: this.get("editReason")}).then(result=> {
       if (result.responseJson.action === "enqueued") {
-        self.send('postWasEnqueued', result.responseJson);
-        self.destroyDraft();
-        self.close();
-        self.appEvents.trigger('post-stream:refresh');
+        this.send('postWasEnqueued', result.responseJson);
+        this.destroyDraft();
+        this.close();
+        this.appEvents.trigger('post-stream:refresh');
         return result;
       }
 
       // If user "created a new topic/post" or "replied as a new topic" successfully, remove the draft.
-      if (result.responseJson.action === "create_post" || self.get('replyAsNewTopicDraft')) {
-        self.destroyDraft();
+      if (result.responseJson.action === "create_post" || this.get('replyAsNewTopicDraft') || this.get('replyAsNewPrivateMessageDraft')) {
+        this.destroyDraft();
       }
-      if (self.get('model.action') === 'edit') {
-        self.appEvents.trigger('post-stream:refresh', { id: parseInt(result.responseJson.id) });
+      if (this.get('model.action') === 'edit') {
+        this.appEvents.trigger('post-stream:refresh', { id: parseInt(result.responseJson.id) });
+        if (result.responseJson.post.post_number === 1) {
+          this.appEvents.trigger('header:show-topic', composer.get('topic'));
+        }
       } else {
-        self.appEvents.trigger('post-stream:refresh');
+        this.appEvents.trigger('post-stream:refresh');
       }
 
       if (result.responseJson.action === "create_post") {
-        self.appEvents.trigger('post:highlight', result.payload.post_number);
+        this.appEvents.trigger('post:highlight', result.payload.post_number);
       }
-      self.close();
+      this.close();
 
       const currentUser = Discourse.User.current();
       if (composer.get('creatingTopic')) {
@@ -481,9 +511,9 @@ export default Ember.Controller.extend({
         }
       }
 
-    }).catch(function(error) {
+    }).catch(error => {
       composer.set('disableDrafts', false);
-      self.appEvents.one('composer:will-open', () => bootbox.alert(error));
+      this.appEvents.one('composer:will-open', () => bootbox.alert(error));
     });
 
     if (this.get('application.currentRouteName').split('.')[0] === 'topic' &&

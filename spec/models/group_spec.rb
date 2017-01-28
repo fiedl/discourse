@@ -154,9 +154,42 @@ describe Group do
 
   end
 
-  it "makes sure the everyone group is not visible" do
-    g = Group.refresh_automatic_group!(:everyone)
-    expect(g.visible).to eq(false)
+  describe '.refresh_automatic_group!' do
+    it "makes sure the everyone group is not visible" do
+      g = Group.refresh_automatic_group!(:everyone)
+      expect(g.visible).to eq(false)
+    end
+
+    it "uses the localized name if name has not been taken" do
+      begin
+        default_locale = SiteSetting.default_locale
+        I18n.locale = SiteSetting.default_locale = 'de'
+
+        group = Group.refresh_automatic_group!(:staff)
+
+        expect(group.name).to_not eq('staff')
+        expect(group.name).to eq(I18n.t('groups.default_names.staff'))
+      ensure
+        I18n.locale = SiteSetting.default_locale = default_locale
+      end
+    end
+
+    it "does not use the localized name if name has already been taken" do
+      begin
+        default_locale = SiteSetting.default_locale
+        I18n.locale = SiteSetting.default_locale = 'de'
+
+        another_group = Fabricate(:group,
+          name: I18n.t('groups.default_names.staff')
+        )
+
+        group = Group.refresh_automatic_group!(:staff)
+
+        expect(group.name).to eq('staff')
+      ensure
+        I18n.locale = SiteSetting.default_locale = default_locale
+      end
+    end
   end
 
   it "Correctly handles removal of primary group" do
@@ -322,7 +355,6 @@ describe Group do
     expect(Group.desired_trust_level_groups(2).sort).to eq [10,11,12]
   end
 
-
   it "correctly handles trust level changes" do
     user = Fabricate(:user, trust_level: 2)
     Group.user_trust_level_change!(user.id, 2)
@@ -367,6 +399,13 @@ describe Group do
 
     group.add(u3)
     expect(u3.reload.trust_level).to eq(3)
+  end
+
+  it 'should cook the bio' do
+    group = Fabricate(:group)
+    group.update_attributes!(bio_raw: 'This is a group for :unicorn: lovers')
+
+    expect(group.bio_cooked).to include("unicorn.png")
   end
 
 end

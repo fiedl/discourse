@@ -120,18 +120,18 @@ describe WebHook do
     end
 
     it 'should enqueue the right hooks for post events' do
-      user # bypass a user_created event
-      WebHook.expects(:enqueue_hooks).once
+      WebHook.expects(:enqueue_post_hooks).once
       PostCreator.create(user, { raw: 'post', topic_id: topic.id, reply_to_post_number: 1, skip_validations: true })
 
-      WebHook.expects(:enqueue_hooks).once
+      # post destroy or recover triggers a moderator post
+      WebHook.expects(:enqueue_post_hooks).twice
       PostDestroyer.new(user, post2).destroy
 
-      WebHook.expects(:enqueue_hooks).once
+      WebHook.expects(:enqueue_post_hooks).twice
       PostDestroyer.new(user, post2).recover
     end
 
-    it 'should enqueue the right hooks for user creation events' do
+    it 'should enqueue the right hooks for user events' do
       WebHook.expects(:enqueue_hooks).once
       user
 
@@ -140,6 +140,9 @@ describe WebHook do
 
       WebHook.expects(:enqueue_hooks).once
       user.approve(admin)
+
+      WebHook.expects(:enqueue_hooks).once
+      UserUpdater.new(admin, user).update(username: 'testing123')
     end
   end
 end

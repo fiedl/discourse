@@ -18,6 +18,7 @@ const CLOSED = 'closed',
       REPLY = 'reply',
       EDIT = 'edit',
       REPLY_AS_NEW_TOPIC_KEY = "reply_as_new_topic",
+      REPLY_AS_NEW_PRIVATE_MESSAGE_KEY = "reply_as_new_private_message",
 
       // When creating, these fields are moved into the post model from the composer model
       _create_serializer = {
@@ -32,13 +33,15 @@ const CLOSED = 'closed',
         target_usernames: 'targetUsernames',
         typing_duration_msecs: 'typingTime',
         composer_open_duration_msecs: 'composerTime',
-        tags: 'tags'
+        tags: 'tags',
+        featured_link: 'featuredLink'
       },
 
       _edit_topic_serializer = {
         title: 'topic.title',
         categoryId: 'topic.category.id',
-        tags: 'topic.tags'
+        tags: 'topic.tags',
+        featuredLink: 'topic.featured_link'
       };
 
 const Composer = RestModel.extend({
@@ -136,6 +139,21 @@ const Composer = RestModel.extend({
   canEditTitle: Em.computed.or('creatingTopic', 'creatingPrivateMessage', 'editingFirstPost'),
   canCategorize: Em.computed.and('canEditTitle', 'notCreatingPrivateMessage'),
 
+  @computed('canEditTitle', 'creatingPrivateMessage', 'categoryId')
+  canEditTopicFeaturedLink(canEditTitle, creatingPrivateMessage, categoryId) {
+    if (!this.siteSettings.topic_featured_link_enabled || !canEditTitle || creatingPrivateMessage) { return false; }
+
+    const categoryIds = this.site.get('topic_featured_link_allowed_category_ids');
+    if (!categoryId && categoryIds &&
+          (categoryIds.indexOf(this.site.get('uncategorized_category_id')) !== -1 || !this.siteSettings.allow_uncategorized_topics)) { return true; }
+    return categoryIds === undefined || !categoryIds.length || categoryIds.indexOf(categoryId) !== -1;
+  },
+
+  @computed('canEditTopicFeaturedLink')
+  titlePlaceholder() {
+    return this.get('canEditTopicFeaturedLink') ? 'composer.title_or_link_placeholder' : 'composer.title_placeholder';
+  },
+
   // Determine the appropriate title for this action
   actionTitle: function() {
     const topic = this.get('topic');
@@ -179,7 +197,6 @@ const Composer = RestModel.extend({
     }
 
   }.property('action', 'post', 'topic', 'topic.title'),
-
 
   // whether to disable the post button
   cantSubmitPost: function() {
@@ -269,11 +286,12 @@ const Composer = RestModel.extend({
     }
   }.property('privateMessage'),
 
-  missingReplyCharacters: function() {
-    const postType = this.get('post.post_type');
-    if (postType === this.site.get('post_types.small_action')) { return 0; }
-    return this.get('minimumPostLength') - this.get('replyLength');
-  }.property('minimumPostLength', 'replyLength'),
+  @computed('minimumPostLength', 'replyLength', 'canEditTopicFeaturedLink')
+  missingReplyCharacters(minimumPostLength, replyLength, canEditTopicFeaturedLink) {
+    if (this.get('post.post_type') === this.site.get('post_types.small_action') ||
+        canEditTopicFeaturedLink && this.get('featuredLink')) { return 0; }
+    return minimumPostLength - replyLength;
+  },
 
   /**
     Minimum number of characters for a post body to be valid.
@@ -492,6 +510,12 @@ const Composer = RestModel.extend({
 
   save(opts) {
     if (!this.get('cantSubmitPost')) {
+
+      // change category may result in some effect for topic featured link
+      if (!this.get('canEditTopicFeaturedLink')) {
+        this.set('featuredLink', null);
+      }
+
       return this.get('editingPost') ? this.editPost(opts) : this.createPost(opts);
     }
   },
@@ -512,7 +536,8 @@ const Composer = RestModel.extend({
       stagedPost: false,
       typingTime: 0,
       composerOpened: null,
-      composerTotalOpened: 0
+      composerTotalOpened: 0,
+      featuredLink: null
     });
   },
 
@@ -530,8 +555,7 @@ const Composer = RestModel.extend({
         post.get('post_number') === 1 &&
         this.get('topic.details.can_edit')) {
       const topicProps = this.getProperties(Object.keys(_edit_topic_serializer));
-
-       promise = Topic.update(this.get('topic'), topicProps);
+      promise = Topic.update(this.get('topic'), topicProps);
     } else {
       promise = Ember.RSVP.resolve();
     }
@@ -686,6 +710,10 @@ const Composer = RestModel.extend({
     }).catch(throwAjaxError(function() {
       if (postStream) {
         postStream.undoPost(createdPost);
+
+        if (post) {
+          post.set('reply_count', post.get('reply_count') - 1);
+        }
       }
       Ember.run.next(() => composer.set('composeState', OPEN));
     }));
@@ -787,7 +815,8 @@ Composer.reopenClass({
   EDIT,
 
   // Draft key
-  REPLY_AS_NEW_TOPIC_KEY
+  REPLY_AS_NEW_TOPIC_KEY,
+  REPLY_AS_NEW_PRIVATE_MESSAGE_KEY
 });
 
 export default Composer;
