@@ -5,7 +5,6 @@ require 'topic_subtype'
 describe PostCreator do
 
   before do
-    ActiveRecord::Base.observers.enable :all
   end
 
   let(:user) { Fabricate(:user) }
@@ -20,6 +19,7 @@ describe PostCreator do
     let(:creator_with_category) { PostCreator.new(user, basic_topic_params.merge(category: category.id )) }
     let(:creator_with_meta_data) { PostCreator.new(user, basic_topic_params.merge(meta_data: {hello: "world"} )) }
     let(:creator_with_image_sizes) { PostCreator.new(user, basic_topic_params.merge(image_sizes: image_sizes)) }
+    let(:creator_with_featured_link) { PostCreator.new(user, title: "featured link topic", archetype_id: 1, featured_link: "http://www.discourse.org", raw: "http://www.discourse.org") }
 
     it "can create a topic with null byte central" do
       post = PostCreator.create(user, title: "hello\u0000world this is title", raw: "this is my\u0000 first topic")
@@ -31,6 +31,14 @@ describe PostCreator do
       p = PostCreator.create(user, basic_topic_params.merge(auto_track: false))
       # must be 0 otherwise it will think we read the topic which is clearly untrue
       expect(TopicUser.where(user_id: p.user_id, topic_id: p.topic_id).count).to eq(0)
+    end
+
+    it "can be created with first post as wiki" do
+      cat = Fabricate(:category)
+      cat.all_topics_wiki = true
+      cat.save
+      post = PostCreator.create(user, basic_topic_params.merge(category: cat.id ))
+      expect(post.wiki).to eq(true)
     end
 
     it "ensures the user can create the topic" do
@@ -98,6 +106,8 @@ describe PostCreator do
 
       it "generates the correct messages for a secure topic" do
 
+        UserActionCreator.enable
+
         admin = Fabricate(:admin)
 
         cat = Fabricate(:category)
@@ -130,6 +140,8 @@ describe PostCreator do
       end
 
       it 'generates the correct messages for a normal topic' do
+
+        UserActionCreator.enable
 
         p = nil
         messages = MessageBus.track_publish do
@@ -243,6 +255,14 @@ describe PostCreator do
         end
       end
 
+      it 'creates a post with featured link' do
+        SiteSetting.topic_featured_link_enabled = true
+        SiteSetting.min_first_post_length = 100
+        post = creator_with_featured_link.create
+        expect(post.topic.featured_link).to eq('http://www.discourse.org')
+        expect(post.valid?).to eq(true)
+      end
+
       describe "topic's auto close" do
 
         it "doesn't update topic's auto close when it's not based on last post" do
@@ -334,7 +354,12 @@ describe PostCreator do
   context 'whisper' do
     let!(:topic) { Fabricate(:topic, user: user) }
 
-    it 'forces replies to whispers to be whispers' do
+    it 'whispers do not mess up the public view' do
+
+      first = PostCreator.new(user,
+                                topic_id: topic.id,
+                                raw: 'this is the first post').create
+
       whisper = PostCreator.new(user,
                                 topic_id: topic.id,
                                 reply_to_post_number: 1,
@@ -344,6 +369,7 @@ describe PostCreator do
       expect(whisper).to be_present
       expect(whisper.post_type).to eq(Post.types[:whisper])
 
+
       whisper_reply = PostCreator.new(user,
                                       topic_id: topic.id,
                                       reply_to_post_number: whisper.post_number,
@@ -352,6 +378,29 @@ describe PostCreator do
 
       expect(whisper_reply).to be_present
       expect(whisper_reply.post_type).to eq(Post.types[:whisper])
+
+
+      first.reload
+      # does not leak into the OP
+      expect(first.reply_count).to eq(0)
+
+      topic.reload
+
+      # cause whispers should not muck up that number
+      expect(topic.highest_post_number).to eq(1)
+      expect(topic.reply_count).to eq(0)
+      expect(topic.posts_count).to eq(1)
+      expect(topic.highest_staff_post_number).to eq(3)
+
+      topic.update_columns(highest_staff_post_number:0, highest_post_number:0, posts_count: 0, last_posted_at: 1.year.ago)
+
+      Topic.reset_highest(topic.id)
+
+      topic.reload
+      expect(topic.highest_post_number).to eq(1)
+      expect(topic.posts_count).to eq(1)
+      expect(topic.last_posted_at).to eq(first.created_at)
+      expect(topic.highest_staff_post_number).to eq(3)
     end
   end
 
@@ -624,6 +673,8 @@ describe PostCreator do
       _post2 = create_post(user: post1.user, topic_id: post1.topic_id)
 
       post1.topic.reload
+
+      expect(post1.topic.posts_count).to eq(3)
       expect(post1.topic.closed).to eq(true)
     end
   end
@@ -853,4 +904,39 @@ describe PostCreator do
     end
   end
 
+  context "private message to a muted user" do
+    let(:muted_me) { Fabricate(:evil_trout) }
+
+    it 'should fail' do
+      updater = UserUpdater.new(muted_me, muted_me)
+      updater.update_muted_users("#{user.username}")
+
+      pc = PostCreator.new(
+        user,
+        title: 'this message is to someone who muted me!',
+        raw: "you will have to see this even if you muted me!",
+        archetype: Archetype.private_message,
+        target_usernames: "#{muted_me.username}"
+      )
+      expect(pc).not_to be_valid
+      expect(pc.errors).to be_present
+    end
+
+    let(:staff_user) { Fabricate(:admin) }
+
+    it 'succeeds if the user is staff' do
+      updater = UserUpdater.new(muted_me, muted_me)
+      updater.update_muted_users("#{staff_user.username}")
+
+      pc = PostCreator.new(
+        staff_user,
+        title: 'this message is to someone who muted me!',
+        raw: "you will have to see this even if you muted me!",
+        archetype: Archetype.private_message,
+        target_usernames: "#{muted_me.username}"
+      )
+      expect(pc).to be_valid
+      expect(pc.errors).to be_blank
+    end
+  end
 end

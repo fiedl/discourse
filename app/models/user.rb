@@ -1,5 +1,6 @@
 require_dependency 'email'
 require_dependency 'email_token'
+require_dependency 'email_validator'
 require_dependency 'trust_level'
 require_dependency 'pbkdf2'
 require_dependency 'discourse'
@@ -39,6 +40,7 @@ class User < ActiveRecord::Base
   has_many :warnings
   has_many :user_archived_messages, dependent: :destroy
   has_many :email_change_requests, dependent: :destroy
+  has_many :directory_items, dependent: :delete_all
 
 
   has_one :user_option, dependent: :destroy
@@ -66,6 +68,9 @@ class User < ActiveRecord::Base
 
   belongs_to :uploaded_avatar, class_name: 'Upload'
 
+  has_many :acting_group_histories, dependent: :destroy, foreign_key: :acting_user_id, class_name: GroupHistory
+  has_many :targeted_group_histories, dependent: :destroy, foreign_key: :target_user_id, class_name: GroupHistory
+
   delegate :last_sent_email_address, :to => :email_logs
 
   before_validation :strip_downcase_email
@@ -73,9 +78,10 @@ class User < ActiveRecord::Base
   validates_presence_of :username
   validate :username_validator, if: :username_changed?
   validates :email, presence: true, uniqueness: true
+  validates :email, format: { with: EmailValidator.email_regex }, if: :email_changed?
   validates :email, email: true, if: :should_validate_email?
   validate :password_validator
-  validates :name, user_full_name: true, if: :name_changed?
+  validates :name, user_full_name: true, if: :name_changed?, length: { maximum: 255 }
   validates :ip_address, allowed_ip_address: {on: :create, message: :signup_not_allowed}
 
   after_initialize :add_trust_level
@@ -85,17 +91,18 @@ class User < ActiveRecord::Base
   after_create :create_user_option
   after_create :create_user_profile
   after_create :ensure_in_trust_level_group
-  after_create :automatic_group_membership
   after_create :set_default_categories_preferences
   after_create :trigger_user_created_event
 
   before_save :update_username_lower
   before_save :ensure_password_is_hashed
 
+  after_save :automatic_group_membership
   after_save :clear_global_notice_if_needed
   after_save :refresh_avatar
   after_save :badge_grant
   after_save :expire_old_email_tokens
+  after_save :index_search
 
   before_destroy do
     # These tables don't have primary keys, so destroying them with activerecord is tricky:
@@ -290,23 +297,22 @@ class User < ActiveRecord::Base
     super
   end
 
-  def unread_private_messages
-    @unread_pms ||=
-      begin
-        # perf critical, much more efficient than AR
-        sql = "
-           SELECT COUNT(*) FROM notifications n
-           LEFT JOIN topics t ON n.topic_id = t.id
-           WHERE
-            t.deleted_at IS NULL AND
-            n.notification_type = :type AND
-            n.user_id = :user_id AND
-            NOT read"
+  def unread_notifications_of_type(notification_type)
+    # perf critical, much more efficient than AR
+    sql = "
+       SELECT COUNT(*) FROM notifications n
+       LEFT JOIN topics t ON n.topic_id = t.id
+       WHERE
+        t.deleted_at IS NULL AND
+        n.notification_type = :type AND
+        n.user_id = :user_id AND
+        NOT read"
 
-        User.exec_sql(sql, user_id: id,
-                           type:  Notification.types[:private_message])
-            .getvalue(0,0).to_i
-      end
+    User.exec_sql(sql, user_id: id, type: notification_type).getvalue(0,0).to_i
+  end
+
+  def unread_private_messages
+    @unread_pms ||= unread_notifications_of_type(Notification.types[:private_message])
   end
 
   def unread_notifications
@@ -341,6 +347,18 @@ class User < ActiveRecord::Base
     else
       false
     end
+  end
+
+  TRACK_FIRST_NOTIFICATION_READ_DURATION = 1.week.to_i
+
+  def read_first_notification?
+    if (trust_level > TrustLevel[0] ||
+        created_at < TRACK_FIRST_NOTIFICATION_READ_DURATION.seconds.ago)
+
+      return true
+    end
+
+    self.seen_notification_id == 0 ? false : true
   end
 
   def publish_notifications_state
@@ -384,6 +402,7 @@ class User < ActiveRecord::Base
                        {unread_notifications: unread_notifications,
                         unread_private_messages: unread_private_messages,
                         total_unread_notifications: total_unread_notifications,
+                        read_first_notification: read_first_notification?,
                         last_notification: json,
                         recent: recent,
                         seen_notification_id: seen_notification_id
@@ -687,22 +706,27 @@ class User < ActiveRecord::Base
   end
 
   def featured_user_badges(limit=3)
-    user_badges
-        .group(:badge_id)
-        .select(UserBadge.attribute_names.map { |x| "MAX(user_badges.#{x}) AS #{x}" },
-                'COUNT(*) AS "count"',
-                'MAX(badges.badge_type_id) AS badges_badge_type_id',
-                'MAX(badges.grant_count) AS badges_grant_count')
-        .joins(:badge)
-        .order("CASE WHEN user_badges.badge_id = (
-                  SELECT MAX(ub2.badge_id)
-                    FROM user_badges ub2
-                   WHERE ub2.badge_id IN (#{Badge.trust_level_badge_ids.join(",")})
-                     AND ub2.user_id = #{self.id}
-                ) THEN 1 ELSE 0 END DESC")
-        .order('badges_badge_type_id ASC, badges_grant_count ASC')
-        .includes(:user, :granted_by, { badge: :badge_type }, { post: :topic })
-        .limit(limit)
+    tl_badge_ids = Badge.trust_level_badge_ids
+
+    query = user_badges
+              .group(:badge_id)
+              .select(UserBadge.attribute_names.map { |x| "MAX(user_badges.#{x}) AS #{x}" },
+                      'COUNT(*) AS "count"',
+                      'MAX(badges.badge_type_id) AS badges_badge_type_id',
+                      'MAX(badges.grant_count) AS badges_grant_count')
+              .joins(:badge)
+              .order('badges_badge_type_id ASC, badges_grant_count ASC, badge_id DESC')
+              .includes(:user, :granted_by, { badge: :badge_type }, { post: :topic })
+
+    tl_badge = query.where("user_badges.badge_id IN (:tl_badge_ids)",
+                           tl_badge_ids: tl_badge_ids)
+                    .limit(1)
+
+    other_badges = query.where("user_badges.badge_id NOT IN (:tl_badge_ids)",
+                               tl_badge_ids: tl_badge_ids)
+                        .limit(limit)
+
+    (tl_badge + other_badges).take(limit)
   end
 
   def self.count_by_signup_date(start_date, end_date, group_id=nil)
@@ -893,6 +917,10 @@ class User < ActiveRecord::Base
     end
   end
 
+  def index_search
+    SearchIndexer.index(self)
+  end
+
   def clear_global_notice_if_needed
     if admin && SiteSetting.has_login_hint
       SiteSetting.has_login_hint = false
@@ -905,12 +933,17 @@ class User < ActiveRecord::Base
   end
 
   def automatic_group_membership
+    user = User.find(self.id)
+
     Group.where(automatic: false)
          .where("LENGTH(COALESCE(automatic_membership_email_domains, '')) > 0")
          .each do |group|
+
       domains = group.automatic_membership_email_domains.gsub('.', '\.')
-      if self.email =~ Regexp.new("@(#{domains})$", true)
-        group.add(self) rescue ActiveRecord::RecordNotUnique
+
+      if user.reload.email =~ Regexp.new("@(#{domains})$", true) && !group.users.include?(user)
+        group.add(user)
+        GroupActionLogger.new(Discourse.system_user, group).log_add_user_to_group(user)
       end
     end
   end
@@ -983,7 +1016,7 @@ class User < ActiveRecord::Base
 
     values = []
 
-    %w{watching tracking muted}.each do |s|
+    %w{watching watching_first_post tracking muted}.each do |s|
       category_ids = SiteSetting.send("default_categories_#{s}").split("|")
       category_ids.each do |category_id|
         values << "(#{self.id}, #{category_id}, #{CategoryUser.notification_levels[s.to_sym]})"
@@ -1078,11 +1111,12 @@ end
 #
 # Indexes
 #
-#  idx_users_admin                (id)
-#  idx_users_moderator            (id)
-#  index_users_on_auth_token      (auth_token)
-#  index_users_on_last_posted_at  (last_posted_at)
-#  index_users_on_last_seen_at    (last_seen_at)
-#  index_users_on_username        (username) UNIQUE
-#  index_users_on_username_lower  (username_lower) UNIQUE
+#  idx_users_admin                    (id)
+#  idx_users_moderator                (id)
+#  index_users_on_auth_token          (auth_token)
+#  index_users_on_last_posted_at      (last_posted_at)
+#  index_users_on_last_seen_at        (last_seen_at)
+#  index_users_on_uploaded_avatar_id  (uploaded_avatar_id)
+#  index_users_on_username            (username) UNIQUE
+#  index_users_on_username_lower      (username_lower) UNIQUE
 #

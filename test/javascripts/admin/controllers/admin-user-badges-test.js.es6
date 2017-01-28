@@ -1,6 +1,10 @@
 import Badge from 'discourse/models/badge';
+import { mapRoutes } from 'discourse/mapping-router';
 
 moduleFor('controller:admin-user-badges', {
+  setup() {
+    this.registry.register('router:main', mapRoutes());
+  },
   needs: ['controller:adminUser']
 });
 
@@ -16,6 +20,6 @@ test("grantableBadges", function() {
   });
 
 
-  not(badgeNames.contains(badgeDisabled), "excludes disabled badges");
+  not(badgeNames.includes(badgeDisabled), "excludes disabled badges");
   deepEqual(badgeNames, sortedNames, "sorts badges by name");
 });

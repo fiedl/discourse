@@ -136,6 +136,7 @@ da:
         enabled: 'listet %{when}'
         disabled: 'aflistet %{when}'
     topic_admin_menu: "administrationshandlinger på emne"
+    wizard_required: "Det er tid til at konfigurere dig forum! <a href='%{url}' data-auto-route='true'>Start Konfigurations Guiden</a>!"
     emails_are_disabled: "Alle udgående emails er blevet deaktiveret globalt af en administrator. Ingen emailnotifikationer af nogen slags vil blive sendt."
     bootstrap_mode_enabled: "For at gøre det nemmere at lancere dit nye website, er du i bootstrap tilstand. Alle nye brugere vil blive tildelt niveau 1 og daglige email updateringer vil være slået til. Dette vil blive automatisk slået fra når total antal brugere overskrider %{min_users} brugere."
     bootstrap_mode_disabled: "Bootstrap tilstand vil blive deaktiveret indenfor de næste 24 timer."
@@ -320,18 +321,23 @@ da:
       total_rows:
         one: "1 bruger"
         other: "%{count} brugere"
+    group_histories:
+      actions:
+        change_group_setting: "Skift gruppe indstilling"
+        add_user_to_group: "Tilføj bruger"
+        remove_user_from_group: "Fjern bruger"
+        make_user_group_owner: "Gør til ejer"
+        remove_user_as_group_owner: "Fjern ejer"
     groups:
-      empty:
-        posts: "Der er ingen indlæg af medlemmer af denne gruppe."
-        members: "Der er ingen medlemmer i denne gruppe."
-        mentions: "Denne gruppe er ikke nævnt."
-        messages: "Der er ingen besked til denne gruppe."
-        topics: "Der er intet emne af medlemmer af denne gruppe."
+      logs:
+        title: "Logs"
+        when: "Når"
+        action: "Handling"
+        acting_user: "Fungerende bruger"
       add: "Tilføj"
       selector_placeholder: "Tilføj medlemmer"
       owner: "ejer"
       visible: "Gruppen er synlige for alle brugere"
-      index: "Grupper"
       title:
         one: "gruppe"
         other: "grupper"
@@ -427,7 +433,6 @@ da:
       profile: "Profil"
       mute: "Mute"
       edit: "Redigér indstillinger"
-      download_archive: "Download Mine Posts"
       new_private_message: "Ny Besked"
       private_message: "Besked"
       private_messages: "Beskeder"
@@ -683,13 +688,9 @@ da:
         account_age_days: "Kontoens alder i dage"
         create: "Send en invitation"
         generate_link: "Kopier invitations-link"
-        generated_link_message: '<p>Invitationslink genereret!</p><p><input class="invite-link-input" style="width: 75%;" type="text" value="%{inviteLink}"></p><p>Invitationslinket er kun gyldigt for denne email-adresse: <b>%{invitedEmail}</b></p>'
         bulk_invite:
-          none: "Du har ikke inviteret nogen her endnu. Du kan sende individuelle invitationer eller invitere en masse mennesker på én gang ved at <a href='https://meta.discourse.org/t/send-bulk-invites/16468'>uploade en samlet liste over invitationer</a>."
           text: "Masse invitering fra en fil"
-          uploading: "Uploader..."
           success: "Fil uploaded successfuldt, du vil blive meddelt via en beskede når processen er fuldendt."
-          error: "Der var en fejl ved upload af filen '{{filename}}': {{message}}"
       password:
         title: "Adgangskode"
         too_short: "Din adgangskode er for kort."
@@ -1205,7 +1206,6 @@ da:
         go_bottom: "bund"
         go: "start"
         jump_bottom: "Hop til sidste indlæg"
-        jump_prompt: "hop til indlæg"
         jump_prompt_long: "Hvilket indlæg vil du gerne springe til?"
         jump_bottom_with_number: "hop til indlæg %{post_number}"
         total: antal indlæg
@@ -1276,8 +1276,11 @@ da:
         make_banner: "Gør emnet til en banner"
         remove_banner: "Emnet skal ikke være banner længere"
       reply:
-        title: 'Svar'
-        help: 'begynd at skrive et svar til dette emne'
+        post:
+          title: 'Svar'
+        topic:
+          title: 'Svar'
+          help: 'begynd at skrive et svar til dette emne'
       clear_pin:
         title: "Fjern tegnestift"
         help: "Fjern tegnestiften på dette emne så det ikke længere vises i toppen af emnelisten"
@@ -1396,7 +1399,6 @@ da:
     post:
       reply: "<i class='fa fa-mail-forward'></i> {{replyAvatar}} {{usernameLink}}"
       reply_topic: "<i class='fa fa-mail-forward'></i> {{link}}"
-      quote_reply: "citér svar"
       edit: "Redigerer {{link}} {{replyAvatar}} {{username}}"
       edit_reason: "Reason: "
       post_number: "indlæg {{number}}"
@@ -1434,7 +1436,6 @@ da:
         file_too_large: "Beklager, filen du prøver at uploade er for stor (den maksimale størrelse er {{max_size_kb}}kb). Du kan evt. uploade filen til en fildelings service og dele linket her."
         too_many_uploads: "Beklager, men du kan kun uploade én fil ad gangen."
         too_many_dragged_and_dropped_files: "Beklager, du kan maksimalt uploade 10 filer ad gangen"
-        upload_not_authorized: "Beklager, filen, som du forsøger at uploade, er ikke godkendt (godkendte filendelser: {{authorized_extensions}})."
         image_upload_not_allowed_for_new_user: "Beklager, nye brugere kan ikke uploade billeder."
         attachment_upload_not_allowed_for_new_user: "Beklager, nye brugere kan ikke uploade vedhæftede filer."
         attachment_download_requires_login: "Beklager, du skal være logget på for at downloade vedhæftede filer."
@@ -1730,7 +1731,6 @@ da:
       one: "visning"
       other: "visninger"
     replies: "Svar"
-    views_long: "dette emne er blevet vist {{number}} gange"
     activity: "Aktivitet"
     likes: "Likes"
     likes_lowercase:
@@ -1980,8 +1980,6 @@ da:
         backups: "backups"
         traffic_short: "Trafik"
         traffic: "Applikation web forespørgsler"
-        page_views: "API Forespørgsler"
-        page_views_short: "API Forespørgsler"
         show_traffic_report: "Vist detaljeret trafik rapport"
         reports:
           today: "I dag"
@@ -2070,15 +2068,12 @@ da:
         refresh: "Genindlæs"
         new: "Nye"
         selector_placeholder: "indtast brugernavn"
-        name_placeholder: "Gruppenavn, ingen mellemrum, på samme måde som brugernavne"
         about: "Redigér gruppemedlemsskaber og gruppenavne her"
         group_members: "Gruppe medlemmer"
         delete: "Slet"
         delete_confirm: "Slet denne gruppe?"
         delete_failed: "Kan ikke slette gruppen. Hvis dette er en automatisk gruppe, kan den ikke ødelægges."
-        delete_member_confirm: "Fjern '%{username}' fra gruppen '%{group}'?"
         delete_owner_confirm: "Fjern ejer-privilegier for '%{username}'?"
-        name: "Navn"
         add: "Tilføj"
         add_members: "Tilføj medlemmer"
         custom: "Brugerdefineret"
@@ -2095,8 +2090,6 @@ da:
         add_owners: Tilføj ejere
         incoming_email: "Brugerdefineret indkommende email"
         incoming_email_placeholder: "indtast email"
-        flair_bg_color_placeholder: "(Valgfrit) Hex farveværdi"
-        flair_preview: "Vis"
       api:
         generate_master: "Generér API-nøgle"
         none: "Der er ingen aktive API-nøgler i øjeblikket."
@@ -2181,10 +2174,8 @@ da:
             title: "Rul databasen tilbage til et tidspunkt hvor tingene virkede"
             confirm: "Er du sikker på at du vil genskabe databasen til den forrige virkende version?"
       export_csv:
-        user_archive_confirm: "Er du sikker på du vil downloade dine indlæg?"
         success: "Eksport er startet, du vil blive notificeret via en besked når denne proces er færdig."
         failed: "Eksport fejlede. Tjek venligst loggen."
-        rate_limit_error: "Indlæg kan downloades én gang om dagen, prøv igen i morgen."
         button_text: "Eksporter"
         button_title:
           user: "Eksporter hele brugerlisten i en CSV-fil"

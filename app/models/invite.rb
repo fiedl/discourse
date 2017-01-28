@@ -55,19 +55,15 @@ class Invite < ActiveRecord::Base
     InviteRedeemer.new(self).redeem unless expired? || destroyed? || !link_valid?
   end
 
-
-  def add_groups_for_topic(topic)
-    if topic.category
-      (topic.category.groups - groups).each { |group| group.add(user) }
-    end
-  end
-
   def self.extend_permissions(topic, user, invited_by)
     if topic.private_message?
       topic.grant_permission_to_user(user.email)
     elsif topic.category && topic.category.groups.any?
       if Guardian.new(invited_by).can_invite_to?(topic) && !SiteSetting.enable_sso
-        (topic.category.groups - user.groups).each { |group| group.add(user) }
+        (topic.category.groups - user.groups).each do |group|
+          group.add(user)
+          GroupActionLogger.new(Discourse.system_user, group).log_add_user_to_group(user)
+        end
       end
     end
   end
@@ -265,8 +261,12 @@ class Invite < ActiveRecord::Base
     File.join(Rails.root, "public", "uploads", "csv", RailsMultisite::ConnectionManagement.current_db)
   end
 
-  def self.chunk_path(identifier, filename, chunk_number)
-    File.join(Invite.base_directory, "tmp", identifier, "#{filename}.part#{chunk_number}")
+  def self.create_csv(file, name)
+    extension = File.extname(file.original_filename)
+    path = "#{Invite.base_directory}/#{name}#{extension}"
+    FileUtils.mkdir_p(Pathname.new(path).dirname)
+    File.open(path, "wb") { |f| f << file.tempfile.read }
+    path
   end
 end
 

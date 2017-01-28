@@ -1,4 +1,5 @@
 import { observes } from 'ember-addons/ember-computed-decorators';
+import showModal from 'discourse/lib/show-modal';
 
 export default Ember.Component.extend({
   composerOpen: null,
@@ -52,8 +53,16 @@ export default Ember.Component.extend({
   _expanded() {
     if (this.get('info.topicProgressExpanded')) {
       $(window).on('click.hide-fullscreen', (e) => {
-        if ( $(e.target).is('.topic-timeline') ||
-             !$(e.target).parents().is('#topic-progress-wrapper')) {
+        let $target = $(e.target);
+        let $parents = $target.parents();
+        if ( !$target.is('.widget-button') &&
+             !$parents.is('.widget-button') &&
+             !$parents.is('.dropdown-menu') &&
+             (
+              $target.is('.topic-timeline') ||
+             !$parents.is('#topic-progress-wrapper')
+             )
+          ) {
           this._collapseFullscreen();
         }
       });
@@ -85,19 +94,13 @@ export default Ember.Component.extend({
   },
 
   keyboardTrigger(e) {
-    if(e.type === "jump") {
-      bootbox.prompt(I18n.t('topic.progress.jump_prompt_long'), postIndex => {
-        if (postIndex === null) { return; }
-        this.sendAction('jumpToIndex', postIndex);
+    if (e.type === "jump") {
+      const controller = showModal('jump-to-post');
+      controller.setProperties({
+        topic: this.get('topic'),
+        postNumber: 1,
+        jumpToIndex: this.attrs.jumpToIndex
       });
-
-      // this is insanely hacky, for some reason shown event never fires,
-      // something is bust in bootbox
-      // TODO upgrade bootbox to see if this hack can be removed
-      setTimeout(()=>{
-        $('.bootbox.modal').trigger('shown');
-      },50);
-
     }
   },
 

@@ -54,7 +54,7 @@ class Search
     posts.each do |post|
       # force indexing
       post.cooked += " "
-      SearchObserver.index(post)
+      SearchIndexer.index(post)
     end
 
     posts = Post.joins(:topic)
@@ -67,7 +67,7 @@ class Search
     posts.each do |post|
       # force indexing
       post.cooked += " "
-      SearchObserver.index(post)
+      SearchIndexer.index(post)
     end
 
     nil
@@ -250,6 +250,10 @@ class Search
 
   advanced_filter(/posts_count:(\d+)/) do |posts, match|
     posts.where("topics.posts_count = ?", match.to_i)
+  end
+
+  advanced_filter(/min_post_count:(\d+)/) do |posts, match|
+    posts.where("topics.posts_count >= ?", match.to_i)
   end
 
   advanced_filter(/in:first/) do |posts|
@@ -653,7 +657,7 @@ class Search
     end
 
     def self.query_locale
-      @query_locale ||= Post.sanitize(Search.long_locale)
+      "'#{Search.long_locale}'"
     end
 
     def query_locale

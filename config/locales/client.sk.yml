@@ -342,17 +342,10 @@ sk:
         few: "%{count} používatelia"
         other: "%{count} používateľov"
     groups:
-      empty:
-        posts: "Neexistuje žiadny príspevok od člena tejto skupiny."
-        members: "Táto skupina neobsahuje žiadnych členov."
-        mentions: "Táto skupina nieje nikde zmienená."
-        messages: "Neexistujú žiadne správy pre túto skupinu."
-        topics: "Neexistuje žiadna téma od členov tejto skupiny."
       add: "Pridať"
       selector_placeholder: "Pridať členov"
       owner: "vlastník"
       visible: "Skupina je viditeľná všetkým používateľom"
-      index: "Skupiny"
       title:
         one: "skupina"
         few: "skupiny"
@@ -451,7 +444,6 @@ sk:
       profile: "Profil"
       mute: "Ignorovať"
       edit: "Upraviť nastavenia"
-      download_archive: "Stiahnutie mojich prípevkov"
       new_private_message: "Nová správa"
       private_message: "Správa"
       private_messages: "Správy"
@@ -695,13 +687,9 @@ sk:
         account_age_days: "Vek účtu v dňoch"
         create: "Poslať Pozvánku"
         generate_link: "Kopírovať Odkaz Pozvánky"
-        generated_link_message: '<p>Odkaz pre pozvánku bol úspešne vytvorený!</p><p><input class="invite-link-input" style="width: 75%;" type="text" value="%{inviteLink}"></p><p>Odkaz je platný iba pre túto adresu: <b>%{invitedEmail}</b></p>'
         bulk_invite:
-          none: "Zatiaľ ste tu nikoho nepozvali. Môžete odosielať pozvánky individuálne alebo pozvať skupinu ľudí naraz pomocou <a href='https://meta.discourse.org/t/send-bulk-invites/16468'>nahratia súboru</a>."
           text: "Hromadná pozvánka zo súboru"
-          uploading: "Prebieha nahrávanie..."
           success: "Súbor bol úspešne odoslaný. Keď sa nahrávanie dokončí, budete na to upozornený cez správu."
-          error: "Pri nahrávaní '{{filename}}' sa vyskytla chyba: {{message}}"
       password:
         title: "Heslo"
         too_short: "Vaše heslo je príliš krátke."
@@ -1233,7 +1221,6 @@ sk:
         go_bottom: "na spodok"
         go: "Choď"
         jump_bottom: "choď na posledný príspevok"
-        jump_prompt: "choď na príspevok"
         jump_bottom_with_number: "choď na príspevok číslo %{post_number}"
         total: Všetkých príspevkov
         current: tento príspevok
@@ -1301,8 +1288,11 @@ sk:
         make_banner: "Banerová téma"
         remove_banner: "Odstrániť banerovú tému"
       reply:
-        title: 'Odpovedať'
-        help: 'vytvor odpoveď k tejto téme'
+        post:
+          title: 'Odpovedať'
+        topic:
+          title: 'Odpovedať'
+          help: 'vytvor odpoveď k tejto téme'
       clear_pin:
         title: "Zruš pripnutie"
         help: "Zruší pripnutie tejto témy takže sa už viac nebude objavovať na vrchu Vášho zoznamu tém"
@@ -1425,7 +1415,6 @@ sk:
     post:
       reply: "<i class='fa fa-mail-forward'></i> {{replyAvatar}} {{usernameLink}}"
       reply_topic: "<i class='fa fa-mail-forward'></i> {{link}}"
-      quote_reply: "citovať odpoveď"
       edit: "Upravujete {{link}} {{replyAvatar}} {{username}}"
       edit_reason: "Dôvod:"
       post_number: "príspevok {{number}}"
@@ -1469,7 +1458,6 @@ sk:
         file_too_large: "Ľutujeme, daný súbor je príliš veľký (maximálna veľkosť je {{max_size_kb}}kB). Čo takto nahrať ten súbor na zdielané cloudové úložisko a nazdielať odkaz?"
         too_many_uploads: "Ľutujeme, ale naraz je možné nahrať iba jeden súbor."
         too_many_dragged_and_dropped_files: "Ľutujeme, ale naraz je možné nahrať iba 10 súborov."
-        upload_not_authorized: "Ľutujeme, súbor, ktorý sa pokúšate nahrať nemá povolenú príponu  (povolené prípony sú: {{authorized_extensions}})."
         image_upload_not_allowed_for_new_user: "Ľutujeme, noví použivatelia nemôžu nahrávať obrázky."
         attachment_upload_not_allowed_for_new_user: "Ľutujeme, noví používatelia nemôžu nahrávať prílohy."
         attachment_download_requires_login: "Ľutujeme, pre stiahnutie príloh musíte byť prihlásený."
@@ -1782,7 +1770,6 @@ sk:
       few: "zobrazenia"
       other: "zobrazení"
     replies: "Odpovede"
-    views_long: "táto téma bola prezeraná {{number}} krát "
     activity: "Aktivita"
     likes: "Páči sa mi"
     likes_lowercase:
@@ -2069,8 +2056,6 @@ sk:
         backups: "zálohy"
         traffic_short: "Vyťaženie"
         traffic: "Požiadavky webových aplikácií"
-        page_views: "Požiadavky API"
-        page_views_short: "Požiadavky API"
         show_traffic_report: "Zobraziť detaily vyťaženia"
         reports:
           today: "Dnes"
@@ -2165,15 +2150,12 @@ sk:
         refresh: "Obnoviť"
         new: "Nový"
         selector_placeholder: "zadať používateľské meno"
-        name_placeholder: "Názov skupiny, bez medzier, rovnaké pravidlá ako pre používateľa"
         about: "Tu upravíte Vaše členstvo v skupinách a mená"
         group_members: "Členovia skupiny"
         delete: "Odstrániť"
         delete_confirm: "Zmazať túto skupinu?"
         delete_failed: "Nepodarilo sa zmazať skupinu. Pokiaľ je skupina automatická, nemôže byť zrušená."
-        delete_member_confirm: "Odstrániť '%{username}' zo skupiny '%{group}'?"
         delete_owner_confirm: "Odobrať vlastnícke práva %{username}'?"
-        name: "Meno"
         add: "Pridať"
         add_members: "Pridať členov"
         custom: "Vlastné"
@@ -2190,7 +2172,6 @@ sk:
         add_owners: Pridať vlastníkov
         incoming_email: "Vlastná e-mailová adresa pre príchodziu poštu"
         incoming_email_placeholder: "zadajte emailovú adresu"
-        flair_preview: "Náhľad"
       api:
         generate_master: "Vygenerovať Master API kľúč"
         none: "V súčasnosti neexistujú žiadne aktívne API kľúče."
@@ -2269,10 +2250,8 @@ sk:
             label: "Vrátiť späť"
             title: "Vrátiť databázu do predchádzajúceho funkčného stavu"
       export_csv:
-        user_archive_confirm: "Ste si istý, že si chcete stiahnut svoje príspevky?"
         success: "Export bol spustený, o jeho skončení budete informovaný správou."
         failed: "Export zlyhal. Skontrolujte prosím logy."
-        rate_limit_error: "Príspevky možu byť stiahnuté len raz za deň. Skúste opäť zajtra."
         button_text: "Export"
         button_title:
           user: "Exportovať celý zoznam používateľov v CSV formáte."

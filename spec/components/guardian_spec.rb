@@ -4,9 +4,9 @@ require_dependency 'post_destroyer'
 
 describe Guardian do
 
-  let(:user) { build(:user) }
-  let(:moderator) { build(:moderator) }
-  let(:admin) { build(:admin) }
+  let(:user) { Fabricate(:user) }
+  let(:moderator) { Fabricate(:moderator) }
+  let(:admin) { Fabricate(:admin) }
   let(:trust_level_2) { build(:user, trust_level: 2) }
   let(:trust_level_3) { build(:user, trust_level: 3) }
   let(:trust_level_4)  { build(:user, trust_level: 4) }
@@ -90,8 +90,9 @@ describe Guardian do
       end
 
       it "returns true for a new user flagging a private message as spam" do
-        post.topic.archetype = Archetype.private_message
+        post = Fabricate(:private_message_post, user: Fabricate(:admin))
         user.trust_level = TrustLevel[0]
+        post.topic.allowed_users << user
         expect(Guardian.new(user).post_can_act?(post, :spam)).to be_truthy
       end
 
@@ -217,6 +218,7 @@ describe Guardian do
   describe 'can_reply_as_new_topic' do
     let(:user) { Fabricate(:user) }
     let(:topic) { Fabricate(:topic) }
+    let(:private_message) { Fabricate(:private_message_topic) }
 
     it "returns false for a non logged in user" do
       expect(Guardian.new(nil).can_reply_as_new_topic?(topic)).to be_falsey
@@ -233,6 +235,10 @@ describe Guardian do
 
     it "returns true for a trusted user" do
       expect(Guardian.new(user).can_reply_as_new_topic?(topic)).to be_truthy
+    end
+
+    it "returns true for a private message" do
+      expect(Guardian.new(user).can_reply_as_new_topic?(private_message)).to be_truthy
     end
   end
 
@@ -1557,6 +1563,15 @@ describe Guardian do
       user.id = 2
       expect(Guardian.new(admin).can_grant_admin?(user)).to be_truthy
     end
+
+    it 'should not allow an admin to grant admin access to a non real user' do
+      begin
+        Discourse.system_user.update!(admin: false)
+        expect(Guardian.new(admin).can_grant_admin?(Discourse.system_user)).to be(false)
+      ensure
+        Discourse.system_user.update!(admin: true)
+      end
+    end
   end
 
   context 'can_revoke_admin?' do
@@ -1577,6 +1592,10 @@ describe Guardian do
       another_admin.id = 2
 
       expect(Guardian.new(admin).can_revoke_admin?(another_admin)).to be_truthy
+    end
+
+    it "should not allow an admin to revoke a no real user's admin access" do
+      expect(Guardian.new(admin).can_revoke_admin?(Discourse.system_user)).to be(false)
     end
   end
 
@@ -1600,6 +1619,15 @@ describe Guardian do
 
     it "allows an admin to grant a regular user access" do
       expect(Guardian.new(admin).can_grant_moderation?(user)).to be_truthy
+    end
+
+    it "should not allow an admin to grant moderation to a non real user" do
+      begin
+        Discourse.system_user.update!(moderator: false)
+        expect(Guardian.new(admin).can_grant_moderation?(Discourse.system_user)).to be(false)
+      ensure
+        Discourse.system_user.update!(moderator: true)
+      end
     end
   end
 
@@ -1627,6 +1655,10 @@ describe Guardian do
 
     it "does not allow revoke from non moderators" do
       expect(Guardian.new(admin).can_revoke_moderation?(admin)).to be_falsey
+    end
+
+    it "should not allow an admin to revoke moderation from a non real user" do
+      expect(Guardian.new(admin).can_revoke_moderation?(Discourse.system_user)).to be(false)
     end
   end
 
@@ -2277,6 +2309,41 @@ describe Guardian do
           expect(Guardian.new(admin).can_tag_topics?).to be_truthy
           expect(Guardian.new(moderator).can_tag_topics?).to be_truthy
         end
+      end
+    end
+  end
+
+  context 'topic featured link category restriction' do
+    before { SiteSetting.topic_featured_link_enabled = true }
+    let(:guardian) { Guardian.new }
+    let(:uncategorized) { Category.find(SiteSetting.uncategorized_category_id) }
+
+    context "uncategorized" do
+      let!(:link_category) { Fabricate(:link_category) }
+
+      it "allows featured links if uncategorized allows it" do
+        uncategorized.topic_featured_link_allowed = true
+        uncategorized.save!
+        expect(guardian.can_edit_featured_link?(nil)).to eq(true)
+      end
+
+      it "forbids featured links if uncategorized forbids it" do
+        uncategorized.topic_featured_link_allowed = false
+        uncategorized.save!
+        expect(guardian.can_edit_featured_link?(nil)).to eq(false)
+      end
+    end
+
+    context 'when exist' do
+      let!(:category) { Fabricate(:category, topic_featured_link_allowed: false) }
+      let!(:link_category) { Fabricate(:link_category) }
+
+      it 'returns true if the category is listed' do
+        expect(guardian.can_edit_featured_link?(link_category.id)).to eq(true)
+      end
+
+      it 'returns false if the category does not allow it' do
+        expect(guardian.can_edit_featured_link?(category.id)).to eq(false)
       end
     end
   end
