@@ -301,6 +301,9 @@ login:
   sso_allows_all_return_paths: false
   enable_sso_provider: false
   verbose_sso_logging: false
+  verbose_auth_token_logging:
+    hidden: true
+    default: false
   sso_url:
     default: ''
     regex: '^https?:\/\/.+[^\/]$'
@@ -349,6 +352,9 @@ users:
   min_admin_password_length:
     client: true
     default: 15
+    min: 1
+  password_unique_characters:
+    default: 5
     min: 1
   block_common_passwords: true
   enforce_global_nicknames:
@@ -608,7 +614,7 @@ email:
     min: 1
   digest_posts: 3
   digest_other_topics: 5
-  delete_digest_email_after_days:
+  suppress_digest_email_after_days:
     default: 365
     min: 0
     max: 20000
@@ -1212,6 +1218,7 @@ uncategorized:
   # Warnings
   educate_until_posts: 2
   sequential_replies_threshold: 2
+  get_a_room_threshold: 3
   dominating_topic_minimum_percent: 20
   disable_avatar_education_message: false
 
