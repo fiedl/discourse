@@ -6,6 +6,25 @@ class TopicList
   cattr_accessor :preloaded_custom_fields
   self.preloaded_custom_fields = Set.new
 
+  def self.on_preload(&blk)
+    (@preload ||= Set.new) << blk
+  end
+
+  def self.cancel_preload(&blk)
+    if @preload
+      @preload.delete blk
+      if @preload.length == 0
+        @preload = nil
+      end
+    end
+  end
+
+  def self.preload(topics, object)
+    if @preload
+      @preload.each{|preload| preload.call(topics, object)}
+    end
+  end
+
   attr_accessor :more_topics_url,
                 :prev_topics_url,
                 :draft,
@@ -14,7 +33,8 @@ class TopicList
                 :filter,
                 :for_period,
                 :per_page,
-                :tags
+                :tags,
+                :current_user
 
   def initialize(filter, current_user, topics, opts=nil)
     @filter = filter
@@ -96,6 +116,8 @@ class TopicList
     if preloaded_custom_fields.present?
       Topic.preload_custom_fields(@topics, preloaded_custom_fields)
     end
+
+    TopicList.preload(@topics, self)
 
     @topics
   end
