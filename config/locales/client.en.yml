@@ -718,13 +718,11 @@ en:
         instructions: "unique, no spaces, short"
         short_instructions: "People can mention you as @{{username}}"
         available: "Your username is available"
-        global_match: "Email matches the registered username"
-        global_mismatch: "Already registered. Try {{suggestion}}?"
         not_available: "Not available. Try {{suggestion}}?"
+        not_available_no_suggestion: "Not available"
         too_short: "Your username is too short"
         too_long: "Your username is too long"
         checking: "Checking username availability..."
-        enter_email: 'Username found; enter matching email'
         prefilled: "Email matches this registered username"
 
       locale:
@@ -832,10 +830,10 @@ en:
         link_generated: "Invite link generated successfully!"
         valid_for: "Invite link is only valid for this email address: %{email}"
         bulk_invite:
-          none: "You haven't invited anyone here yet. You can send individual invites, or invite a bunch of people at once by <a href='https://meta.discourse.org/t/send-bulk-invites/16468'>uploading a CSV file</a>."
+          none: "You haven't invited anyone here yet. Send individual invites, or invite many people at once by <a href='https://meta.discourse.org/t/send-bulk-invites/16468'>uploading a CSV file</a>."
           text: "Bulk Invite from File"
           success: "File uploaded successfully, you will be notified via message when the process is complete."
-          error: "Sorry, file should be of csv format."
+          error: "Sorry, file should be CSV format."
 
       password:
         title: "Password"
@@ -1065,6 +1063,15 @@ en:
       github:
         title: "with GitHub"
         message: "Authenticating with GitHub (make sure pop up blockers are not enabled)"
+    invites:
+      accept_title: "Invitation"
+      welcome_to: "Welcome to %{site_name}!"
+      invited_by: "You were invited by:"
+      social_login_available: "You'll also be able to sign in with any social login using that email."
+      your_email: "Your account email address is <b>%{email}</b>."
+      accept_invite: "Accept Invitation"
+      success: "Your account has been created and you're now logged in."
+      password_label: "Set Password (optional)"
 
     password_reset:
       continue: "Continue to %{site_name}"
