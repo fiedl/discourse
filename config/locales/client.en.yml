@@ -165,7 +165,7 @@ en:
 
     topic_admin_menu: "topic admin actions"
 
-    wizard_required: "It's time to configure your forum! <a href='%{url}' data-auto-route='true'>Start the Setup Wizard</a>!"
+    wizard_required: "Welcome to your new Discourse! Let’s get started with <a href='%{url}' data-auto-route='true'>the setup wizard</a> ✨"
     emails_are_disabled: "All outgoing email has been globally disabled by an administrator. No email notifications of any kind will be sent."
 
     bootstrap_mode_enabled: "To make launching your new site easier, you are in bootstrap mode. All new users will be granted trust level 1 and have daily email digest updates enabled. This will be automatically turned off when total user count exceeds %{min_users} users."
@@ -1030,7 +1030,7 @@ en:
       logging_in: "Signing In..."
       or: "Or"
       authenticating: "Authenticating..."
-      awaiting_confirmation: "Your account is awaiting activation, use the forgot password link to issue another activation email."
+      awaiting_activation: "Your account is awaiting activation, use the forgot password link to issue another activation email."
       awaiting_approval: "Your account has not been approved by a staff member yet. You will be sent an email when it is approved."
       requires_invite: "Sorry, access to this forum is by invite only."
       not_activated: "You can't log in yet. We previously sent an activation email to you at <b>{{sentTo}}</b>. Please follow the instructions in that email to activate your account."
@@ -1316,6 +1316,8 @@ en:
           first: are the very first post
           pinned: are pinned
           unpinned: are not pinned
+          seen: I've read
+          unseen: I've not read
           wiki: are wiki
         statuses:
           label: Where topics
@@ -1362,8 +1364,10 @@ en:
         selected:
           one: "You have selected <b>1</b> topic."
           other: "You have selected <b>{{count}}</b> topics."
-        change_tags: "Change Tags"
+        change_tags: "Replace Tags"
+        append_tags: "Append Tags"
         choose_new_tags: "Choose new tags for these topics:"
+        choose_append_tags: "Choose new tags to append for these topics:"
         changed_tags: "The tags of those topics were changed."
 
       none:
@@ -1916,6 +1920,18 @@ en:
             title: "Show the raw source diffs side-by-side"
             button: 'Raw'
 
+      raw_email:
+        displays:
+          raw:
+            title: "Show the raw email"
+            button: 'Raw'
+          text_part:
+            title: "Show the text part of the email"
+            button: 'Text'
+          html_part:
+            title: "Show the html part of the email"
+            button: 'HTML'
+
     category:
       can: 'can&hellip; '
       none: '(no category)'
@@ -1967,8 +1983,13 @@ en:
       email_in_disabled: "Posting new topics via email is disabled in the Site Settings. To enable posting new topics via email, "
       email_in_disabled_click: 'enable the "email in" setting.'
       suppress_from_homepage: "Suppress this category from the homepage."
+      show_subcategory_list: "Show subcategory list above topics in this category."
+      num_featured_topics: "Number of topics shown on the categories page:"
+      subcategory_num_featured_topics: "Number of featured topics on parent category's page:"
       all_topics_wiki: "Make new topics wikis by default."
-      sort_order: "Default Sort:"
+      subcategory_list_style: "Subcategory List Style:"
+      sort_order: "Topic List Sort By:"
+      default_view: "Default Topic List:"
       allow_badges_label: "Allow badges to be awarded in this category"
       edit_permissions: "Edit Permissions"
       add_permission: "Add Permission"
@@ -2006,6 +2027,10 @@ en:
         created: "Created"
       sort_ascending: 'Ascending'
       sort_descending: 'Descending'
+      subcategory_list_styles:
+        rows: "Rows"
+        rows_with_featured_topics: "Rows with featured topics"
+        boxes: "Boxes"
 
     flagging:
       title: 'Thanks for helping to keep our community civil!'
@@ -2117,7 +2142,7 @@ en:
     changed_by: "by {{author}}"
 
     raw_email:
-      title: "Raw Email"
+      title: "Incoming Email"
       not_available: "Not available!"
 
     categories_list: "Categories List"
@@ -2548,6 +2573,8 @@ en:
         add_owners: Add owners
         incoming_email: "Custom incoming email address"
         incoming_email_placeholder: "enter email address"
+        none_selected: "Select a group to get started"
+        no_custom_groups: "Create a new custom group"
 
       api:
         generate_master: "Generate Master API Key"
@@ -2686,7 +2713,8 @@ en:
             without_uploads: "Yes (do not include files)"
           download:
             label: "Download"
-            title: "Download the backup"
+            title: "Send email with download link"
+            alert: "A link to download this backup has been emailed to you."
           destroy:
             title: "Remove the backup"
             confirm: "Are you sure you want to destroy this backup?"
@@ -3053,6 +3081,7 @@ en:
         refresh_browsers_message: "Message sent to all clients!"
         show_public_profile: "Show Public Profile"
         impersonate: 'Impersonate'
+        action_logs: "Action Logs"
         ip_lookup: "IP Lookup"
         log_out: "Log Out"
         logged_out: "User was logged out on all devices"

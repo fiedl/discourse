@@ -1,4 +1,5 @@
 require_dependency 'avatar_lookup'
+require_dependency 'primary_group_lookup'
 
 class TopicList
   include ActiveModel::Serialization
@@ -100,6 +101,7 @@ class TopicList
     end
 
     avatar_lookup = AvatarLookup.new(user_ids)
+    primary_group_lookup = PrimaryGroupLookup.new(user_ids)
 
     @topics.each do |ft|
       ft.user_data = @topic_lookup[ft.id] if @topic_lookup.present?
@@ -108,7 +110,11 @@ class TopicList
         ft.user_data.post_action_data = {post_action_type => actions}
       end
 
-      ft.posters = ft.posters_summary(avatar_lookup: avatar_lookup)
+      ft.posters = ft.posters_summary(
+        avatar_lookup: avatar_lookup,
+        primary_group_lookup: primary_group_lookup
+      )
+
       ft.participants = ft.participants_summary(avatar_lookup: avatar_lookup, user: @current_user)
       ft.topic_list = self
     end

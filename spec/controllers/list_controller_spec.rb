@@ -49,13 +49,53 @@ describe ListController do
   end
 
   describe 'RSS feeds' do
-
-    it 'renders RSS' do
+    it 'renders latest RSS' do
       get "latest_feed", format: :rss
       expect(response).to be_success
       expect(response.content_type).to eq('application/rss+xml')
     end
 
+    it 'renders top RSS' do
+      get "top_feed", format: :rss
+      expect(response).to be_success
+      expect(response.content_type).to eq('application/rss+xml')
+    end
+
+    it 'renders all time top RSS' do
+      get "top_all_feed", format: :rss
+      expect(response).to be_success
+      expect(response.content_type).to eq('application/rss+xml')
+    end
+
+    it 'renders yearly top RSS' do
+      get "top_yearly_feed", format: :rss
+      expect(response).to be_success
+      expect(response.content_type).to eq('application/rss+xml')
+    end
+
+    it 'renders quarterly top RSS' do
+      get "top_quarterly_feed", format: :rss
+      expect(response).to be_success
+      expect(response.content_type).to eq('application/rss+xml')
+    end
+
+    it 'renders monthly top RSS' do
+      get "top_monthly_feed", format: :rss
+      expect(response).to be_success
+      expect(response.content_type).to eq('application/rss+xml')
+    end
+
+    it 'renders weekly top RSS' do
+      get "top_weekly_feed", format: :rss
+      expect(response).to be_success
+      expect(response.content_type).to eq('application/rss+xml')
+    end
+
+    it 'renders daily top RSS' do
+      get "top_daily_feed", format: :rss
+      expect(response).to be_success
+      expect(response.content_type).to eq('application/rss+xml')
+    end
   end
 
   context 'category' do
@@ -141,7 +181,6 @@ describe ListController do
 
           it { is_expected.not_to respond_with(:success) }
         end
-
       end
 
       describe 'feed' do
@@ -149,6 +188,29 @@ describe ListController do
           get :category_feed, category: category.slug, format: :rss
           expect(response).to be_success
           expect(response.content_type).to eq('application/rss+xml')
+        end
+      end
+
+      describe "category default views" do
+        it "top default view" do
+          category.update_attributes!(default_view: 'top')
+          described_class.expects(:best_period_for).returns('yearly')
+          xhr :get, :category_default, category: category.slug
+          expect(response).to be_success
+        end
+
+        it "default view is nil" do
+          category.update_attributes!(default_view: nil)
+          described_class.expects(:best_period_for).never
+          xhr :get, :category_default, category: category.slug
+          expect(response).to be_success
+        end
+
+        it "default view is latest" do
+          category.update_attributes!(default_view: 'latest')
+          described_class.expects(:best_period_for).never
+          xhr :get, :category_default, category: category.slug
+          expect(response).to be_success
         end
       end
     end

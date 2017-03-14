@@ -37,6 +37,7 @@ class Category < ActiveRecord::Base
                    presence: true,
                    uniqueness: { scope: :parent_category_id, case_sensitive: false },
                    length: { in: 1..50 }
+  validates :num_featured_topics, numericality: { only_integer: true, greater_than: 0 }
   validate :parent_category_validator
 
   validate :email_in_validator
@@ -505,6 +506,10 @@ SQL
     else
       self.where(slug: category_slug, parent_category_id: nil).first
     end
+  end
+
+  def subcategory_list_includes_topics?
+    subcategory_list_style == 'rows_with_featured_topics'
   end
 end
 
