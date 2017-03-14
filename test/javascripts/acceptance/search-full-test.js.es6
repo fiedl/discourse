@@ -16,7 +16,7 @@ acceptance("Search - Full Page", {
 
     server.get('/users/search/users', () => { //eslint-disable-line
       return response({users: [{username: "admin", name: "admin",
-        avatar_template: "/letter_avatar_proxy/v2/letter/a/3ec8ea/{size}.png"}]});
+        avatar_template: "/images/avatar.png"}]});
     });
 
     server.get('/admin/groups.json', () => { //eslint-disable-line
@@ -233,15 +233,18 @@ test("update in:private filter through advanced search ui", assert => {
   });
 });
 
-test("update in:wiki filter through advanced search ui", assert => {
+test("update in:seen filter through advanced search ui", assert => {
   visit("/search");
   fillIn('.search input.full-page-search', 'none');
   click('.search-advanced-btn');
-  click('.search-advanced-options .in-wiki');
+  click('.search-advanced-options .in-seen');
 
   andThen(() => {
-    assert.ok(exists('.search-advanced-options .in-wiki:checked'), 'has "are wiki" populated');
-    assert.equal(find('.search input.full-page-search').val(), "none in:wiki", 'has updated search term to "none in:wiki"');
+    assert.ok(exists('.search-advanced-options .in-seen:checked'), 'it should check the right checkbox');
+
+    assert.equal(find('.search input.full-page-search').val(), "none in:seen",
+      'it should update the search term'
+    );
   });
 });
 

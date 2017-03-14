@@ -229,6 +229,12 @@ en:
     latest: "Latest topics"
     hot: "Hot topics"
     top: "Top topics"
+    top_all: "All time top topics"
+    top_yearly: "Yearly top topics"
+    top_quarterly: "Quarterly top topics"
+    top_monthly: "Monthly top topics"
+    top_weekly: "Weekly top topics"
+    top_daily: "Daily top topics"
     posts: "Latest posts"
     private_posts: "Latest private messages"
     group_posts: "Latest posts from %{group_name}"
@@ -385,6 +391,10 @@ en:
           attributes:
             payload_url:
               invalid: "URL is invalid. URL should includes http:// or https://. And no blank is allowed."
+        custom_emoji:
+          attributes:
+            name:
+              taken: is already in use by another emoji
 
   user_profile:
     no_info_me: "<div class='missing-profile'>the About Me field of your profile is currently blank, <a href='/users/%{username_lower}/preferences/about-me'>would you like to fill it out?</a></div>"
@@ -492,7 +502,7 @@ en:
       pms_per_day: "You've reached the maximum number of messages today. Please wait %{time_left} before trying again."
       create_like: "You've reached the maximum number of likes today. Please wait %{time_left} before trying again."
       create_bookmark: "You've reached the maximum number of bookmarks today. Please wait %{time_left} before trying again."
-      edit_post: "You've reached the maximun number of edits today. Please wait %{time_left} before trying again."
+      edit_post: "You've reached the maximum number of edits today. Please wait %{time_left} before trying again."
       live_post_counts: "You're asking for live post counts too quickly. Please wait %{time_left} before trying again."
       unsubscribe_via_email: "You've reached the maximum number of unsubscribe via email today. Please wait %{time_left} before trying again."
       topic_invitations_per_day: "You've reached the maximum number of topic invitations today. Please wait %{time_left} before trying again."
@@ -608,6 +618,7 @@ en:
     welcome_to: "Welcome to %{site_name}!"
     approval_required: "A moderator must manually approve your new account before you can access this forum. You'll get an email when your account is approved!"
     missing_session: "We cannot detect if your account was created, please ensure you have cookies enabled."
+    activated: "Sorry, this account has already been activated."
   post_action_types:
     off_topic:
       title: 'Off-Topic'
@@ -923,8 +934,6 @@ en:
     delete_removed_posts_after: "Posts removed by the author will be automatically deleted after (n) hours. If set to 0, posts will be deleted immediately."
     max_image_width: "Maximum thumbnail width of images in a post"
     max_image_height: "Maximum thumbnail height of images in a post"
-    category_featured_topics: "Number of topics displayed per category on the /categories page. After changing this value, it takes up to 15 minutes for the categories page to update."
-    show_subcategory_list: "Show subcategory list instead of topic list when entering a category."
     fixed_category_positions: "If checked, you will be able to arrange categories into a fixed order. If unchecked, categories are listed in order of activity."
     fixed_category_positions_on_create: "If checked, category ordering will be maintained on topic creation dialog (requires fixed_category_positions)."
     add_rel_nofollow_to_user_content: "Add rel nofollow to all submitted user content, except for internal links (including parent domains). If you change this, you must rebake all posts with: \"rake posts:rebake\""
@@ -948,6 +957,7 @@ en:
     email_custom_headers: "A pipe-delimited list of custom email headers"
     email_subject: "Customizable subject format for standard emails. See https://meta.discourse.org/t/customize-subject-format-for-standard-emails/20801"
     force_https: "Force your site to use HTTPS only. WARNING: do NOT enable this until you verify HTTPS is fully set up and working absolutely everywhere! Did you check your CDN, all social logins, and any external logos / dependencies to make sure they are all HTTPS compatible, too?"
+    same_site_cookies: "Use same site cookies, they eliminate all vectors Cross Site Request Forgery on supported browsers (Lax or Strict). Warning: Strict will only work on sites that force login and use SSO."
     summary_score_threshold: "The minimum score required for a post to be included in 'Summarize This Topic'"
     summary_posts_required: "Minimum posts in a topic before 'Summarize This Topic' is enabled"
     summary_likes_required: "Minimum likes in a topic before 'Summarize This Topic' is enabled"
@@ -1040,7 +1050,7 @@ en:
     min_username_length: "Minimum username length in characters. WARNING: if any existing users or groups have names shorter than this, your site will break!"
     max_username_length: "Maximum username length in characters. WARNING: if any existing users or groups have names longer than this, your site will break!"
 
-    reserved_usernames: "Usernames for which signup is not allowed."
+    reserved_usernames: "Usernames for which signup is not allowed. Wildcard symbol * can be used to match any character zero or more times."
 
     min_password_length: "Minimum password length."
     min_admin_password_length: "Minimum password length for Admin."
@@ -1120,6 +1130,9 @@ en:
     max_private_messages_per_day: "Maximum number of messages users can create per day."
     max_invites_per_day: "Maximum number of invites a user can send per day."
     max_topic_invitations_per_day: "Maximum number of topic invitations a user can send per day."
+
+    max_logins_per_ip_per_hour: "Maximum number of logins allowed per IP address per hour"
+    max_logins_per_ip_per_minute: "Maximum number of logins allowed per IP address per minute"
 
     alert_admins_if_errors_per_minute: "Number of errors per minute in order to trigger an admin alert. A value of 0 disables this feature. NOTE: requires restart."
     alert_admins_if_errors_per_hour: "Number of errors per hour in order to trigger an admin alert. A value of 0 disables this feature. NOTE: requires restart."
@@ -1393,6 +1406,8 @@ en:
 
     native_app_install_banner: "Asks recurring visitors to install Discourse native app."
 
+    share_anonymized_statistics: "Share anonymized usage statistics."
+
     max_prints_per_hour_per_user: "Maximum number of /print page impressions (set to 0 to disable)"
 
     full_name_required: "Full name is a required field of a user's profile."
@@ -1423,8 +1438,6 @@ en:
     delete_drafts_older_than_n_days: Delete drafts older than (n) days.
 
     bootstrap_mode_min_users: "Minimum number of users required to disable bootstrap mode (set to 0 to disable)"
-
-    vacuum_db_days: "Run VACUUM ANALYZE to reclaim DB space after migrations (set to 0 to disable)"
 
     prevent_anons_from_downloading_files: "Prevent anonymous users from downloading attachments. WARNING: this will prevent any non-image site assets posted as attachments from working."
 
@@ -1565,11 +1578,6 @@ en:
     post_revision_text: "Ownership transferred from %{old_user} to %{new_user}"
     deleted_user: "a deleted user"
 
-  emoji:
-    errors:
-      name_already_exists: "Sorry, the name '%{name}' is already used by another emoji."
-      error_while_storing_emoji: "Sorry, there has been an error while storing the emoji."
-
   topic_statuses:
     archived_enabled: "This topic is now archived. It is frozen and cannot be changed in any way."
     archived_disabled: "This topic is now unarchived. It is no longer frozen, and can be changed."
@@ -1638,6 +1646,8 @@ en:
     deactivated: "Was deactivated due to too many bounced emails to '%{email}'."
     deactivated_by_staff: "Deactivated by staff"
     activated_by_staff: "Activated by staff"
+    new_user_typed_too_fast: "New user typed too fast"
+    content_matches_auto_block_regex: "Content matches auto block regex"
     username:
       short: "must be at least %{min} characters"
       long: "must be no more than %{max} characters"
@@ -1671,7 +1681,7 @@ en:
     subject_template: "Confirm you no longer want to receive email updates from %{site_title}"
     text_body_template: |
       Someone (possibly you?) requested to no longer send email updates from %{site_domain_name} to this address.
-      If you with to confirm this, please click this link:
+      If you wish to confirm this, please click this link:
 
       %{confirm_unsubscribe_link}
 
@@ -1760,6 +1770,18 @@ en:
       %{base_url}/users/password-reset/%{email_token}
 
       (If the link above has expired, choose "I forgot my password" when logging in with your email address.)
+
+  download_backup_mailer:
+    title: "Download Backup Mailer"
+    subject_template: "[%{site_name}] Site Backup Download"
+    text_body_template: |
+      Here's the [site backup download](%{backup_file_path}) you requested.
+
+      We sent this download link to your validated email address for security reasons.
+
+      (If you *didn't* request this download, you should be seriously concerned -- someone has admin access to your site.)
+    no_token: |
+      Sorry, this backup download link has already been used or has expired.
 
   test_mailer:
     title: "Test Mailer"
@@ -2480,7 +2502,6 @@ en:
       follow_topic: "Follow this topic"
       join_the_discussion: "Read More"
       popular_posts: "Popular Posts"
-      from_topic_label: "From"
       more_new: "New for you"
       subject_template: "[%{site_name}] Summary"
       unsubscribe: "This summary is sent from %{site_link} when we haven't seen you in a while. To unsubscribe %{unsubscribe_link}."
@@ -3344,7 +3365,7 @@ en:
             description: "General contact web page for you or your organization. Will be displayed on <a href='/about' target='_blank'>your about page</a>."
           site_contact:
             label: "Automated Messages"
-            description: "All automated Discourse personal messages will be sent from this user. Most importantly, this user will be the designated sender of every welcome message automatically sent to new users."
+            description: "All automated Discourse personal messages will be sent from this user, such as the welcome message sent to each new user."
 
       corporate:
         title: "Organization"

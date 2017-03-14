@@ -124,8 +124,10 @@ class User < ActiveRecord::Base
   # set to true to optimize creation and save for imports
   attr_accessor :import_mode
 
+  scope :human_users, -> { where('users.id > 0') }
+
   # excluding fake users like the system user or anonymous users
-  scope :real, -> { where('users.id > 0').where('NOT EXISTS(
+  scope :real, -> { human_users.where('NOT EXISTS(
                      SELECT 1
                      FROM user_custom_fields ucf
                      WHERE
@@ -162,7 +164,7 @@ class User < ActiveRecord::Base
     lower = username.downcase
 
     User.where(username_lower: lower).blank? &&
-      !SiteSetting.reserved_usernames.split("|").any? { |reserved| reserved.casecmp(username) == 0 }
+      SiteSetting.reserved_usernames.split("|").all? { |reserved| !lower.match('^' + Regexp.escape(reserved).gsub('\*', '.*') + '$') }
   end
 
   def self.plugin_staff_user_custom_fields
@@ -274,7 +276,7 @@ class User < ActiveRecord::Base
       self.approved_by = approved_by
     end
 
-    self.approved_at = Time.now
+    self.approved_at = Time.zone.now
 
     if result = save
       send_approval_email if send_mail
@@ -984,7 +986,6 @@ class User < ActiveRecord::Base
       @raw_password = nil
     end
   end
-
 
   def hash_password(password, salt)
     raise StandardError.new("password is too long") if password.size > User.max_password_length

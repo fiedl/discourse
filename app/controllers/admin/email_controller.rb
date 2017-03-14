@@ -78,7 +78,8 @@ class Admin::EmailController < Admin::AdminController
   def raw_email
     params.require(:id)
     incoming_email = IncomingEmail.find(params[:id].to_i)
-    render json: { raw_email: incoming_email.raw }
+    text, html = Email.extract_parts(incoming_email.raw)
+    render json: { raw_email: incoming_email.raw, text_part: text, html_part: html }
   end
 
   def incoming
@@ -86,6 +87,26 @@ class Admin::EmailController < Admin::AdminController
     incoming_email = IncomingEmail.find(params[:id].to_i)
     serializer = IncomingEmailDetailsSerializer.new(incoming_email, root: false)
     render_json_dump(serializer)
+  end
+
+  def incoming_from_bounced
+    params.require(:id)
+
+    begin
+      bounced = EmailLog.find_by(id: params[:id].to_i)
+      raise Discourse::InvalidParameters if bounced.nil?
+
+      email_local_part, email_domain = SiteSetting.notification_email.split('@')
+      bounced_to_address = "#{email_local_part}+verp-#{bounced.bounce_key}@#{email_domain}"
+
+      incoming_email = IncomingEmail.find_by(to_addresses: bounced_to_address)
+      raise Discourse::NotFound if incoming_email.nil?
+
+      serializer = IncomingEmailDetailsSerializer.new(incoming_email, root: false)
+      render_json_dump(serializer)
+    rescue => e
+      render json: {errors: [e.message]}, status: 404
+    end
   end
 
   private

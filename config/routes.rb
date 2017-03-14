@@ -26,7 +26,7 @@ Discourse::Application.routes.draw do
     mount Sidekiq::Web => "/sidekiq"
     mount Logster::Web => "/logs"
   else
-    # only allow sidekie in master site
+    # only allow sidekiq in master site
     mount Sidekiq::Web => "/sidekiq", constraints: AdminConstraint.new(require_master: true)
     mount Logster::Web => "/logs", constraints: AdminConstraint.new
   end
@@ -54,6 +54,7 @@ Discourse::Application.routes.draw do
   end
 
   get "site/basic-info" => 'site#basic_info'
+  get "site/statistics" => 'site#statistics'
 
   get "site_customizations/:key" => "site_customizations#show"
 
@@ -150,6 +151,7 @@ Discourse::Application.routes.draw do
         get "rejected"
         get "/incoming/:id/raw" => "email#raw_email"
         get "/incoming/:id" => "email#incoming"
+        get "/incoming_from_bounced/:id" => "email#incoming_from_bounced"
         get "preview-digest" => "email#preview_digest"
         get "send-digest" => "email#send_digest"
         post "handle_mail"
@@ -232,6 +234,7 @@ Discourse::Application.routes.draw do
     resources :backups, only: [:index, :create], constraints: AdminConstraint.new do
       member do
         get "" => "backups#show", constraints: { id: BACKUP_ROUTE_FORMAT }
+        put "" => "backups#email", constraints: { id: BACKUP_ROUTE_FORMAT }
         delete "" => "backups#destroy", constraints: { id: BACKUP_ROUTE_FORMAT }
         post "restore" => "backups#restore", constraints: { id: BACKUP_ROUTE_FORMAT }
       end
@@ -490,7 +493,7 @@ Discourse::Application.routes.draw do
   get "c/:parent_category_slug/:category_slug/find_by_slug" => "categories#find_by_slug"
   get "c/:category.rss" => "list#category_feed", format: :rss
   get "c/:parent_category/:category.rss" => "list#category_feed", format: :rss
-  get "c/:category" => "list#category_latest"
+  get "c/:category" => "list#category_default", as: "category_default"
   get "c/:category/none" => "list#category_none_latest"
   get "c/:parent_category/:category/(:id)" => "list#parent_category_category_latest", constraints: { id: /\d+/ }
   get "c/:category/l/top" => "list#category_top", as: "category_top"
@@ -500,6 +503,7 @@ Discourse::Application.routes.draw do
   get "category_hashtags/check" => "category_hashtags#check"
 
   TopTopic.periods.each do |period|
+    get "top/#{period}.rss" => "list#top_#{period}_feed", format: :rss
     get "top/#{period}" => "list#top_#{period}"
     get "c/:category/l/top/#{period}" => "list#category_top_#{period}", as: "category_top_#{period}"
     get "c/:category/none/l/top/#{period}" => "list#category_none_top_#{period}", as: "category_none_top_#{period}"
