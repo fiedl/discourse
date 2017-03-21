@@ -174,6 +174,18 @@ task 'assets:precompile' => 'assets:precompile:before' do
 
     # protected
     manifest.send :save
+
+    if GlobalSetting.fallback_assets_path.present?
+      begin
+        FileUtils.cp_r("#{Rails.root}/public/assets/.", GlobalSetting.fallback_assets_path)
+      rescue => e
+        STDERR.puts "Failed to backup assets to #{GlobalSetting.fallback_assets_path}"
+        STDERR.puts e
+        STDERR.puts e.backtrace
+      end
+    end
+
+
   end
 
 end

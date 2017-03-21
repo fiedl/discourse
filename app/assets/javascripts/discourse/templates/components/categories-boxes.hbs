@@ -1,18 +1,22 @@
-{{#if categories}}
-  {{#each categories as |c|}}
-    <div class='category-box'>
-      <a href={{c.url}}>
+{{#each categories as |c|}}
+  <div class='category-box category-box-{{unbound c.slug}}'>
+    <a href={{c.url}}>
+      <div class='category-box-heading'>
         {{#if c.uploaded_logo.url}}
           {{cdn-img src=c.uploaded_logo.url class="logo"}}
         {{/if}}
 
-        <div class='details'>
-          <h3>{{c.name}}</h3>
-          <div class='description'>
-            {{c.description}}
-          </div>
-        </div>
-      </a>
-    </div>
-  {{/each}}
-{{/if}}
+        <h3>
+          {{#if c.read_restricted}}
+            {{fa-icon 'lock'}}
+          {{/if}}
+          {{c.name}}
+        </h3>
+      </div>
+
+      <div class='description'>
+        {{{text-overflow class="overflow" text=c.description_excerpt}}}
+      </div>
+    </a>
+  </div>
+{{/each}}
