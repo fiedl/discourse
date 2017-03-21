@@ -550,7 +550,13 @@ class UsersController < ApplicationController
       if Guardian.new(@user).can_access_forum?
         @user.enqueue_welcome_message('welcome_user') if @user.send_welcome_message
         log_on_user(@user)
-        return redirect_to(wizard_path) if Wizard.user_requires_completion?(@user)
+
+        if Wizard.user_requires_completion?(@user)
+          return redirect_to(wizard_path)
+        elsif destination_url = cookies[:destination_url]
+          cookies[:destination_url] = nil
+          return redirect_to(destination_url)
+        end
       else
         @needs_approval = true
       end
@@ -579,7 +585,7 @@ class UsersController < ApplicationController
 
     session.delete(SessionController::ACTIVATE_USER_KEY)
 
-    if @user.active
+    if @user.active && @user.email_confirmed?
       render_json_error(I18n.t('activation.activated'), status: 409)
     else
       @email_token = @user.email_tokens.unconfirmed.active.first
