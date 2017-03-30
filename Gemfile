@@ -72,7 +72,7 @@ gem 'email_reply_trimmer', '0.1.6'
 gem 'image_optim', '0.20.2'
 gem 'multi_json'
 gem 'mustache'
-gem 'nokogiri'
+gem 'nokogiri', '>= 1.7.1' #  USN-3235-1
 gem 'omniauth'
 gem 'omniauth-openid'
 gem 'openid-redis-store'
