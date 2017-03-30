@@ -130,8 +130,8 @@ test("Links", function() {
          "<p>Here's a tweet:<br/><a href=\"https://twitter.com/evil_trout/status/345954894420787200\" class=\"onebox\" target=\"_blank\">https://twitter.com/evil_trout/status/345954894420787200</a></p>",
          "It doesn't strip the new line.");
 
-  cooked("1. View @eviltrout's profile here: http://meta.discourse.org/users/eviltrout/activity<br/>next line.",
-        "<ol><li>View <span class=\"mention\">@eviltrout</span>'s profile here: <a href=\"http://meta.discourse.org/users/eviltrout/activity\">http://meta.discourse.org/users/eviltrout/activity</a><br>next line.</li></ol>",
+  cooked("1. View @eviltrout's profile here: http://meta.discourse.org/u/eviltrout/activity<br/>next line.",
+        "<ol><li>View <span class=\"mention\">@eviltrout</span>'s profile here: <a href=\"http://meta.discourse.org/u/eviltrout/activity\">http://meta.discourse.org/u/eviltrout/activity</a><br>next line.</li></ol>",
         "allows autolinking within a list without inserting a paragraph.");
 
   cooked("[3]: http://eviltrout.com", "", "It doesn't autolink markdown link references");
@@ -227,7 +227,7 @@ test("Mentions", function() {
   const alwaysTrue = { mentionLookup: (function() { return "user"; }) };
 
   cookedOptions("Hello @sam", alwaysTrue,
-                "<p>Hello <a class=\"mention\" href=\"/users/sam\">@sam</a></p>",
+                "<p>Hello <a class=\"mention\" href=\"/u/sam\">@sam</a></p>",
                 "translates mentions to links");
 
   cooked("[@codinghorror](https://twitter.com/codinghorror)",
@@ -303,11 +303,11 @@ test("Mentions", function() {
          "handles mentions separated by a slash.");
 
   cookedOptions("@eviltrout", alwaysTrue,
-                "<p><a class=\"mention\" href=\"/users/eviltrout\">@eviltrout</a></p>",
+                "<p><a class=\"mention\" href=\"/u/eviltrout\">@eviltrout</a></p>",
                 "it doesn't onebox mentions");
 
   cookedOptions("<small>a @sam c</small>", alwaysTrue,
-                "<p><small>a <a class=\"mention\" href=\"/users/sam\">@sam</a> c</small></p>",
+                "<p><small>a <a class=\"mention\" href=\"/u/sam\">@sam</a> c</small></p>",
                 "it allows mentions within HTML tags");
 });
 
