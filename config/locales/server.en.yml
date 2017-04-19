@@ -47,7 +47,7 @@ en:
   topics: "Topics"
   posts: "posts"
   loading: "Loading"
-  powered_by_html: 'Powered by <a href="http://www.discourse.org">Discourse</a>, best viewed with JavaScript enabled'
+  powered_by_html: 'Powered by <a href="https://www.discourse.org">Discourse</a>, best viewed with JavaScript enabled'
   log_in: "Log In"
 
   purge_reason: "Automatically deleted as abandoned, deactivated account"
@@ -55,6 +55,9 @@ en:
   anonymous: "Anonymous"
   remove_posts_deleted_by_author: "Deleted by author"
 
+  themes:
+    bad_color_scheme: "Can not update theme, invalid color scheme"
+    other_error: "Something went wrong updating theme"
   emails:
     incoming:
       default_subject: "This topic needs a title"
@@ -396,6 +399,10 @@ en:
           attributes:
             name:
               taken: is already in use by another emoji
+        topic_status_update:
+          attributes:
+            execute_at:
+              in_the_past: "must be in the future."
 
   user_profile:
     no_info_me: "<div class='missing-profile'>the About Me field of your profile is currently blank, <a href='/u/%{username_lower}/preferences/about-me'>would you like to fill it out?</a></div>"
@@ -620,6 +627,12 @@ en:
     approval_required: "A moderator must manually approve your new account before you can access this forum. You'll get an email when your account is approved!"
     missing_session: "We cannot detect if your account was created, please ensure you have cookies enabled."
     activated: "Sorry, this account has already been activated."
+    admin_confirm:
+      title: "Confirm Admin Account"
+      description: "Are you sure you want <b>%{target_username}</b> to be an administrator?"
+      grant: "Grant Admin Access"
+      complete: "<b>%{target_username}</b> is now an administrator."
+      back_to: "Return to %{title}"
   post_action_types:
     off_topic:
       title: 'Off-Topic'
@@ -1282,6 +1295,7 @@ en:
 
     num_flaggers_to_close_topic: "Minimum number of unique flaggers that is required to automatically pause a topic for intervention"
     num_flags_to_close_topic: "Minimum number of active flags that is required to automatically pause a topic for intervention"
+    num_hours_to_close_topic: "Number of hours to pause a topic for intervention."
 
     auto_respond_to_flag_actions: "Enable automatic reply when disposing a flag."
     min_first_post_typing_time: "Minimum amount of time in milliseconds a user must type during first post, if threshold is not met post will automatically enter the needs approval queue. Set to 0 to disable (not recommended)"
@@ -1610,6 +1624,26 @@ en:
     autoclosed_enabled_lastpost_minutes:
       one: "This topic was automatically closed 1 minute after the last reply. New replies are no longer allowed."
       other: "This topic was automatically closed %{count} minutes after the last reply. New replies are no longer allowed."
+
+    autoclosed_disabled_days:
+      one: "This topic was automatically opened after 1 day."
+      other: "This topic was automatically opened after %{count} days."
+    autoclosed_disabled_hours:
+      one: "This topic was automatically opened after 1 hour."
+      other: "This topic was automatically opened after %{count} hours."
+    autoclosed_disabled_minutes:
+      one: "This topic was automatically opened after 1 minute."
+      other: "This topic was automatically opened after %{count} minutes."
+    autoclosed_disabled_lastpost_days:
+      one: "This topic was automatically opened 1 day after the last reply."
+      other: "This topic was automatically opened %{count} days after the last reply."
+    autoclosed_disabled_lastpost_hours:
+      one: "This topic was automatically opened 1 hour after the last reply."
+      other: "This topic was automatically opened %{count} hours after the last reply."
+    autoclosed_disabled_lastpost_minutes:
+      one: "This topic was automatically opened 1 minute after the last reply."
+      other: "This topic was automatically opened %{count} minutes after the last reply."
+
     autoclosed_disabled: "This topic is now opened. New replies are allowed."
     autoclosed_disabled_lastpost: "This topic is now opened. New replies are allowed."
     pinned_enabled: "This topic is now pinned. It will appear at the top of its category until it is unpinned by staff for everyone, or by individual users for themselves."
@@ -1624,7 +1658,7 @@ en:
     incorrect_username_email_or_password: "Incorrect username, email or password"
     wait_approval: "Thanks for signing up. We will notify you when your account has been approved."
     active: "Your account is activated and ready to use."
-    activate_email: "<p>You're almost done! We sent an activation mail to <b>%{email}</b>. Please follow the instructions in the email to activate your account.</p><p>If it doesn't arrive, check your spam folder, or try to log in again to send another activation mail.</p>"
+    activate_email: "<p>You're almost done! We sent an activation mail to <b>%{email}</b>. Please follow the instructions in the email to activate your account.</p><p>If it doesn't arrive, check your spam folder, or try to log in again to send another activation mail or to input a new email address.</p>"
     not_activated: "You can't log in yet. We sent an activation email to you. Please follow the instructions in the email to activate your account."
     not_allowed_from_ip_address: "You can't log in as %{username} from that IP address."
     admin_not_allowed_from_ip_address: "You can't log in as admin from that IP address."
@@ -1746,7 +1780,7 @@ en:
       %{invite_link}
 
   custom_invite_forum_mailer:
-    title: "Invite Forum Mailer"
+    title: "Custom Invite Forum Mailer"
     subject_template: "%{invitee_name} invited you to join %{site_domain_name}"
     text_body_template: |
       %{invitee_name} invited you to join
@@ -1785,6 +1819,14 @@ en:
       (If you *didn't* request this download, you should be seriously concerned -- someone has admin access to your site.)
     no_token: |
       Sorry, this backup download link has already been used or has expired.
+
+  admin_confirmation_mailer:
+    title: "Admin Confirmation"
+    subject_template: "[%{email_prefix}] Confirm new Admin Account"
+    text_body_template: |
+      Please confirm that you'd like to add **%{target_username}** as an administrator for your forum.
+
+      [Confirm Administrator Account](%{admin_confirm_url})
 
   test_mailer:
     title: "Test Mailer"
@@ -1888,7 +1930,9 @@ en:
     deferred: "Thanks for letting us know. We're looking into it."
     deferred_and_deleted: "Thanks for letting us know. We've removed the post."
 
-  temporarily_closed_due_to_flags: "This topic is temporarily closed due to a large number of community flags."
+  temporarily_closed_due_to_flags:
+    one: "This topic is temporarily closed for 1 hour due to a large number of community flags."
+    other: "This topic is temporarily closed for %{count} hours due to a large number of community flags."
 
   system_messages:
     post_hidden:
@@ -1911,7 +1955,7 @@ en:
 
     usage_tips:
       text_body_template: |
-        For a few quick tips on getting started as a new user, [check out this blog post](http://blog.discourse.org/2016/12/discourse-new-user-tips-and-tricks/).
+        For a few quick tips on getting started as a new user, [check out this blog post](https://blog.discourse.org/2016/12/discourse-new-user-tips-and-tricks/).
 
         As you participate here, we’ll get to know you, and temporary new user limitations will be lifted. Over time you’ll gain [trust levels](https://meta.discourse.org/t/what-do-user-trust-levels-do/4924) that include special abilities to help us manage our community together.
 
@@ -2291,6 +2335,18 @@ en:
         Some problems are being reported on your admin dashboard.
 
         [Please review and fix them](%{base_url}/admin).
+
+    new_user_of_the_month:
+      title: "You're a New User of the Month!"
+      subject_template: "You're a New User of the Month!"
+      text_body_template: |
+        Congratulations, you've been awarded the **New User of the Month award for %{month_year}**. :trophy:
+
+        You've quickly become a valuable member of our community and everyone is really enjoying your posts.
+
+        This award will be permanently visible as a badge on [your user page](/my/badges).
+
+        Thanks, and keep up the great work!
 
   unsubscribe_link: |
     To unsubscribe from these emails, [click here](%{unsubscribe_url}).
@@ -2710,6 +2766,8 @@ en:
 
   color_schemes:
     base_theme_name: "Base"
+    default: "Light Scheme"
+    dark: "Dark Scheme"
 
   about: "About"
   guidelines: "Guidelines"
@@ -3252,7 +3310,7 @@ en:
         This badge is granted the first time you add an Emoji to your post :thumbsup:. Emoji let you convey emotion in your posts, from happiness :smiley: to sadness :anguished: to anger :angry: and everything in between :sunglasses: . Just type a : (colon) or press the Emoji toolbar button in the editor to select from hundreds of choices :ok_hand:
     first_mention:
       name: First Mention
-      description: Mentioned a user in a Post
+      description: Mentioned a user in a post
       long_description: This badge is granted the first time you mention someone's @username in your post. Each mention generates a notification to that person, so they know about your post. Just begin typing @ (at symbol) to mention any user or, if allowed, group – it's a convenient way to bring something to their attention.
     first_onebox:
       name: First Onebox
@@ -3260,9 +3318,15 @@ en:
       long_description: This badge is granted the first time you post a link on a line by itself, which was then automatically expanded into a onebox with a brief summary of the link, a title, and (when available) a picture.
     first_reply_by_email:
       name: First Reply By Email
-      description: Replied to a Post via email
+      description: Replied to a post via email
       long_description: |
         This badge is granted the first time you reply to a post via email :e-mail:.
+    new_user_of_the_month:
+      name: "New User of the Month"
+      description: Outstanding contributions in their first month
+      long_description: |
+        This badge is granted to congratulate two new users each month for their excellent overall contributions, as measured by how often their posts were liked, and by whom.
+    badge_title_metadata: "%{display_name} badge on %{site_title}"
 
   admin_login:
     success: "Email Sent"
@@ -3300,7 +3364,7 @@ en:
   safe_mode:
     title: "Enter safe mode"
     description: "Safe mode allows you to test your site without loading plugins or site customizations."
-    no_customizations: "Disable all site customizations"
+    no_customizations: "Disable current theme"
     only_official: "Disable unofficial plugins"
     no_plugins: "Disable all plugins"
     enter: "Enter Safe Mode"

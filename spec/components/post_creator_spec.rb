@@ -85,6 +85,7 @@ describe PostCreator do
         DiscourseEvent.expects(:trigger).with(:before_create_topic, anything, anything).once
         DiscourseEvent.expects(:trigger).with(:after_trigger_post_process, anything).once
         DiscourseEvent.expects(:trigger).with(:markdown_context, anything).at_least_once
+        DiscourseEvent.expects(:trigger).with(:topic_notification_level_changed, anything, anything, anything).at_least_once
         creator.create
       end
 
@@ -254,31 +255,49 @@ describe PostCreator do
       it 'creates a post with featured link' do
         SiteSetting.topic_featured_link_enabled = true
         SiteSetting.min_first_post_length = 100
+        SiteSetting.queue_jobs = true
+
         post = creator_with_featured_link.create
         expect(post.topic.featured_link).to eq('http://www.discourse.org')
         expect(post.valid?).to eq(true)
       end
 
       describe "topic's auto close" do
+        before do
+          SiteSetting.queue_jobs = true
+        end
 
         it "doesn't update topic's auto close when it's not based on last post" do
-          auto_close_time = 1.day.from_now
-          topic = Fabricate(:topic, auto_close_at: auto_close_time, auto_close_hours: 12)
+          Timecop.freeze do
+            topic = Fabricate(:topic).set_or_create_status_update(TopicStatusUpdate.types[:close], 12)
 
-          PostCreator.new(topic.user, topic_id: topic.id, raw: "this is a second post").create
-          topic.reload
+            PostCreator.new(topic.user, topic_id: topic.id, raw: "this is a second post").create
+            topic.reload
 
-          expect(topic.auto_close_at).to be_within(1.second).of(auto_close_time)
+            topic_status_update = TopicStatusUpdate.last
+            expect(topic_status_update.execute_at).to be_within(1.second).of(Time.zone.now + 12.hours)
+            expect(topic_status_update.created_at).to be_within(1.second).of(Time.zone.now)
+          end
         end
 
         it "updates topic's auto close date when it's based on last post" do
-          auto_close_time = 1.day.from_now
-          topic = Fabricate(:topic, auto_close_at: auto_close_time, auto_close_hours: 12, auto_close_based_on_last_post: true)
+          Timecop.freeze do
+            topic = Fabricate(:topic,
+              topic_status_updates: [Fabricate(:topic_status_update,
+                based_on_last_post: true,
+                execute_at: Time.zone.now - 12.hours,
+                created_at: Time.zone.now - 24.hours
+              )]
+            )
 
-          PostCreator.new(topic.user, topic_id: topic.id, raw: "this is a second post").create
-          topic.reload
+            Fabricate(:post, topic: topic)
 
-          expect(topic.auto_close_at).not_to be_within(1.second).of(auto_close_time)
+            PostCreator.new(topic.user, topic_id: topic.id, raw: "this is a second post").create
+
+            topic_status_update = TopicStatusUpdate.last
+            expect(topic_status_update.execute_at).to be_within(1.second).of(Time.zone.now + 12.hours)
+            expect(topic_status_update.created_at).to be_within(1.second).of(Time.zone.now)
+          end
         end
 
       end
@@ -341,8 +360,9 @@ describe PostCreator do
     context 'when auto-close param is given' do
       it 'ensures the user can auto-close the topic, but ignores auto-close param silently' do
         Guardian.any_instance.stubs(:can_moderate?).returns(false)
-        post = PostCreator.new(user, basic_topic_params.merge(auto_close_time: 2)).create
-        expect(post.topic.auto_close_at).to eq(nil)
+        expect {
+          PostCreator.new(user, basic_topic_params.merge(auto_close_time: 2)).create!
+        }.to_not change { TopicStatusUpdate.count }
       end
     end
   end
@@ -567,7 +587,7 @@ describe PostCreator do
 
     it 'acts correctly' do
       # It's not a warning
-      expect(post.topic.warning).to be_blank
+      expect(post.topic.user_warning).to be_blank
 
       expect(post.topic.archetype).to eq(Archetype.private_message)
       expect(post.topic.subtype).to eq(TopicSubtype.user_to_user)
@@ -639,11 +659,11 @@ describe PostCreator do
 
       topic = post.topic
       expect(topic).to be_present
-      expect(topic.warning).to be_present
+      expect(topic.user_warning).to be_present
       expect(topic.subtype).to eq(TopicSubtype.moderator_warning)
-      expect(topic.warning.user).to eq(target_user1)
-      expect(topic.warning.created_by).to eq(user)
-      expect(target_user1.warnings.count).to eq(1)
+      expect(topic.user_warning.user).to eq(target_user1)
+      expect(topic.user_warning.created_by).to eq(user)
+      expect(target_user1.user_warnings.count).to eq(1)
     end
   end
 

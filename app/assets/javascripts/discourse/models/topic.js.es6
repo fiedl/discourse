@@ -223,16 +223,12 @@ const Topic = RestModel.extend({
 
   toggleStatus(property) {
     this.toggleProperty(property);
-    this.saveStatus(property, !!this.get(property));
+    return this.saveStatus(property, !!this.get(property));
   },
 
   saveStatus(property, value, until) {
     if (property === 'closed') {
       this.incrementProperty('posts_count');
-
-      if (value === true) {
-        this.set('details.auto_close_at', null);
-      }
     }
     return ajax(this.get('url') + "/status", {
       type: 'PUT',
@@ -380,9 +376,8 @@ const Topic = RestModel.extend({
   },
 
   reload() {
-    const self = this;
-    return ajax('/t/' + this.get('id'), { type: 'GET' }).then(function(topic_json) {
-      self.updateFromJson(topic_json);
+    return ajax(`/t/${this.get('id')}`, { type: 'GET' }).then(topic_json => {
+      this.updateFromJson(topic_json);
     });
   },
 
