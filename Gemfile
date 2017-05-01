@@ -2,6 +2,9 @@ source 'https://rubygems.org'
 # if there is a super emergency and rubygems is playing up, try
 #source 'http://production.cf.rubygems.org'
 
+# does not install in linux ATM, so hack this for now
+# gem 'bootsnap', require: false
+
 def rails_master?
   ENV["RAILS_MASTER"] == '1'
 end
@@ -66,7 +69,9 @@ gem 'unf', require: false
 
 gem 'email_reply_trimmer', '0.1.6'
 
-gem 'image_optim'
+# TODO Use official image_optim gem once https://github.com/toy/image_optim/pull/149
+# is merged.
+gem 'discourse_image_optim', require: 'image_optim'
 gem 'multi_json'
 gem 'mustache'
 gem 'nokogiri'
@@ -94,7 +99,6 @@ gem 'rest-client'
 gem 'rinku'
 gem 'sanitize'
 gem 'sidekiq'
-gem 'sidekiq-statistic'
 
 # for sidekiq web
 gem 'sinatra', require: false
@@ -182,3 +186,10 @@ gem 'rmmseg-cpp', require: false
 gem 'logster'
 
 gem 'sassc', require: false
+
+
+if ENV["IMPORT"] == "1"
+  gem 'mysql2'
+  gem 'php_serialize'
+  gem 'redcarpet'
+end

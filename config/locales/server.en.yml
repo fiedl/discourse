@@ -255,6 +255,8 @@ en:
     delete_reason: "Deleted via post moderation queue"
 
   groups:
+    success:
+      bulk_add: "%{users_added} users have been added to the group."
     errors:
       can_not_modify_automatic: "You cannot modify an automatic group"
       member_already_exist: "'%{username}' is already a member of this group."
@@ -1306,7 +1308,7 @@ en:
     reply_by_email_enabled: "Enable replying to topics via email."
     reply_by_email_address: "Template for reply by email incoming email address, for example: %{reply_key}@reply.example.com or replies+%{reply_key}@example.com"
     alternative_reply_by_email_addresses: "List of alternative templates for reply by email incoming email addresses. Example: %{reply_key}@reply.example.com|replies+%{reply_key}@example.com"
-    incoming_email_prefer_html: "Use the HTML instead of the text for incoming email. May cause unexpected formatting issues!"
+    incoming_email_prefer_html: "Use the HTML instead of the text for incoming email."
 
     disable_emails: "Prevent Discourse from sending any kind of emails"
 
@@ -1337,6 +1339,7 @@ en:
 
     enable_forwarded_emails: "[BETA] Allow users to create a topic by forwarding an email in."
     always_show_trimmed_content: "Always show trimmed part of incoming emails. WARNING: might reveal email addresses."
+    private_email: "Don't include content from posts or topics in emails for extra privacy."
 
     manual_polling_enabled: "Push emails using the API for email replies."
     pop3_polling_enabled: "Poll via POP3 for email replies."
@@ -1446,7 +1449,7 @@ en:
     embed_username_required: "The username for topic creation is required."
     embed_whitelist_selector: "CSS selector for elements that are allowed in embeds."
     embed_blacklist_selector: "CSS selector for elements that are removed from embeds."
-    notify_about_flags_after: "If there are flags that haven't been handled after this many hours, send an email to the contact_email. Set to 0 to disable."
+    notify_about_flags_after: "If there are flags that haven't been handled after this many hours, send a private message to staff. Set to 0 to disable."
     show_create_topics_notice: "If the site has fewer than 5 public topics, show a notice asking admins to create some topics."
 
     delete_drafts_older_than_n_days: Delete drafts older than (n) days.
@@ -1935,6 +1938,9 @@ en:
     other: "This topic is temporarily closed for %{count} hours due to a large number of community flags."
 
   system_messages:
+    private_topic_title: "Topic #%{id}"
+    contents_hidden: "Please visit the post to see its contents."
+
     post_hidden:
       title: "Post Hidden"
       subject_template: "Post hidden by community flags"
