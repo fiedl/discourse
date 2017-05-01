@@ -157,8 +157,10 @@ describe Email::Receiver do
       expect(topic.posts.last.cooked).not_to match(/<br/)
 
       expect { process(:html_reply) }.to change { topic.posts.count }
-      expect(topic.posts.last.raw).to eq("This is a <b>HTML</b> reply ;)")
+      expect(topic.posts.last.raw).to eq("This is a **HTML** reply ;)")
+    end
 
+    it "handles different encodings correctly" do
       expect { process(:hebrew_reply) }.to change { topic.posts.count }
       expect(topic.posts.last.raw).to eq("שלום! מה שלומך היום?")
 
@@ -167,6 +169,10 @@ describe Email::Receiver do
 
       expect { process(:reply_with_weird_encoding) }.to change { topic.posts.count }
       expect(topic.posts.last.raw).to eq("This is a reply with a weird encoding.")
+
+      expect { process(:reply_with_8bit_encoding) }.to change { topic.posts.count }
+      expect(topic.posts.last.raw).to eq("hab vergessen kritische zeichen einzufügen:\näöüÄÖÜß")
+
     end
 
     it "prefers text over html" do
@@ -177,7 +183,7 @@ describe Email::Receiver do
     it "prefers html over text when site setting is enabled" do
       SiteSetting.incoming_email_prefer_html = true
       expect { process(:text_and_html_reply) }.to change { topic.posts.count }
-      expect(topic.posts.last.raw).to eq('This is the <b>html</b> part.')
+      expect(topic.posts.last.raw).to eq('This is the **html** part.')
     end
 
     it "uses text when prefer_html site setting is enabled but no html is available" do
