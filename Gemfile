@@ -34,7 +34,7 @@ else
   gem 'seed-fu', '~> 2.3.5'
 end
 
-gem 'mail'
+gem 'mail', '~> 2.6.6.rc1'
 gem 'mime-types', require: 'mime/types/columnar'
 
 gem 'hiredis'
@@ -73,7 +73,7 @@ gem 'email_reply_trimmer', '0.1.6'
 gem 'discourse_image_optim', require: 'image_optim'
 gem 'multi_json'
 gem 'mustache'
-gem 'nokogiri', '>= 1.7.1' #  USN-3235-1
+gem 'nokogiri', '>= 1.7.2'
 gem 'omniauth'
 gem 'omniauth-openid'
 gem 'openid-redis-store'

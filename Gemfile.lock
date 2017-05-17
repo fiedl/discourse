@@ -155,7 +155,7 @@ GEM
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
     lru_redux (1.1.0)
-    mail (2.6.5)
+    mail (2.6.6.rc1)
       mime-types (>= 1.16, < 4)
     memory_profiler (0.9.7)
     message_bus (2.0.2)
@@ -177,7 +177,7 @@ GEM
     multipart-post (2.0.0)
     mustache (1.0.5)
     netrc (0.11.0)
-    nokogiri (1.7.1)
+    nokogiri (1.7.2)
       mini_portile2 (~> 2.1.0)
     nokogumbo (1.4.10)
       nokogiri
@@ -432,7 +432,7 @@ DEPENDENCIES
   listen
   logster
   lru_redux
-  mail
+  mail (~> 2.6.6.rc1)
   memory_profiler
   message_bus
   mime-types
@@ -442,7 +442,7 @@ DEPENDENCIES
   mock_redis
   multi_json
   mustache
-  nokogiri (>= 1.7.1)
+  nokogiri (>= 1.7.2)
   oj
   omniauth
   omniauth-facebook
