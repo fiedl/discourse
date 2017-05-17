@@ -34,7 +34,7 @@ else
   gem 'seed-fu', '~> 2.3.5'
 end
 
-gem 'mail'
+gem 'mail', '>= 2.6.6.rc1' # https://gemnasium.com/github.com/fiedl/discourse/alerts#advisory_309
 gem 'mime-types', require: 'mime/types/columnar'
 
 gem 'hiredis'
