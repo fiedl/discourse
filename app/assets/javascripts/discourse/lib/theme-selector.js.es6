@@ -13,9 +13,9 @@ export function currentThemeKey() {
   return themeKey;
 }
 
-export function selectDefaultTheme(key) {
+export function setLocalTheme(key, themeSeq) {
   if (key) {
-    $.cookie('theme_key', key, {path: '/', expires: 9999});
+    $.cookie('theme_key', `${key},${themeSeq}`, {path: '/', expires: 9999});
   } else {
     $.cookie('theme_key', null, {path: '/', expires: 1});
   }
