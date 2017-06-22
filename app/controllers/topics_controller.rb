@@ -558,11 +558,13 @@ class TopicsController < ApplicationController
     guardian.ensure_can_change_post_timestamps!
 
     begin
-      PostTimestampChanger.new( topic_id: params[:topic_id].to_i,
-                                timestamp: params[:timestamp].to_i ).change!
+      TopicTimestampChanger.new(
+        topic_id: params[:topic_id].to_i,
+        timestamp: params[:timestamp].to_f
+      ).change!
 
       render json: success_json
-    rescue ActiveRecord::RecordInvalid
+    rescue ActiveRecord::RecordInvalid, TopicTimestampChanger::InvalidTimestampError
       render json: failed_json, status: 422
     end
   end
@@ -603,7 +605,7 @@ class TopicsController < ApplicationController
       topic_ids = params[:topic_ids].map {|t| t.to_i}
     elsif params[:filter] == 'unread'
       tq = TopicQuery.new(current_user)
-      topics = TopicQuery.unread_filter(tq.joined_topic_user, staff: guardian.is_staff?).listable_topics
+      topics = TopicQuery.unread_filter(tq.joined_topic_user, current_user.id, staff: guardian.is_staff?).listable_topics
       topics = topics.where('category_id = ?', params[:category_id]) if params[:category_id]
       topic_ids = topics.pluck(:id)
     else

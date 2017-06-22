@@ -351,9 +351,6 @@ da:
         full_name: 'Fulde Navn'
         add_members: "Tilføj Medlemmer"
         delete_member_confirm: "Fjern '%{username}' fra '%{group}' gruppen?"
-      request_membership_pm:
-        title: "Medlemskabsanmodning"
-        body: "Jeg vil gerne ansøge om medlemskab i @%{groupName}."
       name_placeholder: "Gruppe navn, ingen mellemrum, samme som reglen for brugernavn"
       public: "Tillad at brugere frit kan tilmelde sig/forlade gruppen (Kræver at gruppen er synlig)"
       empty:
@@ -488,7 +485,6 @@ da:
       mute: "Mute"
       edit: "Redigér indstillinger"
       download_archive:
-        button_text: "Download Mine Indlæg"
         confirm: "Er du sikker på, at du vil downloade dine indlæg?"
         success: "Downloaden er startet. Du vil blive notificeret via en besked, når processen er færdig."
         rate_limit_error: "Indlæg kan downloades en gang om dagen, prøv igen i morgen."
@@ -616,7 +612,6 @@ da:
         title: "Skift brugernavn"
         confirm: "Hvis du ændrer dit brugernavn, vil alle tidligere citeringer af dine indlæg ikke længere kunne vises. Er du helt sikker på at du ønsker at ændre brugernavn?"
         taken: "Beklager, det brugernavn er optaget."
-        error: "Der skete en fejl i forbindelse med skift af dit brugernavn."
         invalid: "Det brugernavn er ugyldigt. Det må kun bestå af bogstaver og tal."
       change_email:
         title: "Skift e-mail-adresse"
@@ -991,7 +986,6 @@ da:
       your_email: "E-mail-adressen knyttet til kontoen er <b>%{email}</b>."
       accept_invite: "Accepter Invitation"
       success: "Din konto er blevet oprettet, og du er nu logget ind."
-      password_label: "Angiv Kodeord (valgfrit)"
     password_reset:
       continue: "Fortsæt til %{site_name}"
     emoji_set:
@@ -1029,7 +1023,6 @@ da:
       cannot_see_mention:
         category: "Du nævnte {{username}}, men de vil ikke blive notificeret fordi de ikke har adgang til denne kategori. Du vil være nødt til at tilføje dem til en gruppe, der har adgang til kategori."
         private: "Du nævnte {{username}}, men de vil ikke blive notificeret fordi de ikke er i stand til at se denne personlige besked. Du vil være nødt til at invitere dem til denne personlige besked."
-      duplicate_link: "Det ser ud til, at dit link til <b>{{domain}}</b> allerede var indsendt i emnet af <b>@{{username}}</b> i <a href='{{post_url}}'>et svar {{ago}}</a> – er du sikker på at du vil indsende det igen?"
       error:
         title_missing: "Titlen er påkrævet"
         title_too_short: "Titlen skal være på mindst {{min}} tegn"
@@ -1245,10 +1238,8 @@ da:
         dismiss_new: "Afvis nye"
         toggle: "vælg flere emner af gangen"
         actions: "Handlinger på flere indlæg"
-        change_category: "Skift kategori"
         close_topics: "Luk indlæg"
         archive_topics: "Arkiver Emner"
-        notification_level: "Skift niveau for underetninger"
         choose_new_category: "Vælg den nye kategori for emnerne:"
         selected:
           one: "Du har valgt <b>1</b> indlæg."
@@ -1752,10 +1743,6 @@ da:
         confirm:
           one: "Er du sikker på, at du vil slette indlægget?"
           other: "Er du sikker på, at du vil slette alle de valgte indlæg?"
-      merge:
-        confirm:
-          one: "Er du sikker på du vil flette de indlæg?"
-          other: "Er du sikker på at du vil flette disse {{count}} indlæg?"
       revisions:
         controls:
           first: "Første udgave"
@@ -1801,8 +1788,6 @@ da:
       settings: 'Indstillinger'
       topic_template: "Skabelon for emne"
       tags: "Tags"
-      tags_allowed_tags: "Mærker der kun kan bruges i denne kategori:"
-      tags_allowed_tag_groups: "Mærke grupper der kun kan bruges i denne kategori:"
       tags_placeholder: "(Valgfri) liste af tiladte mærker"
       tag_groups_placeholder: "(Valgfri) liste af tiladte mærke grupper"
       topic_featured_link_allowed: "Tillad fremhævede links i denne kategori"
@@ -2133,8 +2118,6 @@ da:
       granted_on: "Tildelt %{date}"
       others_count: "Andre med dette badge (%{count})"
       title: Badges
-      allow_title: "tilgængelig titel"
-      multiple_grant: "tildelt flere gange"
       badge_count:
         one: "1 Badge"
         other: "%{count} Badges"
@@ -2616,9 +2599,6 @@ da:
           updating: "Opdaterer..."
           up_to_date: "Tema er opdateret, senest tjekket:"
           add: "Tilføj"
-          commits_behind:
-            one: "Temaet er 1 integrering bagud!"
-            other: "Temaet er {{count}} integreringer bagud!"
           scss:
             text: "CSS"
             title: "Angiv tilpasset CSS - vi accepterer alle gyldige CSS og SCSS-former"
@@ -2766,7 +2746,6 @@ da:
           do_nothing: "gør intet"
         staff_actions:
           title: "Handlinger"
-          instructions: "Klik på brugernavne og handlinger for at filtrere listen. Klik på profilbillederne for at gå til brugersiderne."
           clear_filters: "Vis alt"
           staff_user: "Bruger"
           target_user: "Bruger"

@@ -13,16 +13,14 @@ class Upload < ActiveRecord::Base
 
   has_many :optimized_images, dependent: :destroy
 
-  attr_accessor :is_attachment_for_group_message
+  attr_accessor :for_group_message
   attr_accessor :for_theme
+  attr_accessor :for_private_message
 
   validates_presence_of :filesize
   validates_presence_of :original_filename
 
   validates_with ::Validators::UploadValidator
-
-  CROPPED_TYPES ||= %w{avatar card_background custom_emoji profile_background}.each(&:freeze)
-  UPLOAD_TYPES  ||= CROPPED_TYPES + %w{composer category_logo category_background}.each(&:freeze)
 
   def thumbnail(width = self.width, height = self.height)
     optimized_images.find_by(width: width, height: height)
@@ -96,7 +94,12 @@ class Upload < ActiveRecord::Base
           # download if external
           if external
             url = SiteSetting.scheme + ":" + previous_url
-            file = FileHelper.download(url, max_file_size_kb, "discourse", true) rescue nil
+            file = FileHelper.download(
+              url,
+              max_file_size: max_file_size_kb,
+              tmp_file_name: "discourse",
+              follow_redirect: true
+            ) rescue nil
             path = file.path
           else
             path = local_store.path_for(upload)

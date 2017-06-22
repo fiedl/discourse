@@ -351,9 +351,6 @@ pt_BR:
         full_name: 'Nome Completo'
         add_members: "Adicionar Membros"
         delete_member_confirm: "Remover '%{username}' do grupo '%{group}'?"
-      request_membership_pm:
-        title: "Pedido de adesão"
-        body: "Eu gostaria de solicitar a adesão no grupo @%{groupName}."
       name_placeholder: "Nome do grupo, sem espaços, regras iguais ao nome de usuário"
       public: "Permitir que usuários entrem e saiam do grupo livremente (Requer que o grupo seja visível)"
       empty:
@@ -488,7 +485,6 @@ pt_BR:
       mute: "Silenciar"
       edit: "Editar Preferências"
       download_archive:
-        button_text: "Baixar Minhas Publicações"
         confirm: "Você tem certeza de que quer baixar as suas publicações?"
         success: "Download iniciado, você será notificado por mensagem quando o processo estiver completo."
         rate_limit_error: "Publicações podem ser baixadas somente uma vez por dia, por favor tente novamente amanhã."
@@ -615,7 +611,6 @@ pt_BR:
         title: "Alterar Nome de Usuário"
         confirm: "Se você mudar seu Nome de Usuário, todas as citações das suas respostas e as menções ao seu @nome serão desfeitas. Você tem certeza?"
         taken: "Desculpe, esse Nome de Usuário já está sendo usado."
-        error: "Houve um erro ao alterar o seu Nome de Usuário."
         invalid: "Esse Nome de Usuário é inválido. Deve conter apenas números e letras."
       change_email:
         title: "Alterar Email"
@@ -990,7 +985,6 @@ pt_BR:
       your_email: "O endereço de email da sua conta é <b>%{email}</b>."
       accept_invite: "Aceitar Convite"
       success: "Sua conta foi criada e você já está logado."
-      password_label: "Configurar Senha (opcional)"
     password_reset:
       continue: "Continuar para %{site_name}"
     emoji_set:
@@ -1028,7 +1022,6 @@ pt_BR:
       cannot_see_mention:
         category: "Você mencionou {{username}}, porém ele(a) não será notificado(a), pois não tem acesso a essa categoria. Você deverá adicioná-lo(a) ao grupo que tem acesso à categoria."
         private: "Você mencionou {{username}}, porém ele(a) não será notificado(a), pois não pode ver essa mensagem pessoal. Você deverá convidá-lo(a) para essa MP."
-      duplicate_link: "Parece que o seu link para <b>{{domain}}</b> já foi postado no tópico por <b>@{{username}}</b> em <a href='{{post_url}}'>uma resposta {{ago}}</a> – tem certeza que deseja postá-lo novamente?"
       error:
         title_missing: "Título é obrigatório"
         title_too_short: "O título tem que ter no mínimo {{min}} caracteres"
@@ -1244,10 +1237,8 @@ pt_BR:
         dismiss_new: "Dispensar Nova"
         toggle: "alternar a seleção em massa de tópicos"
         actions: "Ações em Massa"
-        change_category: "Mudar Categoria"
         close_topics: "Fechar Tópicos"
         archive_topics: "Arquivar Tópicos"
-        notification_level: "Modificar Nível de Notificação"
         choose_new_category: "Escolha a nova categoria para os tópicos:"
         selected:
           one: "Você selecionou <b>1</b> tópico."
@@ -1740,10 +1731,6 @@ pt_BR:
         confirm:
           one: "Tem certeza que quer apagar esta resposta?"
           other: "Tem certeza que quer apagar todos essas respostas?"
-      merge:
-        confirm:
-          one: "Você tem certeza que quer fundir essas postagens?"
-          other: "Você tem certeza que quer fundir essas {{count}} postagens?"
       revisions:
         controls:
           first: "Primeira revisão"
@@ -1789,8 +1776,6 @@ pt_BR:
       settings: 'Configurações'
       topic_template: "Modelo de Tópico"
       tags: "Etiquetas"
-      tags_allowed_tags: "Etiquetas que só podem ser usadas nesta categoria:"
-      tags_allowed_tag_groups: "Grupos de etiquetas que só podem ser usados nesta categoria:"
       tags_placeholder: "(Opcional) lista de etiquetas permitidas"
       tag_groups_placeholder: "(Opcional) lista de grupos de etiquetas permitidos"
       topic_featured_link_allowed: "Permitir links em destaque nesta categoria"
@@ -2120,8 +2105,6 @@ pt_BR:
       granted_on: "Concedido em %{date}"
       others_count: "Outros com esse emblema (%{count})"
       title: Emblemas
-      allow_title: "título disponível"
-      multiple_grant: "concedido várias vezes"
       badge_count:
         one: "1 Emblema"
         other: "%{count} Emblemas"
@@ -2416,7 +2399,6 @@ pt_BR:
         event_type_missing: "Você deve configurar apenas um tipo de evento."
         content_type: "Tipo de Conteúdo"
         secret: "Segredo"
-        event_chooser: "Que eventos devem desencadear esse webhook?"
         wildcard_event: "Envie-me tudo."
         individual_event: "Selecionar eventos individuais."
         verify_certificate: "Verificar o certificado TLS da URL do payload"
@@ -2699,7 +2681,6 @@ pt_BR:
           do_nothing: "não fazer nada"
         staff_actions:
           title: "Ações do Staff"
-          instructions: "Clique nos nomes de usuário e ações para filtrar a lista. Clique nas imagens de perfil para ir para as páginas de usuário."
           clear_filters: "Mostrar Tudo"
           staff_user: "Usuário do Staff"
           target_user: "Usuário Destino"

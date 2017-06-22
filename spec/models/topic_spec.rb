@@ -439,20 +439,40 @@ describe Topic do
         let(:walter) { Fabricate(:walter_white) }
 
         context 'by group name' do
+          let(:group) { Fabricate(:group) }
 
           it 'can add admin to allowed groups' do
             admins = Group[:admins]
-            admins.alias_level = Group::ALIAS_LEVELS[:everyone]
-            admins.save
+            admins.update!(alias_level: Group::ALIAS_LEVELS[:everyone])
 
             expect(topic.invite_group(topic.user, admins)).to eq(true)
-
             expect(topic.allowed_groups.include?(admins)).to eq(true)
-
             expect(topic.remove_allowed_group(topic.user, 'admins')).to eq(true)
-            topic.reload
-
             expect(topic.allowed_groups.include?(admins)).to eq(false)
+          end
+
+          it 'creates a notification for each user in the group' do
+            user = Fabricate(:user)
+            user_2 = Fabricate(:user)
+            Fabricate(:post, topic: topic)
+
+            group.add(user)
+            group.add(user_2)
+
+            group.group_users.find_by(user: user_2).update!(
+              notification_level: NotificationLevels.all[:muted]
+            )
+
+            expect { topic.invite_group(topic.user, group) }
+              .to change { Notification.count }.by(1)
+
+            notification = Notification.last
+
+            expect(notification.user).to eq(user)
+            expect(notification.topic).to eq(topic)
+
+            expect(notification.notification_type)
+              .to eq(Notification.types[:invited_to_private_message])
           end
 
         end
@@ -966,74 +986,92 @@ describe Topic do
     end
   end
 
-  describe 'change_category' do
-
-    before do
-      @topic = Fabricate(:topic)
-      @category = Fabricate(:category, user: @topic.user)
-      @user = @topic.user
-    end
+  describe '#change_category_to_id' do
+    let(:topic) { Fabricate(:topic) }
+    let(:user) { topic.user }
+    let(:category) { Fabricate(:category, user: user) }
 
     describe 'without a previous category' do
-
-      it 'should not change the topic_count when not changed' do
-       expect { @topic.change_category_to_id(@topic.category.id); @category.reload }.not_to change(@category, :topic_count)
+      it 'changes the category' do
+        topic.change_category_to_id(category.id)
+        category.reload
+        expect(topic.category).to eq(category)
+        expect(category.topic_count).to eq(1)
       end
 
-      describe 'changed category' do
-        before do
-          @topic.change_category_to_id(@category.id)
-          @category.reload
-        end
-
-        it 'changes the category' do
-          expect(@topic.category).to eq(@category)
-          expect(@category.topic_count).to eq(1)
-        end
-
+      it 'should not change the topic_count when not changed' do
+       expect { topic.change_category_to_id(topic.category.id); category.reload }.not_to change(category, :topic_count)
       end
 
       it "doesn't change the category when it can't be found" do
-        @topic.change_category_to_id(12312312)
-        expect(@topic.category_id).to eq(SiteSetting.uncategorized_category_id)
+        topic.change_category_to_id(12312312)
+        expect(topic.category_id).to eq(SiteSetting.uncategorized_category_id)
       end
     end
 
     describe 'with a previous category' do
       before do
-        @topic.change_category_to_id(@category.id)
-        @topic.reload
-        @category.reload
+        topic.change_category_to_id(category.id)
+        topic.reload
+        category.reload
       end
 
       it 'increases the topic_count' do
-        expect(@category.topic_count).to eq(1)
+        expect(category.topic_count).to eq(1)
       end
 
       it "doesn't change the topic_count when the value doesn't change" do
-        expect { @topic.change_category_to_id(@category.id); @category.reload }.not_to change(@category, :topic_count)
+        expect { topic.change_category_to_id(category.id); category.reload }.not_to change(category, :topic_count)
       end
 
-      it "doesn't reset the category when given a name that doesn't exist" do
-        @topic.change_category_to_id(55556)
-        expect(@topic.category_id).to be_present
+      it "doesn't reset the category when an id that doesn't exist" do
+        topic.change_category_to_id(55556)
+        expect(topic.category_id).to eq(category.id)
       end
 
       describe 'to a different category' do
-        before do
-          @new_category = Fabricate(:category, user: @user, name: '2nd category')
-          @topic.change_category_to_id(@new_category.id)
-          @topic.reload
-          @new_category.reload
-          @category.reload
+        let(:new_category) { Fabricate(:category, user: user, name: '2nd category') }
+
+        it 'should work' do
+          topic.change_category_to_id(new_category.id)
+
+          expect(topic.reload.category).to eq(new_category)
+          expect(new_category.reload.topic_count).to eq(1)
+          expect(category.reload.topic_count).to eq(0)
         end
 
-        it "should increase the new category's topic count" do
-          expect(@new_category.topic_count).to eq(1)
-        end
+        describe 'when new category is set to auto close by default' do
+          before do
+            new_category.update!(auto_close_hours: 5)
+          end
 
-        it "should lower the original category's topic count" do
-          expect(@category.topic_count).to eq(0)
+          it 'should set a topic timer' do
+            expect { topic.change_category_to_id(new_category.id) }
+              .to change { TopicTimer.count }.by(1)
+
+            expect(topic.reload.category).to eq(new_category)
+
+            topic_timer = TopicTimer.last
+
+            expect(topic_timer.topic).to eq(topic)
+            expect(topic_timer.execute_at).to be_within(1.second).of(Time.zone.now + 5.hours)
+          end
+
+          describe 'when topic has an existing topic timer' do
+            let(:topic_timer) { Fabricate(:topic_timer, topic: topic) }
+
+            it "should not inherit category's auto close hours" do
+              topic_timer
+              topic.change_category_to_id(new_category.id)
+
+              expect(topic.reload.category).to eq(new_category)
+
+              expect(topic.public_topic_timer).to eq(topic_timer)
+
+              expect(topic.public_topic_timer.execute_at)
+                .to be_within(1.second).of(topic_timer.execute_at)
+            end
+          end
         end
       end
 
@@ -1051,13 +1089,13 @@ describe Topic do
 
       describe 'when the category exists' do
         before do
-          @topic.change_category_to_id(nil)
-          @category.reload
+          topic.change_category_to_id(nil)
+          category.reload
         end
 
         it "resets the category" do
-          expect(@topic.category_id).to eq(SiteSetting.uncategorized_category_id)
-          expect(@category.topic_count).to eq(0)
+          expect(topic.category_id).to eq(SiteSetting.uncategorized_category_id)
+          expect(category.topic_count).to eq(0)
         end
       end
 
@@ -1154,34 +1192,6 @@ describe Topic do
       end
     end
 
-    it "can take a time later in the day" do
-      Timecop.freeze(now) do
-        topic.set_or_create_timer(TopicTimer.types[:close], '13:00', {by_user: admin})
-        expect(topic.topic_timers.first.execute_at).to eq(Time.zone.local(2013,11,20,13,0))
-      end
-    end
-
-    it "can take a time later in the day, with timezone offset" do
-      Timecop.freeze(now) do
-        topic.set_or_create_timer(TopicTimer.types[:close], '13:00', {by_user: admin, timezone_offset: 240})
-        expect(topic.topic_timers.first.execute_at).to eq(Time.zone.local(2013,11,20,17,0))
-      end
-    end
-
-    it "can take a time for the next day" do
-      Timecop.freeze(now) do
-        topic.set_or_create_timer(TopicTimer.types[:close], '5:00', {by_user: admin})
-        expect(topic.topic_timers.first.execute_at).to eq(Time.zone.local(2013,11,21,5,0))
-      end
-    end
-
-    it "can take a time for the next day, with timezone offset" do
-      Timecop.freeze(now) do
-        topic.set_or_create_timer(TopicTimer.types[:close], '1:00', {by_user: admin, timezone_offset: 240})
-        expect(topic.topic_timers.first.execute_at).to eq(Time.zone.local(2013,11,21,5,0))
-      end
-    end
-
     it "can take a timestamp for a future time" do
       Timecop.freeze(now) do
         topic.set_or_create_timer(TopicTimer.types[:close], '2013-11-22 5:00', {by_user: admin})
@@ -1254,6 +1264,16 @@ describe Topic do
       Timecop.freeze(now) do
         closing_topic.set_or_create_timer(TopicTimer.types[:close], 48)
         expect(closing_topic.reload.public_topic_timer.execute_at).to eq(2.days.from_now)
+      end
+    end
+
+    it 'should allow status_type to be updated' do
+      Timecop.freeze do
+        topic_timer = closing_topic.set_or_create_timer(
+          TopicTimer.types[:publish_to_category], 72, by_user: admin
+        )
+
+        expect(topic_timer.execute_at).to eq(3.days.from_now)
       end
     end
 

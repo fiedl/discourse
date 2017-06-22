@@ -351,9 +351,6 @@ it:
         full_name: 'Nome Completo'
         add_members: "Aggiungi Membri"
         delete_member_confirm: "Rimuovere '%{username}' dal gruppo '%{group}'?"
-      request_membership_pm:
-        title: "Richiesta di Iscrizione"
-        body: "Vorrei iscrivermi a @%{groupName}."
       name_placeholder: "Nome del gruppo, senza spazi, stesse regole del nome utente"
       public: "Permetti agli utenti di aggiungersi/togliersi liberamente dal gruppo (il gruppo deve essere visibile)"
       empty:
@@ -370,6 +367,7 @@ it:
       automatic_group: Gruppo Automatico
       closed_group: Gruppo Chiuso
       is_group_user: "Sei un membro di questo gruppo"
+      allow_membership_requests: "Permetti agli utenti di richiedere l'invito ai proprietari del gruppo"
       membership: "Iscrizione"
       name: "Nome"
       user_count: "Numero di Membri"
@@ -486,7 +484,6 @@ it:
       mute: "Ignora"
       edit: "Modifica opzioni"
       download_archive:
-        button_text: "Scarica i Miei Messaggi"
         confirm: "Sei sicuro di voler scaricare i tuoi messaggi?"
         success: "Esportazione iniziata, verrai avvertito con un messaggio al termine del processo."
         rate_limit_error: "I messaggi possono essere scaricati una volta al giorno, riprova domani."
@@ -516,6 +513,7 @@ it:
       first_notification: "La tua prima notifica! Selezionala per iniziare."
       disable_jump_reply: "Non saltare al mio messaggio dopo la mia risposta"
       dynamic_favicon: "Visualizza il conteggio degli argomenti nuovi / aggiornati sull'icona del browser"
+      theme_default_on_all_devices: "Rendi questo il mio tema di default su tutti i miei dispositivi"
       external_links_in_new_tab: "Apri tutti i link esterni in nuove schede"
       enable_quoting: "Abilita \"rispondi quotando\" per il testo evidenziato"
       change: "cambia"
@@ -566,11 +564,13 @@ it:
       muted_users_instructions: "Occulta tutte le notifiche da questi utenti."
       muted_topics_link: "Mostra argomenti silenziati"
       watched_topics_link: "Mostra argomenti osservati"
+      tracked_topics_link: "Mostra gli argomenti seguiti"
       automatically_unpin_topics: "Spunta automaticamente gli argomenti quando arrivi in fondo."
       apps: "Applicazioni"
       revoke_access: "Revoca Accesso"
       undo_revoke_access: "Annullare Revoca Accesso"
       api_approved: "Approvato:"
+      theme: "Tema"
       staff_counters:
         flags_given: "segnalazioni utili"
         flagged_posts: "messaggi segnalati"
@@ -588,6 +588,15 @@ it:
         move_to_archive: "Archivia"
         failed_to_move: "Errore nello spostare i messaggi selezionati (forse la tua connessione non è attiva)"
         select_all: "Seleziona Tutti"
+      preferences_nav:
+        account: "Account"
+        profile: "Profilo"
+        emails: "Email"
+        notifications: "Notifiche"
+        categories: "Categorie"
+        tags: "Etichette"
+        interface: "Interfaccia"
+        apps: "App"
       change_password:
         success: "(email inviata)"
         in_progress: "(invio email in corso)"
@@ -603,7 +612,6 @@ it:
         title: "Cambia Utente"
         confirm: "Se modifichi il nome utente, tutte le precedenti menzioni al tuo @nome non saranno più valide. Sei assolutamente sicuro di volerlo fare?"
         taken: "Spiacenti, questo nome utente è già riservato."
-        error: "C'è stato un problema nel cambio del tuo nome utente."
         invalid: "Nome utente non valido: usa solo lettere e cifre"
       change_email:
         title: "Cambia email"
@@ -963,6 +971,8 @@ it:
       github:
         title: "con GitHub"
         message: "Autenticazione con GitHub (assicurati che il blocco pop up non sia attivo)"
+    invites:
+      welcome_to: "Benvenuto su %{site_name}!"
     password_reset:
       continue: "Procedi su %{site_name}"
     emoji_set:
@@ -987,7 +997,7 @@ it:
       unlist: "invisibile"
       add_warning: "Questo è un avvertimento ufficiale."
       toggle_whisper: "Attiva/Disattiva Sussurri"
-      toggle_unlisted: "Attiva/Disattiva Invisibili"
+      toggle_unlisted: "Rendi Invisibile"
       posting_not_on_topic: "A quale argomento vuoi rispondere?"
       saving_draft_tip: "salvataggio..."
       saved_draft_tip: "salvato"
@@ -1000,7 +1010,6 @@ it:
       cannot_see_mention:
         category: "Hai menzionato {{username}} ma non verranno notificati perché non hanno accesso a questa categoria. Dovrai aggiungerli ad un gruppo che ha accesso a questa categoria."
         private: "Hai menzionato {{username}} ma non verranno notificati perché non hanno accesso a questo messaggio personale. Dovrai invitarli a questo MP."
-      duplicate_link: "Sembra che il collegamento a <b>{{domain}}</b> sia già stato pubblicato nell'argomento di <b>@{{username}}</b> in <a href='{{post_url}}'>una risposta {{ago}}</a> – sei sicuro di volerlo pubblicare ancora?"
       error:
         title_missing: "Il titolo è richiesto"
         title_too_short: "Il titolo deve essere lungo almeno {{min}} caratteri"
@@ -1052,9 +1061,9 @@ it:
       olist_title: "Elenco Numerato"
       ulist_title: "Elenco Puntato"
       list_item: "Elemento lista"
-      heading_label: "I"
-      heading_title: "Intestazione"
-      heading_text: "Intestazione"
+      heading_label: "T"
+      heading_title: "Titolo"
+      heading_text: "Titolo"
       hr_title: "Linea Orizzontale"
       help: "Aiuto Inserimento Markdown"
       toggler: "nascondi o mostra il pannello di editing"
@@ -1211,10 +1220,8 @@ it:
         dismiss_new: "Chiudi Nuovo"
         toggle: "commuta la selezione multipla degli argomenti"
         actions: "Azioni Multiple"
-        change_category: "Cambia Categoria"
         close_topics: "Chiudi Argomenti"
         archive_topics: "Archivia Argomenti"
-        notification_level: "Cambia Livello Notifiche"
         choose_new_category: "Scegli la nuova categoria per gli argomenti:"
         selected:
           one: "Hai selezionato <b>1</b> argomento."
@@ -1307,6 +1314,17 @@ it:
       jump_reply_up: passa a una risposta precedente
       jump_reply_down: passa a una risposta successiva
       deleted: "L'argomento è stato cancellato"
+      auto_update_input:
+        set_based_on_last_post: "Chiudi in base all'ultimo messaggio"
+      temp_close:
+        title: "Chiudi Temporaneamente"
+      auto_close:
+        title: "Chiudi Automaticamente"
+        label: "Ore per la chiusura automatica:"
+        based_on_last_post: "Non chiudere finché l'ultimo messaggio nell'argomento non ha questa anzianità."
+      status_update_notice:
+        auto_close: "Questo argomento si chiuderà automaticamente in %{timeLeft}."
+        auto_close_based_on_last_post: "Questo argomento si chiuderà %{duration}dopo l'ultima risposta."
       auto_close_title: 'Impostazioni di auto-chiusura'
       auto_close_immediate:
         one: "L'ultimo messaggio nell'argomento ha già 1 ora, per cui l'argomento verrà chiuso immediatamente."
@@ -1675,10 +1693,6 @@ it:
         confirm:
           one: "Sei sicuro di voler cancellare questo messaggio?"
           other: "Sei sicuro di voler cancellare tutti questi messaggi?"
-      merge:
-        confirm:
-          one: "Sicuro di voler unire questi messaggi?"
-          other: "Sicuro di voler unire questi {{count}} messaggi?"
       revisions:
         controls:
           first: "Prima revisione"
@@ -1713,8 +1727,6 @@ it:
       settings: 'Impostazioni'
       topic_template: "Modello di Argomento"
       tags: "Etichette"
-      tags_allowed_tags: "Etichette che si possono usare soltanto in questa categoria:"
-      tags_allowed_tag_groups: "Aggiungi etichette ai gruppi che possono essere utilizzati unicamente in questa categoria:"
       tags_placeholder: "Elenco (opzionale) delle etichette permesse"
       tag_groups_placeholder: "Elenco (opzionale) dei gruppi di etichette permessi"
       topic_featured_link_allowed: "Consenti collegamenti in primo piano in questa categoria"
@@ -2025,8 +2037,7 @@ it:
       granted_on: "Assegnata %{date}"
       others_count: "Altri utenti con questo distintivo (%{count})"
       title: Distintivi
-      allow_title: "titolo disponibile"
-      multiple_grant: "assegnato più volte"
+      allow_title: "Puoi usare questo distintivo come qualifica"
       badge_count:
         one: "1 Distintivo"
         other: "%{count} Distintivi"
@@ -2472,6 +2483,13 @@ it:
           desktop: "Desktop"
           mobile: "Mobile"
           preview: "Anteprima"
+          scss:
+            text: "CSS"
+          head_tag:
+            text: "</head>"
+            title: "HTML che sarà inserito prima del tag </head> "
+          body_tag:
+            text: "</body>"
         colors:
           title: "Colori"
           long_title: "Combinazioni Colori"
@@ -2593,7 +2611,6 @@ it:
           do_nothing: "non fare nulla"
         staff_actions:
           title: "Azioni Staff"
-          instructions: "Fai clic sul nome utente o sulle azioni per filtrare la lista. Fai clic sulle immagini del profilo per andare alla pagina utente."
           clear_filters: "Mostra Tutto"
           staff_user: "Utente"
           target_user: "Destinatario"
@@ -2613,6 +2630,8 @@ it:
             change_trust_level: "cambia livello esperienza"
             change_username: "cambia nome utente"
             change_site_setting: "modifica le impostazioni del sito"
+            change_theme: "modifica tema"
+            delete_theme: "cancella tema"
             change_site_text: "cambia il testo del sito"
             suspend_user: "utente sospeso"
             unsuspend_user: "utente riattivato"

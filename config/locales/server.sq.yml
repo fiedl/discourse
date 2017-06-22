@@ -163,7 +163,6 @@ sq:
       <<: *errors
   meta_category_name: "Reagimet e Faqes"
   staff_category_name: "Stafi"
-  assets_topic_body: "This is a permanent topic, visible only to staff, for storing images and files used in the site design. Don't delete it!\n\n\nHere's how:\n\n\n1. Reply to this topic.\n2. Upload all the images you wish to use for logos, favicons, and so forth here. (Use the upload toolbar icon in the post editor, or drag-and-drop or paste images.)\n3. Submit your reply to post it.\n4. Right click the images in your new post to get the path to the uploaded images, or click the edit icon to edit your post and retrieve the path to the images. Copy the image paths.\n5. Paste those image paths into [basic settings](/admin/site_settings/category/required).\n\n\nIf you need to enable different file type uploads, edit `authorized_extensions` in the [file settings](/admin/site_settings/category/files)."
   lounge_welcome:
     title: "Mirë se vini në Lounge"
     body: |2
@@ -327,7 +326,6 @@ sq:
       long_form: 'sinjalizoi këtë postim si jashtë teme'
     spam:
       title: 'Spam'
-      description: 'Ky postim është një njoftim reklamues. Nuk është i vlefshëm dhe nuk ka lidhje me temën e tanishme, por ka natyrë promovuese.'
       long_form: 'sinjalizoi këtë postim si spam'
       email_title: '"%{title}" u sinjalizua si spam'
       email_body: "%{link}\n\n%{message}"
@@ -384,7 +382,6 @@ sq:
         remove: "Kjo temë nuk është më banderolë. Nuk do të shfaqet më në majë të çdo faqeje të sitit. "
   unsubscribed:
     title: "U çregjistruat!"
-    description: "U çregjistruat. Për të ndryshuar rregullimet e email-it <a href='%{url}'> shkoni tek preferencat e përdoruesit</a>."
     topic_description: "Për t'u ri-abonuar tek %{link}, përdorni kontrollin e njoftimeve në fund apo në të djathtë të temës."
   unsubscribe:
     title: "Çregjistrohuni"
@@ -813,7 +810,6 @@ sq:
     enable_names: "Show the user's full name on their profile, user card, and emails. Disable to hide full name everywhere."
     display_name_on_posts: "Show a user's full name on their posts in addition to their @username."
     show_time_gap_days: "If two posts are made this many days apart, display the time gap in the topic."
-    invites_per_page: "Default invites shown on the user page."
     short_progress_text_threshold: "After the number of posts in a topic goes above this number, the progress bar will only show the current post number. If you change the progress bar's width, you may need to change this value."
     default_code_lang: "Default programming language syntax highlighting applied to GitHub code blocks (lang-auto, ruby, python etc.)"
     warn_reviving_old_topic_age: "When someone starts replying to a topic where the last reply is older than this many days, a warning will be displayed. Disable by setting to 0."
@@ -979,16 +975,6 @@ sq:
         Për udhëzime të mëtejshme, shikoni [rregullat e komunitetit](%{base_url}/guidelines).
     welcome_user:
       subject_template: "Mirë se vini tek %{site_name}!"
-      text_body_template: |
-        Faleminderit që iu bashkuat %{site_name}, dhe mirësevini!
-
-        %{new_user_tips}
-
-        Ne besojmë në [sjelljen e qytetëruar të komunitetit](%{base_url}/guidelines) kurdoherë.
-
-        Shijojeni qëndrimin tuaj!
-
-        (Nëse ju duhet të komunikoni me [anëtarët e stafit](%{base_url}/about) si një anëtar i ri, thjesht përgjigjuni këtij mesazhi.)
     welcome_invite:
       subject_template: "Mirë se vini tek %{site_name}!"
     backup_succeeded:
@@ -1004,14 +990,6 @@ sq:
       text_body_template: "Your bulk user invite file was processed, %{sent} invites mailed."
     bulk_invite_failed:
       subject_template: "Bulk user invite processed with errors"
-      text_body_template: |
-        Your bulk user invite file was processed, %{sent} invites mailed with %{failed} error(s).
-
-        Here's the log:
-
-        ```
-        %{logs}
-        ```
     csv_export_succeeded:
       subject_template: "Data export complete"
     csv_export_failed:

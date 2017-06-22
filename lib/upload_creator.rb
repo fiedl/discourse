@@ -5,17 +5,20 @@ class UploadCreator
 
   TYPES_CONVERTED_TO_JPEG ||= %i{bmp png}
 
+  TYPES_TO_CROP ||= %w{avatar card_background custom_emoji profile_background}.each(&:freeze)
+
   WHITELISTED_SVG_ELEMENTS ||= %w{
     circle clippath defs ellipse g line linearGradient path polygon polyline
     radialGradient rect stop svg text textpath tref tspan use
-  }
+  }.each(&:freeze)
 
   # Available options
   #  - type (string)
   #  - content_type (string)
   #  - origin (string)
-  #  - is_attachment_for_group_message (boolean)
+  #  - for_group_message (boolean)
   #  - for_theme (boolean)
+  #  - for_private_message (boolean)
   def initialize(file, filename, opts = {})
     @upload = Upload.new
     @file = file
@@ -36,13 +39,12 @@ class UploadCreator
 
         if @filename[/\.svg$/i]
           whitelist_svg!
-        else
+        elsif !Rails.env.test?
           convert_to_jpeg! if should_convert_to_jpeg?
           downsize!        if should_downsize?
 
           return @upload   if is_still_too_big?
 
-          fix_orientation! if should_fix_orientation?
           crop!            if should_crop?
           optimize!        if should_optimize?
         end
@@ -76,13 +78,9 @@ class UploadCreator
         @upload.width, @upload.height = ImageSizer.resize(*@image_info.size)
       end
 
-      if @opts[:is_attachment_for_group_message]
-        @upload.is_attachment_for_group_message = true
-      end
-
-      if @opts[:for_theme]
-        @upload.for_theme = true
-      end
+      @upload.for_private_message = true if @opts[:for_private_message]
+      @upload.for_group_message   = true if @opts[:for_group_message]
+      @upload.for_theme           = true if @opts[:for_theme]
 
       return @upload unless @upload.save
 
@@ -120,9 +118,11 @@ class UploadCreator
     end
   end
 
+  MIN_PIXELS_TO_CONVERT_TO_JPEG ||= 1280 * 720
+
   def should_convert_to_jpeg?
     TYPES_CONVERTED_TO_JPEG.include?(@image_info.type) &&
-    @image_info.size.min > 720 &&
+    pixels > MIN_PIXELS_TO_CONVERT_TO_JPEG &&
     SiteSetting.png_to_jpg_quality < 100
   end
 
@@ -130,14 +130,21 @@ class UploadCreator
     jpeg_tempfile = Tempfile.new(["image", ".jpg"])
 
     OptimizedImage.ensure_safe_paths!(@file.path, jpeg_tempfile.path)
-    Discourse::Utils.execute_command('convert', @file.path, '-quality', SiteSetting.png_to_jpg_quality.to_s, jpeg_tempfile.path)
+    Discourse::Utils.execute_command(
+      'convert', @file.path,
+      '-auto-orient',
+      '-background', 'white',
+      '-flatten',
+      '-quality', SiteSetting.png_to_jpg_quality.to_s,
+      jpeg_tempfile.path
+    )
 
     # keep the JPEG if it's at least 15% smaller
     if File.size(jpeg_tempfile.path) < filesize * 0.85
-      @image_info = FastImage.new(jpeg_tempfile)
       @file = jpeg_tempfile
       @filename = (File.basename(@filename, ".*").presence || I18n.t("image").presence || "image") + ".jpg"
       @opts[:content_type] = "image/jpeg"
+      extract_image_info!
     else
       jpeg_tempfile.close! rescue nil
     end
@@ -177,7 +184,7 @@ class UploadCreator
   end
 
   def should_crop?
-    Upload::CROPPED_TYPES.include?(@opts[:type])
+    TYPES_TO_CROP.include?(@opts[:type])
   end
 
   def crop!
@@ -198,17 +205,8 @@ class UploadCreator
     when "custom_emoji"
       OptimizedImage.downsize(@file.path, @file.path, "100x100\\>", filename: @filename, allow_animation: allow_animation)
     end
-  end
 
-  def should_fix_orientation?
-    # orientation is between 1 and 8, 1 being the default
-    # cf. http://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/
-    @image_info.orientation.to_i > 1
-  end
-
-  def fix_orientation!
-    OptimizedImage.ensure_safe_paths!(@file.path)
-    Discourse::Utils.execute_command('convert', @file.path, '-auto-orient', @file.path)
+    extract_image_info!
   end
 
   def should_optimize?
@@ -224,6 +222,7 @@ class UploadCreator
   def optimize!
     OptimizedImage.ensure_safe_paths!(@file.path)
     ImageOptim.new.optimize_image!(@file.path)
+    extract_image_info!
   rescue ImageOptim::Worker::TimeoutExceeded
     Rails.logger.warn("ImageOptim timed out while optimizing #{@filename}")
   end

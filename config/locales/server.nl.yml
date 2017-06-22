@@ -346,10 +346,6 @@ nl:
           attributes:
             name:
               taken: wordt al door een andere emoji gebruikt
-        topic_status_update:
-          attributes:
-            execute_at:
-              in_the_past: "moet in de toekomst liggen."
       <<: *errors
   user_profile:
     no_info_me: "<div class='missing-profile'>het veld Over mij van uw profiel is momenteel leeg; <a href='/u/%{username_lower}/preferences/about-me'>zou u dit willen invullen?</a></div>"
@@ -361,7 +357,6 @@ nl:
   staff_category_name: "Staf"
   staff_category_description: "Privécategorie voor stafgesprekken. Topics zijn alleen zichtbaar voor beheerders en moderators."
   assets_topic_title: "Assets voor het websiteontwerp"
-  assets_topic_body: "Dit is een permanent topic, alleen zichtbaar voor staf, voor het opslaan van afbeeldingen en bestanden die in het ontwerp van de website worden gebruikt. Verwijder het niet!\n\n\nZo werkt het:\n\n\n1. Antwoord op dit topic.\n2. Upload hier alle afbeeldingen die u voor logo's, favicons, enzovoorts wilt gebruiken. (Gebruik het werkbalkpictogram voor uploaden in de berichteditor, of sleep of plak afbeeldingen.)\n3. Verzend uw antwoord om dit te plaatsen.\n4. Klik met de rechtermuisknop op de afbeeldingen in uw nieuwe bericht om het pad naar de geüploade afbeeldingen te verkrijgen, of klik op het bewerkingspictogram om uw bericht te bewerken en het pad naar de afbeeldingen op te halen. Kopieer de afbeeldingspaden.\n5. Plak die afbeeldingspaden in [basisinstellingen](/admin/site_settings/category/required).\n\n\nAls u verschillende soorten uploads van bestandstypen dient in te schakelen, bewerk dan 'authorized_extensions' in de [bestandsinstellingen](/admin/site_settings/category/files)."
   discourse_welcome_topic:
     title: "Welkom bij Discourse"
     body: |2
@@ -570,7 +565,6 @@ nl:
       long_form: 'heeft dit als off-topic gemarkeerd'
     spam:
       title: 'Spam'
-      description: 'Dit bericht is een advertentie. Het is niet nuttig of relevant voor het huidige topic, maar promotioneel van aard.'
       long_form: 'heeft dit als spam gemarkeerd'
       email_title: '''%{title}'' is als spam gemarkeerd'
       email_body: "%{link}\n\n%{message}"
@@ -637,7 +631,6 @@ nl:
         remove: "Dit topic is geen banner meer. Het zal niet meer bovenaan elke pagina verschijnen."
   unsubscribed:
     title: "Uitgeschreven!"
-    description: "U bent uitgeschreven. <a href='%{url}'>Bezoek uw gebruikersvoorkeuren</a> om uw e-mailinstellingen te wijzigen."
     topic_description: "Gebruik de meldingsinstellingen onder of rechts van het topic om u opnieuw voor %{link} in te schrijven."
   unsubscribe:
     title: "Uitschrijven"
@@ -1152,7 +1145,6 @@ nl:
     enable_names: "Toon de volledige naam van de gebruiker op hun profiel, gebruikerskaart en e-mails. Scahkel uit om volledige naam overal te verbergen."
     display_name_on_posts: "Laat de volledige naam van een gebruiker bij zijn berichten zien, na de @gebruikersnaam"
     show_time_gap_days: "Als twee berichten dit aantal dagen na elkaar zijn gemaakt zal een tijdsgat worden getoond in het topic."
-    invites_per_page: "Standaard uitnodigingen getoond op de gebruikerspagina."
     short_progress_text_threshold: "Als het aantal berichten in een topic meer is dan dit aantal zal de voortgangsbalk alleen het nummer van het huidige bericht tonen. Als je de breedte van de voortgangsbalk verandert, moet je dit getal misschien ook aanpassen."
     default_code_lang: "Standaard programmeertaal die gebruikt wordt voor syntax highlighting van GitHub codeblokken (lang-auto, ruby, python etc.)"
     warn_reviving_old_topic_age: "Wanneer iemand begint met antwoorden op een topic waar het laatste antwoord ouder is dan dit aantal dagen, zal er een waarschuwing worden weergegeven. Kan worden uitsgechakeld door op 0 te zetten."
@@ -1306,7 +1298,7 @@ nl:
     incorrect_username_email_or_password: "Onjuiste gebruikersnaam, e-mailadres of wachtwoord"
     wait_approval: "Bedankt voor het registreren. We laten u weten wanneer uw account is goedgekeurd."
     active: "Uw account is geactiveerd en gereed voor gebruik."
-    activate_email: "<p>U bent er bijna! We hebben een activeringsmail naar<b>%{email}</b> gestuurd. Volg de instructies in het e-mailbericht om uw account te activeren.</p><p>Als dit niet aankomt, contoleer dan uw spammap.</p>"
+    activate_email: "<p>U bent er bijna! We hebben een activeringsmail naar <b>%{email}</b> gestuurd. Volg de instructies in het e-mailbericht om uw account te activeren.</p><p>Als dit niet aankomt, contoleer dan uw spammap.</p>"
     not_activated: "U kunt zich nog niet aanmelden. We hebben u een activeringsmail gestuurd. Volg de instructies in het e-mailbericht om uw account te activeren."
     not_allowed_from_ip_address: "U kunt zich niet als %{username} aanmelden vanaf dat IP-adres."
     admin_not_allowed_from_ip_address: "U kunt zich niet als beheerder aanmelden vanaf dat IP-adres."
@@ -1391,14 +1383,6 @@ nl:
     bulk_invite_failed:
       title: "Groepsuitnodiging Mislukt"
       subject_template: "Massale uitnodiging aan gebruikers verwerkt, met fouten"
-      text_body_template: |
-        Je bestand met gebruikers uitnodigingen is verwerkt, %{sent} uitnodigingen zijn verzonden met %{failed} fout(en).
-
-        Verslag:
-
-        ```
-        %{logs}
-        ```
     csv_export_succeeded:
       title: "CSV Export Geslaagd"
       subject_template: "Export succesvol afgerond."
@@ -1521,6 +1505,8 @@ nl:
       join_the_discussion: "Meer lezen"
       popular_posts: "Populaire berichten"
       more_new: "Nieuw voor u"
+      subject_template: "[%{email_prefix}] Samenvatting"
+      unsubscribe: "Deze samenvatting is verstuurd door %{site_link}, omdat we je al een tijdje niet gezien hebben. Om je af te melden van onze community e-mails, %{unsubscribe_link}."
       click_here: "klik hier"
       preheader: "Een korte samenvatting sinds uw laatste bezoek op %{last_seen_at}"
     set_password:

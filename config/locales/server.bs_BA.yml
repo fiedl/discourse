@@ -136,7 +136,6 @@ bs_BA:
   meta_category_description: "Discussion about this site, its organization, how it works, and how we can improve it."
   staff_category_name: "Staff"
   staff_category_description: "Private category for staff discussions. Topics are only visible to admins and moderators."
-  assets_topic_body: "This is a permanent topic, visible only to staff, for storing images and files used in the site design. Don't delete it!\n\n\nHere's how:\n\n\n1. Reply to this topic.\n2. Upload all the images you wish to use for logos, favicons, and so forth here. (Use the upload toolbar icon in the post editor, or drag-and-drop or paste images.)\n3. Submit your reply to post it.\n4. Right click the images in your new post to get the path to the uploaded images, or click the edit icon to edit your post and retrieve the path to the images. Copy the image paths.\n5. Paste those image paths into [basic settings](/admin/site_settings/category/required).\n\n\nIf you need to enable different file type uploads, edit `authorized_extensions` in the [file settings](/admin/site_settings/category/files)."
   lounge_welcome:
     title: "Welcome to the Lounge"
     body: |2
@@ -214,7 +213,6 @@ bs_BA:
       long_form: 'opomeni kao ne-relevantno'
     spam:
       title: 'Spam'
-      description: 'Ovaj post je reklamnog karaktera i ne doprinosi razvoju teme jer je tu samo iz materijalnih razloga.'
       long_form: 'opomeni kao spam'
     inappropriate:
       title: 'Neprikladno'
@@ -571,7 +569,6 @@ bs_BA:
     disable_edit_notifications: "Disables edit notifications by the system user when 'download_remote_images_to_local' is active."
     enable_names: "Allow showing user full names. Disable to hide full names."
     display_name_on_posts: "Show a user's full name on their posts in addition to their @username."
-    invites_per_page: "Default invites shown on the user page."
     short_progress_text_threshold: "After the number of posts in a topic goes above this number, the progress bar will only show the current post number. If you change the progress bar's width, you may need to change this value."
     default_code_lang: "Default programming language syntax highlighting applied to GitHub code blocks (lang-auto, ruby, python etc.)"
     warn_reviving_old_topic_age: "When someone starts replying to a topic where the last reply is older than this many days, a warning will be displayed. Disable by setting to 0."
@@ -674,16 +671,6 @@ bs_BA:
   system_messages:
     welcome_user:
       subject_template: "Dobrodošli na %{site_name}!"
-      text_body_template: |
-        Hvala što ste se pridružili %{site_name}, dobrodošli!
-
-        %{new_user_tips}
-
-        Mi vjerujemo u [civilizovanu diskusiju](%{base_url}/guidelines) na svakom nivou u svako doba.
-
-        Uživajte!
-
-        (Ako trebate razgovarati s nekim od [članova osoblja](%{base_url}/about) kao novi korisnik, samo odgovorite na ovu poruku.)
     welcome_invite:
       subject_template: "Dobrodošli na %{site_name}!"
     backup_succeeded:
@@ -699,14 +686,6 @@ bs_BA:
       text_body_template: "Your bulk user invite file was processed, %{sent} invites mailed."
     bulk_invite_failed:
       subject_template: "Bulk user invite processed with errors"
-      text_body_template: |
-        Your bulk user invite file was processed, %{sent} invites mailed with %{failed} error(s).
-
-        Here's the log:
-
-        ```
-        %{logs}
-        ```
     csv_export_succeeded:
       subject_template: "Data Export completed successfully"
     csv_export_failed:

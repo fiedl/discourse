@@ -620,7 +620,6 @@ ar:
       long_form: 'أبلغ أن هذا خارج الموضوع.'
     spam:
       title: 'مزعج'
-      description: 'هذه المشاركة تعتبر إعلانًا. ليست مفيدة أو ذات علاقة بالموضوع الحاليّ، بل ترويجيّة فحسب.'
       long_form: 'علّم هذا على أنّه غير لائق'
       email_title: '"%{title}" عُلّم على أنّه موضوع غير لائق'
       email_body: "%{link}\n\n%{message}"
@@ -687,7 +686,6 @@ ar:
         remove: "هذا الموضوع لم يعد معلّم. لن يظهر في أعلى كل صفحة."
   unsubscribed:
     title: "غير مشترك "
-    description: "لقد تم الغاء اشتراكك. لتغير اختيارات بريدك الالكترونى <a href='%{url}'>زور اختياراتك الشخصية</a>"
     topic_description: "لإعادة الاشتراك لل %{link}، استخدم ادارة التنبيهات في أسفل او يمين الموضوع."
   unsubscribe:
     title: "إلغاء الإشتراك"
@@ -1067,8 +1065,6 @@ ar:
     external_system_avatars_enabled: "استخدم خدمات الهه النظام الخارجي "
     default_opengraph_image_url: "عنوان رابط صورة ال اوبن جراف الثابتة"
     allow_all_attachments_for_group_messages: "اسمح بجميع ملحقات البريد  للرسائل الجماعيه "
-    convert_pasted_images_to_hq_jpg: "حوّل الصّور الملصقة إلى ملفّات JPG عالية الجودة."
-    convert_pasted_images_quality: "جودة ملفّات JPG المحوّلة (1 هي أدنى جودة، 100 هي أفضل جودة)."
     enable_flash_video_onebox: "فعّل تضمين روابط swf وflv (أدوبي فلاش) في الصّناديق. تحذير: قد يتسبّب بمخاطر أمنيّة."
     default_invitee_trust_level: "مستوى الثقة الإفتراضي (0-4) للأعضاء المدعوين."
     default_trust_level: "مستوى الثقة الإفتراضي (0-4) للأعضاء المدعوين.تحذير! التغيرات ستضعك تحت خطر البريد الغير هام."
@@ -1204,7 +1200,6 @@ ar:
     enable_names: "عرض الاسم الكامل للعضو , بطاقة العضو , ورسائل البريد الالكتروني , تعطيل عرض الاسم في اي مكان "
     display_name_on_posts: "عرض الاسم الكامل للعضو على التعليقات بالاضافة الى @username."
     show_time_gap_days: "إذا تم إجراء وظيفتين في حد كثير من الأيام، عرض الفجوة الزمنية في الموضوع."
-    invites_per_page: "الدعوات الافتراضية تظهر في صفحة العضو"
     short_progress_text_threshold: "بعد نعدي عدد المشاركات في الموضوع اكثر من هذا الرقم, شريط المهام فقط سوف يعرض رقم المشاركه الحاليه.اذا غيرت عرض شريط المهام, ربما تحتاج لتغير هذه  القيمه"
     default_code_lang: "تسليط الضوء علي تركيب جمله اللغه البرمجيه يطبق الي مكعبات اكواد GitHub (lang-auto, ruby, python etc.)"
     warn_reviving_old_topic_age: "عندما يبدا احدهم بالرد علي الموضوع و اخر كان اقدم من هذه الايام, سوف يظهر تحذير, عطل عن طريق الضبط الي 0"
@@ -1451,16 +1446,6 @@ ar:
       subject_template: "المشاركة مخفية بتصويت الاعضاء"
     welcome_user:
       subject_template: "مرحبا بك في %{site_name}!"
-      text_body_template: |
-        شكراً لأنضمامك %{site_name}, ومرحباً بك!
-
-        %{new_user_tips}
-
-        نحن نؤمن  [سلوك المجتمع المتحضر](%{base_url}/guidelines) في جميع الأوقات.
-
-        أستمتع بوقتك!
-
-        (أذا كنت بحاجة للتواصل مع  [الموظفين](%{base_url}/about) كمستخدم جديد, فقط مجرد الرد على هذه الرسالة.)
     welcome_invite:
       subject_template: "مرحبا بك في %{site_name}!"
     backup_succeeded:
@@ -1476,14 +1461,6 @@ ar:
       text_body_template: "ملف دعوة العضو الجماعية الخاص بك تمت معالجته، %{sent} دعوات مرسلة."
     bulk_invite_failed:
       subject_template: "دعوة العضو الجماعية تمت مع وجود أخطاء"
-      text_body_template: |
-        تمت معالجة ملف دعوات العضو , وتدعو %{sent} بالبريد مع %{failed} error(s).
-
-        هنا السجل
-
-        ```
-        %{logs}
-        ```
     csv_export_succeeded:
       subject_template: "اكتمل تصدير البيانات"
     csv_export_failed:

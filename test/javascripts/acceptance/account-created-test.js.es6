@@ -3,9 +3,9 @@ import PreloadStore from 'preload-store';
 
 acceptance("Account Created");
 
-test("account created - message", assert => {
+QUnit.test("account created - message", assert => {
   PreloadStore.store('accountCreated', {
-    message: "Hello World"
+    message: "Hello World",
   });
   visit("/u/account-created");
 
@@ -20,11 +20,12 @@ test("account created - message", assert => {
   });
 });
 
-test("account created - resend email", assert => {
+QUnit.test("account created - resend email", assert => {
   PreloadStore.store('accountCreated', {
     message: "Hello World",
     username: 'eviltrout',
-    email: 'eviltrout@example.com'
+    email: 'eviltrout@example.com',
+    show_controls: true
   });
   visit("/u/account-created");
 
@@ -46,11 +47,12 @@ test("account created - resend email", assert => {
 
 });
 
-test("account created - update email - cancel", assert => {
+QUnit.test("account created - update email - cancel", assert => {
   PreloadStore.store('accountCreated', {
     message: "Hello World",
     username: 'eviltrout',
-    email: 'eviltrout@example.com'
+    email: 'eviltrout@example.com',
+    show_controls: true
   });
   visit("/u/account-created");
 
@@ -66,11 +68,12 @@ test("account created - update email - cancel", assert => {
   });
 });
 
-test("account created - update email - submit", assert => {
+QUnit.test("account created - update email - submit", assert => {
   PreloadStore.store('accountCreated', {
     message: "Hello World",
     username: 'eviltrout',
-    email: 'eviltrout@example.com'
+    email: 'eviltrout@example.com',
+    show_controls: true
   });
   visit("/u/account-created");
 

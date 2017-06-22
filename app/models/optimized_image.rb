@@ -115,6 +115,7 @@ class OptimizedImage < ActiveRecord::Base
     %W{
       convert
       #{from}[0]
+      -auto-orient
       -gravity center
       -background transparent
       -thumbnail #{dimensions}^
@@ -146,6 +147,7 @@ class OptimizedImage < ActiveRecord::Base
     %W{
       convert
       #{from}[0]
+      -auto-orient
       -gravity north
       -background transparent
       -thumbnail #{opts[:width]}
@@ -176,6 +178,7 @@ class OptimizedImage < ActiveRecord::Base
     %W{
       convert
       #{from}[0]
+      -auto-orient
       -gravity center
       -background transparent
       -resize #{dimensions}
@@ -246,7 +249,12 @@ class OptimizedImage < ActiveRecord::Base
           # download if external
           if external
             url = SiteSetting.scheme + ":" + previous_url
-            file = FileHelper.download(url, max_file_size_kb, "discourse", true) rescue nil
+            file = FileHelper.download(
+              url,
+              max_file_size: max_file_size_kb,
+              tmp_file_name: "discourse",
+              follow_redirect: true
+            ) rescue nil
             path = file.path
           else
             path = local_store.path_for(optimized_image)

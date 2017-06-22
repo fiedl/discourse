@@ -351,9 +351,6 @@ de:
         full_name: 'Vollständiger Name'
         add_members: "Mitglieder hinzufügen"
         delete_member_confirm: "'%{username}' aus der Gruppe '%{group}' entfernen?"
-      request_membership_pm:
-        title: "Mitgliedschaftsanfrage"
-        body: "Ich möchte mich um eine Mitgliedschaft in @%{groupName} bewerben."
       name_placeholder: "Gruppenname, keine Leerzeichen, gleiche Regel wie beim Benutzernamen"
       public: "Benutzern erlauben, die Gruppenzugehörigkeit frei zu wechseln (Erfordert, dass die Gruppe sichtbar ist)"
       empty:
@@ -488,7 +485,6 @@ de:
       mute: "Stummschalten"
       edit: "Einstellungen bearbeiten"
       download_archive:
-        button_text: "Meine Beiträge herunterladen"
         confirm: "Möchtest du wirklich deine Beiträge herunterladen?"
         success: "Der Export wurde gestartet. Du erhältst eine Nachricht, sobald der Vorgang abgeschlossen ist."
         rate_limit_error: "Beiträge können pro Tag nur einmal heruntergeladen werden. Bitte versuch es morgen wieder."
@@ -518,6 +514,7 @@ de:
       first_notification: "Deine erste Benachrichtigung! Wähle sie aus um fortzufahren."
       disable_jump_reply: "Springe nicht zu meinem Beitrag, nachdem ich geantwortet habe"
       dynamic_favicon: "Zeige die Anzahl der neuen und geänderten Themen im Browser-Symbol an"
+      theme_default_on_all_devices: "Übernehme dieses Theme für alle meine Geräte."
       external_links_in_new_tab: "Öffne alle externen Links in einem neuen Tab"
       enable_quoting: "Aktiviere Zitatantwort mit dem hervorgehobenen Text"
       change: "ändern"
@@ -616,7 +613,6 @@ de:
         title: "Benutzernamen ändern"
         confirm: "Wenn du deinen Benutzernamen änderst, werden alle vorherigen Zitate deiner Beiträge und Erwähnungen deines vorherigen @Namens nicht mehr funktonieren. Bist du dir ganz sicher, dass du das tun möchtest?"
         taken: "Der Benutzername ist bereits vergeben."
-        error: "Bei der Änderung deines Benutzernamens ist ein Fehler aufgetreten."
         invalid: "Der Benutzernamen ist nicht zulässig. Er darf nur Zahlen und Buchstaben enthalten."
       change_email:
         title: "E-Mail-Adresse ändern"
@@ -754,6 +750,7 @@ de:
         rescinded: "Einladung zurückgenommen"
         reinvite: "Einladung erneut senden"
         reinvite_all: "Alle Einladungen erneut senden"
+        reinvite_all_confirm: "Bist Du dir sicher alle Einladungen nochmals zu senden?"
         reinvited: "Einladung erneut gesendet"
         reinvited_all: "Alle Einladungen erneut gesendet!"
         time_read: "Lesezeit"
@@ -991,7 +988,8 @@ de:
       your_email: "Die E-Mail-Adresse deines Benutzerkontos ist <b>%{email}</b>"
       accept_invite: "Einladung annehmen"
       success: "Dein Konto wurde erstellt und du bist jetzt angemeldet."
-      password_label: "Passwort setzen (optional)"
+      password_label: "Wähle ein Passwort"
+      optional_description: "(optional)"
     password_reset:
       continue: "Weiter zu %{site_name}"
     emoji_set:
@@ -1029,7 +1027,7 @@ de:
       cannot_see_mention:
         category: "Du hast {{username}} erwähnt, aber diese Person wird nicht benachrichtigt da sie keinen Zugriff auf diese Kategorie hat. Füge sie einer Gruppe hinzu die Zugriff auf diese Kategorie hat."
         private: "Du hast {{username}} erwähnt, aber diese Person wird nicht benachrichtigt da sie diese persönliche Nachricht nicht sehen kann. Lade sie zu dieser PM ein."
-      duplicate_link: "Es sieht so aus als wäre dein Link zu <b>{{domain}}</b> in dem Thema bereits von <b>@{{username}}</b> in <a href='{{post_url}}'>einer Antwort vor {{ago}}</a> geteilt worden – möchtest du ihn wirklich erneut teilen? "
+      duplicate_link: "Es sieht so aus als wäre dein Link auf <b>{{domain}}</b> in dem Thema bereits geschrieben worden von  <b>@{{username}}</b> in <a href='{{post_url}}'>einer Antwort vor {{ago}}</a> – bist du sicher, dass du ihn noch einmal schreiben möchtest?"
       error:
         title_missing: "Titel ist erforderlich"
         title_too_short: "Titel muss mindestens {{min}} Zeichen lang sein"
@@ -1119,6 +1117,7 @@ de:
       moved_post: "<i title='Beitrag verschoben' class='fa fa-sign-out'></i><p><span>{{username}}</span> hat {{description}} verschoben</p>"
       linked: "<i title='linked post' class='fa fa-link'></i><p><span>{{username}}</span> {{description}}</p>"
       granted_badge: "<i title='Abzeichen verliehen' class='fa fa-certificate'></i><p>Abzeichen '{{description}}' erhalten</p>"
+      topic_reminder: "<i title='topic reminder' class='fa fa-hand-o-right'></i><p><span>{{username}}</span> {{description}}</p>"
       watching_first_post: "<i title='new topic' class='fa fa-dot-circle-o'></i><p><span>Neues Thema</span> {{description}}</p>"
       group_message_summary:
         one: "<i title='messages in group inbox' class='fa fa-group'></i><p> Eine Nachricht in deinem {{group_name}} Postfach</p>"
@@ -1210,6 +1209,7 @@ de:
           seen: Gelesene Themen/Beiträge
           unseen: Ungelesene Themen/Beiträge
           wiki: Wikis
+          all_tags: Enthält alle Schlagwörter
         statuses:
           label: 'Themen einschränken:'
           open: Offene Themen
@@ -1235,6 +1235,7 @@ de:
         select_all: "Wähle alle aus"
         clear_all: "Auswahl aufheben"
         unlist_topics: "Themen unsichtbar machen"
+        relist_topics: "Themen neu auflisten"
         reset_read: "Gelesene zurücksetzen"
         delete: "Themen löschen"
         dismiss: "Ignorieren"
@@ -1245,10 +1246,10 @@ de:
         dismiss_new: "Neue Themen ignorieren"
         toggle: "zu Massenoperationen auf Themen umschalten"
         actions: "Massenoperationen"
-        change_category: "Kategorie ändern"
+        change_category: "Kategorie auswählen"
         close_topics: "Themen schließen"
         archive_topics: "Themen archivieren"
-        notification_level: "Benachrichtigungsstufe ändern"
+        notification_level: "Benachrichtigungen"
         choose_new_category: "Neue Kategorie für die gewählten Themen:"
         selected:
           one: "Du hast <b>ein</b> Thema ausgewählt."
@@ -1357,6 +1358,7 @@ de:
         later_this_week: "Später in dieser Woche"
         this_weekend: "Dieses Wochenende"
         next_week: "Nächste Woche"
+        next_month: "Nächster Monat"
         pick_date_and_time: "Datum und Zeit wählen"
         set_based_on_last_post: "Schließen basierend auf dem letzten Beitrag"
       publish_to_category:
@@ -1372,11 +1374,17 @@ de:
         label: "Thema automatisch schließen (Stunden):"
         error: "Bitte gib einen gültigen Wert ein."
         based_on_last_post: "Nicht schließen, bevor der letzte Beitrag in dem Thema mindestens so alt ist."
+      auto_delete:
+        title: "Thema automatisch löschen"
+      reminder:
+        title: "Erinnere mich"
       status_update_notice:
         auto_open: "Dieses Thema wird automatisch geöffnet %{timeLeft}."
         auto_close: "Dieses Thema wird automatisch geschlossen %{timeLeft}."
         auto_publish_to_category: "Dieses Thema wird in <a href=%{categoryUrl}>#%{categoryName}</a> veröffentlicht %{timeLeft}."
         auto_close_based_on_last_post: "Dieses Thema wird %{duration} nach der letzten Antwort geschlossen."
+        auto_delete: "Dieses Thema wird automatisch gelöscht %{timeLeft}."
+        auto_reminder: "Du wirst über dieses Thema erinnert %{timeLeft}."
       auto_close_title: 'Automatisches Schließen'
       auto_close_immediate:
         one: "Der letzte Beitrag in diesem Thema ist bereits eine Stunde alt. Das Thema wird daher sofort geschlossen."
@@ -1752,10 +1760,6 @@ de:
         confirm:
           one: "Möchtest du wirklich diesen Beitrag löschen?"
           other: "Möchtest du wirklich all diese Beiträge löschen?"
-      merge:
-        confirm:
-          one: "Möchtest du diese Beiträge wirklich zusammenführen?"
-          other: "Möchtest du diese {{count}} Beiträge wirklich zusammenführen?"
       revisions:
         controls:
           first: "Erste Überarbeitung"
@@ -1801,8 +1805,6 @@ de:
       settings: 'Einstellungen'
       topic_template: "Themenvorlage"
       tags: "Schlagwörter"
-      tags_allowed_tags: "Schlagwörter, die nur in dieser Kategorie verwendet werden können:"
-      tags_allowed_tag_groups: "Schlagwortgruppen, die nur in dieser Kategorie verwendet werden können:"
       tags_placeholder: "(Optional) Liste erlaubter Schlagwörter"
       tag_groups_placeholder: "(Optional) Liste erlaubter Schlagwort-Gruppen"
       topic_featured_link_allowed: "Erlaube hervorgehobene Links in dieser Kategorie"
@@ -2129,8 +2131,8 @@ de:
       granted_on: "Verliehen %{date}"
       others_count: "Andere mit diesem Abzeichen (%{count})"
       title: Abzeichen
-      allow_title: "kann als Titel verwendet werden"
-      multiple_grant: "kann mehrfach verliehen werden"
+      allow_title: "Du kannst dieses Abzeichen als Titel verwenden"
+      multiple_grant: "Du kannst dieses Abzeichen mehrmals verliehen bekommen"
       badge_count:
         one: "1 Abzeichen"
         other: "%{count} Abzeichen"
@@ -2599,10 +2601,17 @@ de:
           color_scheme_select: "Wähle Farben für dieses Theme"
           custom_sections: "Benutzerdefinierte Abschnitte:"
           theme_components: "Theme-Komponenten"
+          uploads: "Uploads"
+          no_uploads: "Du kannst Medieninhalte hochladen, die zu deinem Theme gehören, wie etwa Schriftarten und Bilder."
+          add_upload: "Upload hinzufügen"
+          upload_file_tip: "Wähle einen hochzuladenen Medieninhalt aus (png, woff2, usw.)"
+          variable_name: "SCSS Variablen-Name:"
+          upload: "Hochladen"
           child_themes_check: "Theme beinhaltet andere Kinder-Themes"
           css_html: "Benutzerdefiniertes CSS/HTML"
           edit_css_html: "Bearbeite CSS/HTML"
           edit_css_html_help: "Du hast kein CSS oder HTML bearbeitet"
+          delete_upload_confirm: "Upload löschen? (Theme-CSS funktioniert eventuell nicht mehr!)"
           import_web_tip: "Repository mit dem Theme"
           import_file_tip: ".dcstyle.json Datei mit dem Theme"
           about_theme: "Über das Theme"
@@ -2613,9 +2622,6 @@ de:
           updating: "Wird aktualisiert..."
           up_to_date: "Theme ist aktuell, zuletzt geprüft:"
           add: "Hinzufügen"
-          commits_behind:
-            one: "Theme ist 1 Commit hinterher!"
-            other: "Theme ist {{count}} Commits hinterher!"
           scss:
             text: "CSS"
             title: "Gib benutzerdefiniertes CSS ein, wir akzeptieren alle gültigen CSS und SCSS-Stile"
@@ -2762,8 +2768,8 @@ de:
           block: "blockieren"
           do_nothing: "nichts tun"
         staff_actions:
+          all: "alle"
           title: "Team-Aktionen"
-          instructions: "Klicke auf die Benutzernamen und Aktionen, um die Liste zu filtern. Klicke auf das Profilbild, um die Benutzerseiten zu sehen."
           clear_filters: "Alles anzeigen"
           staff_user: "Team-Mitglied"
           target_user: "Betroffener Benutzer"
@@ -3198,6 +3204,7 @@ de:
         sample: "Benutze den folgenden HTML code für deine Site um Discourse Beiträge zu erstellen und einzubetten. Ersetze <b>REPLACE_ME</b> mit der URL der Site in die du sie einbetten möchtest."
         title: "Einbettung"
         host: "Erlaubte Hosts"
+        class_name: "Klassenname"
         path_whitelist: "Pfad Whitelist"
         edit: "bearbeiten"
         category: "In Kategorie Beitrag schreiben"
@@ -3217,6 +3224,7 @@ de:
         embed_classname_whitelist: "Erlaubte CSS-Klassen"
         feed_polling_enabled: "Beiträge über RSS/ATOM importieren"
         feed_polling_url: "URL des RSS/ATOM Feeds für den Import"
+        feed_polling_frequency_mins: "Häufigkeit der Feed-Abfrage (in Minuten)"
         save: "Einbettungseinstellungen speichern"
       permalink:
         title: "Permanentlinks"

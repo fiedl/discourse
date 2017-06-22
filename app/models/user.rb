@@ -98,7 +98,6 @@ class User < ActiveRecord::Base
   before_save :ensure_password_is_hashed
 
   after_save :expire_tokens_if_password_changed
-  after_save :automatic_group_membership
   after_save :clear_global_notice_if_needed
   after_save :refresh_avatar
   after_save :badge_grant
@@ -689,8 +688,7 @@ class User < ActiveRecord::Base
   end
 
   def activate
-    email_token = self.email_tokens.active.first
-    if email_token
+    if email_token = self.email_tokens.active.first
       EmailToken.confirm(email_token.token)
     else
       self.active = true
@@ -912,6 +910,30 @@ class User < ActiveRecord::Base
     DiscourseEvent.trigger(:user_logged_out, self)
   end
 
+  def logged_in
+    DiscourseEvent.trigger(:user_logged_in, self)
+
+    if !self.seen_before?
+      DiscourseEvent.trigger(:user_first_logged_in, self)
+    end
+  end
+
+  def set_automatic_groups
+    return unless active && email_confirmed? && !staged
+
+    Group.where(automatic: false)
+         .where("LENGTH(COALESCE(automatic_membership_email_domains, '')) > 0")
+         .each do |group|
+
+      domains = group.automatic_membership_email_domains.gsub('.', '\.')
+
+      if email =~ Regexp.new("@(#{domains})$", true) && !group.users.include?(self)
+        group.add(self)
+        GroupActionLogger.new(Discourse.system_user, group).log_add_user_to_group(self)
+      end
+    end
+  end
+
   protected
 
   def badge_grant
@@ -939,23 +961,6 @@ class User < ActiveRecord::Base
 
   def ensure_in_trust_level_group
     Group.user_trust_level_change!(id, trust_level)
-  end
-
-  def automatic_group_membership
-    user = User.find(self.id)
-    return unless user && user.active && user.email_confirmed? && !user.staged
-
-    Group.where(automatic: false)
-         .where("LENGTH(COALESCE(automatic_membership_email_domains, '')) > 0")
-         .each do |group|
-
-      domains = group.automatic_membership_email_domains.gsub('.', '\.')
-
-      if user.email =~ Regexp.new("@(#{domains})$", true) && !group.users.include?(user)
-        group.add(user)
-        GroupActionLogger.new(Discourse.system_user, group).log_add_user_to_group(user)
-      end
-    end
   end
 
   def create_user_stat

@@ -151,6 +151,7 @@ class Search
   end
 
   attr_accessor :term
+  attr_reader :clean_term
 
   def initialize(term, opts=nil)
     @opts = opts || {}
@@ -161,10 +162,14 @@ class Search
     @limit = Search.per_facet
     @valid = true
 
+    # Removes any zero-width characters from search terms
+    term.to_s.gsub!(/[\u200B-\u200D\uFEFF]/, '')
+    @clean_term = term.to_s.dup
+
     term = process_advanced_search!(term)
 
     if term.present?
-      @term = Search.prepare_data(term.to_s)
+      @term = Search.prepare_data(term)
       @original_term = PG::Connection.escape_string(@term)
     end
 
@@ -177,7 +182,7 @@ class Search
       @limit = Search.per_filter
     end
 
-    @results = GroupedSearchResults.new(@opts[:type_filter], term, @search_context, @include_blurbs, @blurb_length)
+    @results = GroupedSearchResults.new(@opts[:type_filter], clean_term, @search_context, @include_blurbs, @blurb_length)
   end
 
   def valid?
@@ -445,15 +450,27 @@ class Search
     end
   end
 
-  advanced_filter(/tags?:([a-zA-Z0-9,\-_]+)/) do |posts, match|
-    tags = match.split(",")
+  advanced_filter(/tags?:([a-zA-Z0-9,\-_+]+)/) do |posts, match|
+    if match.include?('+')
+      tags = match.split('+')
 
-    posts.where("topics.id IN (
+      posts.where("topics.id IN (
+      SELECT tt.topic_id
+      FROM topic_tags tt, tags
+      WHERE tt.tag_id = tags.id
+      GROUP BY tt.topic_id
+      HAVING to_tsvector(#{query_locale}, array_to_string(array_agg(tags.name), ' ')) @@ to_tsquery(#{query_locale}, ?)
+      )", tags.join('&'))
+    else
+      tags = match.split(",")
+
+      posts.where("topics.id IN (
       SELECT DISTINCT(tt.topic_id)
       FROM topic_tags tt, tags
       WHERE tt.tag_id = tags.id
       AND tags.name in (?)
       )", tags)
+    end
   end
 
   private
@@ -474,7 +491,7 @@ class Search
           end
         end
 
-        if word == 'order:latest'
+        if word == 'order:latest' || word == 'l'
           @order = :latest
           nil
         elsif word == 'order:latest_topic'
@@ -664,7 +681,7 @@ class Search
           posts = posts.where("topics.category_id in (?)", category_ids)
         elsif @search_context.is_a?(Topic)
           posts = posts.where("topics.id = #{@search_context.id}")
-                       .order("posts.post_number")
+                       .order("posts.post_number #{@order == :latest ? "DESC" : ""}")
         end
 
       end
@@ -673,7 +690,7 @@ class Search
         if opts[:aggregate_search]
           posts = posts.order("MAX(posts.created_at) DESC")
         else
-          posts = posts.order("posts.created_at DESC")
+          posts = posts.reorder("posts.created_at DESC")
         end
       elsif @order == :latest_topic
         if opts[:aggregate_search]
@@ -710,6 +727,7 @@ class Search
       else
         posts = posts.where("(categories.id IS NULL) OR (NOT categories.read_restricted)").references(:categories)
       end
+
       posts.limit(limit)
     end
 
@@ -776,8 +794,7 @@ class Search
     def aggregate_posts(post_sql)
       return [] unless post_sql
 
-      Post.includes(:topic => :category)
-        .includes(:user)
+      posts_eager_loads(Post)
         .joins("JOIN (#{post_sql}) x ON x.id = posts.topic_id AND x.post_number = posts.post_number")
         .order('row_number')
     end
@@ -805,15 +822,26 @@ class Search
 
     def topic_search
       if @search_context.is_a?(Topic)
-        posts = posts_query(@limit).where('posts.topic_id = ?', @search_context.id)
-                                   .includes(:topic => :category)
-                                   .includes(:user)
+        posts = posts_eager_loads(posts_query(@limit))
+          .where('posts.topic_id = ?', @search_context.id)
+
         posts.each do |post|
           @results.add(post)
         end
       else
         aggregate_search
       end
+    end
+
+    def posts_eager_loads(query)
+      query = query.includes(:user)
+      topic_eager_loads = [:category]
+
+      if SiteSetting.tagging_enabled
+        topic_eager_loads << :tags
+      end
+
+      query.includes(topic: topic_eager_loads)
     end
 
 end
