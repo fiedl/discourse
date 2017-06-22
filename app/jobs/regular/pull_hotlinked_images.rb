@@ -36,14 +36,24 @@ module Jobs
             # have we already downloaded that file?
             unless downloaded_urls.include?(src)
               begin
-                hotlinked = FileHelper.download(src, @max_size, "discourse-hotlinked", true)
+                hotlinked = FileHelper.download(
+                  src,
+                  max_file_size: @max_size,
+                  tmp_file_name: "discourse-hotlinked",
+                  follow_redirect: true
+                )
               rescue Discourse::InvalidParameters
               end
               if hotlinked
                 if File.size(hotlinked.path) <= @max_size
                   filename = File.basename(URI.parse(src).path)
+                  filename << File.extname(hotlinked.path) unless filename["."]
                   upload = UploadCreator.new(hotlinked, filename, origin: src).create_for(post.user_id)
-                  downloaded_urls[src] = upload.url
+                  if upload.persisted?
+                    downloaded_urls[src] = upload.url
+                  else
+                    Rails.logger.info("Failed to pull hotlinked image for post: #{post_id}: #{src} - #{upload.errors.join("\n")}")
+                  end
                 else
                   Rails.logger.info("Failed to pull hotlinked image for post: #{post_id}: #{src} - Image is bigger than #{@max_size}")
                 end
@@ -76,8 +86,7 @@ module Jobs
           rescue => e
             Rails.logger.info("Failed to pull hotlinked image: #{src} post:#{post_id}\n" + e.message + "\n" + e.backtrace.join("\n"))
           ensure
-            # close & delete the temp file
-            hotlinked && hotlinked.close!
+            hotlinked&.close! rescue nil
           end
         end
 
@@ -89,12 +98,14 @@ module Jobs
         # we never want that job to bump the topic
         options = { bypass_bump: true }
         post.revise(Discourse.system_user, changes, options)
+      elsif downloaded_urls.present?
+        post.trigger_post_process(true)
       end
     end
 
     def extract_images_from(html)
       doc = Nokogiri::HTML::fragment(html)
-      doc.css("img[src]") - doc.css(".onebox-result img") - doc.css("img.avatar")
+      doc.css("img[src]") - doc.css("img.avatar")
     end
 
     def is_valid_image_url(src)

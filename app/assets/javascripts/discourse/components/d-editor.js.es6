@@ -8,7 +8,7 @@ import { search as searchCategoryTag  } from 'discourse/lib/category-tag-search'
 import { SEPARATOR } from 'discourse/lib/category-hashtags';
 import { cook } from 'discourse/lib/text';
 import { translations } from 'pretty-text/emoji/data';
-import { emojiSearch } from 'pretty-text/emoji';
+import { emojiSearch, isSkinTonableEmoji } from 'pretty-text/emoji';
 import { emojiUrlFor } from 'discourse/lib/text';
 import { getRegister } from 'discourse-common/lib/get-owner';
 import { findRawTemplate } from 'discourse/lib/raw-templates';
@@ -138,7 +138,7 @@ class Toolbar {
       label: button.label,
       icon: button.label ? null : button.icon || button.id,
       action: button.action || 'toolbarButton',
-      perform: button.perform || Ember.K,
+      perform: button.perform || function() { },
       trimLeading: button.trimLeading
     };
 
@@ -337,6 +337,10 @@ export default Ember.Component.extend({
         self.set('value', text);
       },
 
+      onKeyUp(text, cp) {
+        return text.substring(0, cp).match(/(:(?!:).?[\w-]*:?(?!:)(?:t\d?)?:?) ?$/g);
+      },
+
       transformComplete(v) {
         if (v.code) {
           return `${v.code}:`;
@@ -370,6 +374,20 @@ export default Ember.Component.extend({
 
           if (translations[full]) {
             return resolve([translations[full]]);
+          }
+
+          const match = term.match(/^:?(.*?):t(\d)?$/);
+          if (match) {
+            let name = match[1];
+            let scale = match[2];
+
+            if (isSkinTonableEmoji(name)) {
+              if (scale) {
+                return resolve([`${name}:t${scale}`]);
+              } else {
+                return resolve([2, 3, 4, 5, 6].map(x => `${name}:t${x}`));
+              }
+            }
           }
 
           const options = emojiSearch(term, {maxResults: 5});

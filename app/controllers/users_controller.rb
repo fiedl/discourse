@@ -127,14 +127,13 @@ class UsersController < ApplicationController
     user = fetch_user_from_params
     guardian.ensure_can_edit_username!(user)
 
-    # TODO proper error surfacing (result is a Model#save call)
     result = UsernameChanger.change(user, params[:new_username], current_user)
-    raise Discourse::InvalidParameters.new(:new_username) unless result
 
-    render json: {
-      id: user.id,
-      username: user.username
-    }
+    if result
+      render json: { id: user.id, username: user.username }
+    else
+      render_json_error(user.errors.full_messages.join(','))
+    end
   end
 
   def check_emails
@@ -293,6 +292,7 @@ class UsersController < ApplicationController
   end
 
   def create
+    params.require(:email)
     params.permit(:user_fields)
 
     unless SiteSetting.allow_new_registrations
@@ -303,7 +303,7 @@ class UsersController < ApplicationController
       return fail_with("login.password_too_long")
     end
 
-    if params[:email] && params[:email].length > 254 + 1 + 253
+    if params[:email].length > 254 + 1 + 253
       return fail_with("login.email_too_long")
     end
 
@@ -311,7 +311,7 @@ class UsersController < ApplicationController
       return fail_with("login.reserved_username")
     end
 
-    if user = User.where(staged: true).find_by(email: params[:email].strip.downcase)
+    if user = User.find_by(staged: true, email: params[:email].strip.downcase)
       user_params.each { |k, v| user.send("#{k}=", v) }
       user.staged = false
     else
@@ -435,7 +435,7 @@ class UsersController < ApplicationController
         else
           store_preloaded("password_reset", MultiJson.dump({ is_developer: UsernameCheckerService.is_developer?(@user.email) }))
         end
-        return redirect_to(wizard_path) if Wizard.user_requires_completion?(@user)
+        return redirect_to(wizard_path) if request.put? && Wizard.user_requires_completion?(@user)
       end
 
       format.json do
@@ -537,12 +537,16 @@ class UsersController < ApplicationController
 
     @custom_body_class = "static-account-created"
     @message = session['user_created_message'] || I18n.t('activation.missing_session')
-    @account_created = { message: @message }
+    @account_created = {
+      message: @message,
+      show_controls: false
+    }
 
     if session_user_id = session[SessionController::ACTIVATE_USER_KEY]
       if user = User.where(id: session_user_id.to_i).first
         @account_created[:username] = user.username
         @account_created[:email] = user.email
+        @account_created[:show_controls] = true
       end
     end
 
@@ -618,6 +622,8 @@ class UsersController < ApplicationController
       RateLimiter.new(nil, "activate-min-#{request.remote_ip}", 6, 1.minute).performed!
     end
 
+    raise Discourse::InvalidAccess.new if SiteSetting.must_approve_users?
+
     if params[:username].present?
       @user = User.find_by_username_or_email(params[:username].to_s)
     end
@@ -626,7 +632,7 @@ class UsersController < ApplicationController
     if !current_user&.staff? &&
         @user.id != session[SessionController::ACTIVATE_USER_KEY]
 
-      raise Discourse::InvalidAccess
+      raise Discourse::InvalidAccess.new
     end
 
     session.delete(SessionController::ACTIVATE_USER_KEY)

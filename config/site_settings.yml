@@ -373,7 +373,7 @@ users:
   invites_per_page:
     client: true
     default: 40
-    min: 1
+    hidden: true
   delete_user_max_post_age:
     client: true
     default: 60
@@ -629,6 +629,8 @@ email:
   alternative_reply_by_email_addresses:
     default: ''
     validator: "AlternativeReplyByEmailAddressesValidator"
+  find_related_post_with_key:
+    default: false
   manual_polling_enabled:
     default: false
   pop3_polling_enabled:
@@ -714,7 +716,7 @@ files:
     min: 5
     max: 150
   theme_authorized_extensions:
-    default: 'jpg|jpeg|png|woff|woff2|svg|eot|ttf|otf'
+    default: 'jpg|jpeg|png|woff|woff2|svg|eot|ttf|otf|gif'
     type: list
   authorized_extensions:
     client: true
@@ -798,6 +800,9 @@ files:
     default: 95
     min: 1
     max: 100
+  allow_staff_to_upload_any_file_in_pm:
+    default: true
+    client: true
 
 trust:
   default_trust_level:
@@ -890,6 +895,13 @@ security:
   use_admin_ip_whitelist:
     default: false
     client: true
+  blacklist_ip_blocks:
+    default: ''
+    type: list
+    shadowed_by_global: true
+  whitelist_internal_hosts:
+    default: ''
+    type: list
 
 onebox:
   enable_flash_video_onebox: false

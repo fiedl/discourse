@@ -83,6 +83,7 @@ ko:
           other: "%{count}년 후"
       previous_month: '이전 달'
       next_month: '다음 달'
+      placeholder: 날짜를 선택하세요
     share:
       topic: '주제를 공유합니다.'
       post: '게시글 #%{postNumber}'
@@ -316,9 +317,6 @@ ko:
         full_name: '전체 이름'
         add_members: "구성원 추가"
         delete_member_confirm: "'%{username}'를 '%{group}' 그룹에서 삭제하겠습니까?"
-      request_membership_pm:
-        title: "멤버십 요청"
-        body: "@%{groupName} 에 멤버십을 요청합니다."
       name_placeholder: "그룹 이름, 공백 없이 username 규칙과 동일하게 입력하세요."
       public: "사용자들이 그룹을 자유롭게 참여/탈퇴 가능하게 합니다. (그룹은 반드시 공개되어야 함)"
       empty:
@@ -528,7 +526,6 @@ ko:
       change_username:
         title: "아이디 변경"
         taken: "죄송합니다. 이미 사용 중인 아이디입니다."
-        error: "아이디를 변경하는 중에 오류가 발생했습니다."
         invalid: "아이디가 잘못되었습니다. 숫자와 문자를 포함해야합니다."
       change_email:
         title: "이메일 변경"
@@ -594,6 +591,7 @@ ko:
       like_notification_frequency:
         title: "누군가 '좋아요' 해주면 알려주기"
         always: "항상"
+        first_time: "게시글이 첫 좋아요를 받은 시간"
         never: "절대"
       email_previous_replies:
         title: "이메일 밑부분에 이전 댓글을 포함합니다."
@@ -681,6 +679,8 @@ ko:
           other: "좋아요"
         likes_received:
           other: "받음"
+        bookmark_count:
+          other: "북마크들"
         top_replies: "인기 댓글"
         no_replies: "아직 답글이 없습니다."
         more_replies: "답글 더 보기"
@@ -690,6 +690,10 @@ ko:
         top_badges: "인기 배지"
         no_badges: "아직 배지가 없습니다."
         more_badges: "배지 더 보기"
+        top_links: "인기 링크"
+        no_links: "아직 링크가 없습니다."
+        most_liked_by: "가장 많이 좋아요를 한 사용자"
+        most_liked_users: "가장 많이 좋아요를 받은"
       associated_accounts: "로그인"
       ip_address:
         title: "마지막 IP 주소"
@@ -1001,10 +1005,8 @@ ko:
         dismiss_new: "새글 제거"
         toggle: "주제 복수 선택"
         actions: "일괄 적용"
-        change_category: "카테고리 변경"
         close_topics: "주제 닫기"
         archive_topics: "주제 보관하기"
-        notification_level: "알림 설정 변경"
         choose_new_category: "주제의 새로운 카테고리를 선택"
         selected:
           other: "<b>{{count}}</b>개의 주제가 선택되었습니다."
@@ -1971,7 +1973,6 @@ ko:
           do_nothing: "아무것도 하지 않음"
         staff_actions:
           title: "스태프 기록"
-          instructions: "사용자 아이디을 클릭하여 목록에서 차단하십시오. 프로필 사진을 클릭하여 사용자 페이지로 갑니다."
           clear_filters: "전체 보기"
           staff_user: "스태프 사용자"
           target_user: "타겟 사용자"
@@ -2374,6 +2375,7 @@ ko:
         embed_truncate: "임베드된 글 뒷부분 잘라내기"
         embed_whitelist_selector: "CSS selector for elements that are allowed in embeds"
         embed_blacklist_selector: "CSS selector for elements that are removed from embeds"
+        embed_classname_whitelist: "허용된 CSS 클래스"
         feed_polling_enabled: "RSS/ATOM으로 글 가져오기"
         feed_polling_url: "긁어올 RSS/ATOM 피드 URL"
         save: "삽입(Embedding) 설정 저장하기"
@@ -2392,3 +2394,21 @@ ko:
           label: "새로운:"
           add: "추가"
           filter: "검색 (URL 혹은 외부 URL)"
+  wizard_js:
+    wizard:
+      done: "완료"
+      back: "이전"
+      next: "다음"
+      step: "%{total} 중 %{current}"
+      upload: "업로드"
+      uploading: "업로드 중..."
+      quit: "아마도 다음에"
+      staff_count:
+        other: "당신의 커뮤니티는 관리자가 %{count}명 있습니다."
+      invites:
+        add_user: "추가"
+        none_added: "관리자에게 초대되지 않았습니다. 계속하시겠습니까?"
+        roles:
+          admin: "관리자"
+          moderator: "운영자"
+          regular: "일반 유저"

@@ -246,7 +246,6 @@ vi:
   meta_category_description: "Thảo luận về site này, tổ chức của nó, làm sao nó hoạt động, và làm sao chúng tôi có thể cải tiến nó tốt hơn."
   staff_category_name: "Nhân viên"
   staff_category_description: "Chuyên mục riêng dành cho nhân viên. Các chủ đề chỉ hiển thị với quản trị viên và điều hành viên."
-  assets_topic_body: "Chủ đề này tồn tại vĩnh viễn, chỉ xem được bởi nhân viên, dùng để chứa ảnh và file dành cho việc thiết kế. Vui lòng đừng xóa.\n\n\nHướng dẫn:\n\n\n1. Trả lời chủ đề này.\n2. Tải lên tất cả ảnh bạn cần cho logo, favicon, và các thứ khác. (Dùng nút tải lên trong công cụ viết bài, hoặc kéo-và-thả hoặc dán ảnh vào) \n3. Gửi trả lời của bạn.\n4. Bấm chuột phải lên ảnh trong bài đăng mới để chép đường dẫn của các ảnh đã được tải lên, hoặc sửa bài viết của bạn để lấy đường dẫn của ảnh. Sao chép các đường dẫn này.\n5. Dán các đường dẫn này vào [thiết lập chung](/admin/site_settings/category/required).\n\n\nNếu bạn cần tải lên các loại file khác, sửa `authorized_extensions` trong [thiết lập file](/admin/site_settings/category/files)."
   lounge_welcome:
     title: "Chào mừng bạn đến với Phòng khách"
     body: |2
@@ -401,7 +400,6 @@ vi:
       long_form: 'đánh dấu không-đúng-chủ-đề'
     spam:
       title: 'Spam'
-      description: 'Bài đăng này là một bài quảng cáo. Không bổ ích hoặc liên quan tới chủ đề hiện tại, chỉ nhằm mục đích quảng cáo.'
       long_form: 'đánh dấu là spam'
       email_title: '"%{title}" đã bị gắn cờ spam'
       email_body: "%{link}\n\n%{message}"
@@ -942,7 +940,6 @@ vi:
     enable_names: "Hiển thị tên đầy đủ của thành viên trên trang hồ sơ, thẻ thành viên, và email. Tắt để ẩn tên đầy đủ ở khắp mọi nơi."
     display_name_on_posts: "Hiển thị tên đầy đủ của thành viên trên bài viết của họ và khi gõ @username."
     show_time_gap_days: "Nếu hai bài viết được thực hiện cách nhau nhiều ngày, hiển thị thời gian cách nhau đó trong chủ đề."
-    invites_per_page: "Lời mời mặc định hiển thị trên trang thành viên"
     short_progress_text_threshold: "Sau khi số bài đăng của một chủ đề vượt qua giới hạn này, thanh tiến trình sẽ chỉ hiện số thứ tự của bài đăng hiện tại. Nếu bạn thay đổi chiều rộng của thanh tiến trình, bạn có thể cần thay đổi giá trị này"
     default_code_lang: "Highlight cú pháp ngôn ngữ lập trình mặc định áp dụng cho đoạn mã GitHub (lang-auto, ruby, python...)"
     warn_reviving_old_topic_age: "Khi ai đó trả lời chủ đề mà lần trả lời cuối cùng cũ hơn số ngày được thiết lập ở đây, hiển thị một cảnh báo. Vô hiệu hóa bằng cách đặt là 0."
@@ -1121,16 +1118,6 @@ vi:
   system_messages:
     welcome_user:
       subject_template: "Chào mừng đến với %{site_name}!"
-      text_body_template: |
-        Chào mừng bạn gia nhập %{site_name}!
-
-        %{new_user_tips}
-
-        Chúng tôi tin rằng bạn sẽ cùng chúng tôi phát triển một cộng đồng văn minh [hành vi ứng xử](%{base_url}/guidelines).
-
-        Chúc vui vẻ!
-
-        (Nếu bạn cần giao tiếp với BQT [thành viên quản trị](%{base_url}/about), bạn có thể gửi trả lời email này).
     welcome_invite:
       subject_template: "Chào mừng đến với %{site_name}!"
     backup_succeeded:
@@ -1146,14 +1133,6 @@ vi:
       text_body_template: "File mời thành viên hàng loạt của bạn đã được thực hiện, %{sent} lời mời đã được gửi."
     bulk_invite_failed:
       subject_template: "Có lỗi khi thực hiện mời thành viên hàng loạt"
-      text_body_template: |
-        File mời thành viên hàng loạt của bạn đã được thực hiện, %{sent} lời mời đã được gửi kèm với %{failed} lỗi.
-
-        Đây là nhật ký:
-
-        ```
-        %{logs}
-        ```
     csv_export_succeeded:
       subject_template: "Xuất dữ liệu hoàn tất"
     csv_export_failed:
@@ -1301,8 +1280,6 @@ vi:
   subject_pm: "[PM]"
   user_notifications:
     previous_discussion: "Các trả lời trước"
-    reached_limit:
-      other: "LƯU Ý: bạn đã đạt đến giới hạn %{count} email được gửi mỗi ngày. Thêm nữa, các email thông báo sẽ tiếp tục bị chặn."
     in_reply_to: "Trong Trả Lời Tới"
     unsubscribe:
       title: "Bỏ theo dõi"

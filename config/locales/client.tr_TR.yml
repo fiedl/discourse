@@ -317,9 +317,6 @@ tr_TR:
         full_name: 'Tam İsim'
         add_members: "Üyeleri ekle"
         delete_member_confirm: "'%{username}' adlı kullanıcıyı '%{group}' grubundan çıkart?"
-      request_membership_pm:
-        title: "Üyelik isteği"
-        body: "@%{groupName} adlı gruba üye olarak başvurmak istiyorum."
       name_placeholder: "Grup adı, kullanıcı adındaki gibi boşluksuz olmalı"
       public: "Kullanıcıların gruptan serbest bir şekilde ayrılıp/katılmasına izin ver (grubun görünür olması gerekmekte)"
       empty:
@@ -449,7 +446,6 @@ tr_TR:
       mute: "Sustur"
       edit: "Tercihleri Düzenle"
       download_archive:
-        button_text: "Gönderilerimi İndir"
         confirm: "Gönderilerinizi indirmek istediğinize emin misiniz?"
         success: "İndirme başlatıldı, İşlem tamamlandığında mesaj ile bilgilendirileceksiniz."
         rate_limit_error: "Gönderiler günde bir kez indirilebilir, lütfen yarın tekrar deneyin."
@@ -551,6 +547,8 @@ tr_TR:
         move_to_archive: " Arşiv"
         failed_to_move: "Seçilen iletileri taşımak başarısız oldu (muhtemelen ağınız çöktü)"
         select_all: "Tümünü seç"
+      preferences_nav:
+        interface: "Arayüz"
       change_password:
         success: "(e-posta gönderildi)"
         in_progress: "(e-posta yollanıyor)"
@@ -566,7 +564,6 @@ tr_TR:
         title: "Kullanıcı Adını Değiştir"
         confirm: "Kullanıcı adınızı değiştirmeniz halinde, eski gönderilerinizden yapılan tüm alıntılar ve @eskiadınızdaki bahsetmeler bozulacak. Bunu yapmak istediğinize gerçekten emin misiniz?"
         taken: "Üzgünüz, bu kullanıcı adı alınmış."
-        error: "Kullanıcı adınızı değiştirirken bir hata oluştu."
         invalid: "Bu kullanıcı adı geçersiz. Sadece sayı ve harf içermelidir."
       change_email:
         title: "E-posta Adresini Değiştirin"
@@ -957,7 +954,6 @@ tr_TR:
       cannot_see_mention:
         category: "{{username}}  adlı kullanıcıdan bahsettiniz fakat Ona bildirim gönderilmeyecek çünkü bu kategoriye ulaşma izni yok. Bunun gerçekleşmesi için kişi bu gruba eklemeniz gerekmektedir."
         private: "{{username}} adlı kullanıcıdan bahsettiniz fakat Ona bildirim gönderilmeyecek çünkü bu kişisel mesaja ulaşma izni yok. Bunun gerçekleşmesi için kişiyi bu PM'ye eklemeniz gerekmektedir."
-      duplicate_link: "Görünüşe göre <b>{{domain}}</b> alan adına bağlanan bağlantınız <b>@{{username}}</b> tarafından <a href='{{post_url}}'>a cevabı içerisinde {{ago}} yayınlanmış görünüyor. </a> – tekrar yayınlamak istediğinize emin misiniz?"
       error:
         title_missing: "Başlık gerekli"
         title_too_short: "Başlık en az {{min}} karakter olmalı"
@@ -1166,10 +1162,8 @@ tr_TR:
         dismiss_new: "Yenileri Yoksay"
         toggle: "konuların toplu seçimini aç/kapa"
         actions: "Toplu Eylemler"
-        change_category: "Kategoriyi Değiştir"
         close_topics: "Konuları Kapat"
         archive_topics: "Konuları Arşivle"
-        notification_level: "Bildirim Seviyesini Değiştir"
         choose_new_category: "Konular için yeni bir kategori seçin:"
         selected:
           other: "<b>{{count}}</b> konu seçtiniz."
@@ -1590,9 +1584,6 @@ tr_TR:
       delete:
         confirm:
           other: "Tüm bu gönderileri silmek istediğinize emin misiniz?"
-      merge:
-        confirm:
-          other: "{{count}} adet gönderiyi birleştirmek istediğinize emin misiniz?"
       revisions:
         controls:
           first: "İlk revizyon"
@@ -1626,8 +1617,6 @@ tr_TR:
       settings: 'Ayarlar'
       topic_template: "Konu Şablonu"
       tags: "Etiketler"
-      tags_allowed_tags: "Sadece bu kategoride kullanılabilir etiketler:"
-      tags_allowed_tag_groups: "Yalnızca bu kategoride kullanılabilir etiket grupları:"
       tags_placeholder: "(Seçmeli) izin verilen etiketlerin listesi"
       tag_groups_placeholder: "(Seçmeli) izin verilen etiket gruplarının listesi"
       topic_featured_link_allowed: " Featured link'lere bu kategoride izin ver"
@@ -1929,8 +1918,6 @@ tr_TR:
       granted_on: "%{date} tarihinde verildi"
       others_count: "Bu rozete sahip diğer kişiler (%{count})"
       title: Rozetler
-      allow_title: "uygun başlık"
-      multiple_grant: "birden fazla ödüllendirilmiş"
       badge_count:
         other: "%{count} Rozet"
       more_badges:
@@ -2215,7 +2202,6 @@ tr_TR:
         event_type_missing: "En az bir olay tipi ayarlamalısınız."
         content_type: "İçerik Türü"
         secret: "Gizli"
-        event_chooser: "Bu web kancasını tetikleyecek olayların neler olmasını isterdiniz?"
         wildcard_event: "Bana her şeyi gönder."
         individual_event: "Belirli olayları seç"
         verify_certificate: "Veri yükü URL'inin TLS sertifikasını kontrol edin."
@@ -2482,7 +2468,6 @@ tr_TR:
           do_nothing: "hiçbir şey yapma"
         staff_actions:
           title: "Görevli Eylemleri"
-          instructions: "Kullanıcı adları ve eylemlere tıklayarak listeyi süz. Profil resimlerine tıklayarak kullanıcı sayfalarına git."
           clear_filters: "Hepsini Göster"
           staff_user: "Görevli Kullanıcı"
           target_user: "Hedef Kullanıcı"

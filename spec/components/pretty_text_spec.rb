@@ -13,7 +13,7 @@ describe PrettyText do
         topic = Fabricate(:topic, title: "this is a test topic :slight_smile:")
         expected = <<HTML
 <aside class="quote" data-post="2" data-topic="#{topic.id}"><div class="title">
-<div class="quote-controls"></div><a href="http://test.localhost/t/this-is-a-test-topic-slight-smile/#{topic.id}/2">This is a test topic <img src="/images/emoji/emoji_one/slight_smile.png?v=3" title="slight_smile" alt="slight_smile" class="emoji"></a>
+<div class="quote-controls"></div><a href="http://test.localhost/t/this-is-a-test-topic-slight-smile/#{topic.id}/2">This is a test topic <img src="/images/emoji/emoji_one/slight_smile.png?v=5" title="slight_smile" alt="slight_smile" class="emoji"></a>
 </div>
 <blockquote><p>ddd</p></blockquote></aside>
 HTML
@@ -452,6 +452,13 @@ HTML
     it "doesn't replace unicode emoji if emoji is disabled" do
       SiteSetting.enable_emoji = false
       expect(PrettyText.cook("💣")).not_to match(/\:bomb\:/)
+    end
+
+    it "replaces skin toned emoji" do
+      expect(PrettyText.cook("hello 👱🏿‍♀️")).to eq("<p>hello <img src=\"/images/emoji/emoji_one/blonde_woman/6.png?v=5\" title=\":blonde_woman:t6:\" class=\"emoji\" alt=\":blonde_woman:t6:\"></p>")
+      expect(PrettyText.cook("hello 👩‍🎤")).to eq("<p>hello <img src=\"/images/emoji/emoji_one/woman_singer.png?v=5\" title=\":woman_singer:\" class=\"emoji\" alt=\":woman_singer:\"></p>")
+      expect(PrettyText.cook("hello 👩🏾‍🎓")).to eq("<p>hello <img src=\"/images/emoji/emoji_one/woman_student/5.png?v=5\" title=\":woman_student:t5:\" class=\"emoji\" alt=\":woman_student:t5:\"></p>")
+      expect(PrettyText.cook("hello 🤷‍♀️")).to eq("<p>hello <img src=\"/images/emoji/emoji_one/woman_shrugging.png?v=5\" title=\":woman_shrugging:\" class=\"emoji\" alt=\":woman_shrugging:\"></p>")
     end
   end
 

@@ -309,7 +309,7 @@ Discourse::Application.routes.draw do
   get "user_preferences" => "users#user_preferences_redirect"
 
   %w{users u}.each_with_index do |root_path, index|
-    resources :users, except: [:show, :update, :destroy], path: root_path do
+    resources :users, except: [:new, :show, :update, :destroy], path: root_path do
       collection do
         get "check_username"
         get "is_local_username"
@@ -430,7 +430,6 @@ Discourse::Application.routes.draw do
     get 'activity' => "groups#show"
     get 'activity/:filter' => "groups#show"
     get 'members'
-    get 'owners'
     get 'posts'
     get 'topics'
     get 'mentions'
@@ -442,6 +441,7 @@ Discourse::Application.routes.draw do
     member do
       put "members" => "groups#add_members"
       delete "members" => "groups#remove_member"
+      post "request_membership" => "groups#request_membership"
       post "notifications" => "groups#set_notifications"
     end
   end

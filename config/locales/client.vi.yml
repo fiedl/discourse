@@ -325,9 +325,6 @@ vi:
         full_name: 'Tên đầy đủ'
         add_members: "Thêm thành viên"
         delete_member_confirm: "Xoá  '%{username}' khỏi nhóm '%{group}' ?"
-      request_membership_pm:
-        title: "Xin làm thành viên"
-        body: "Tôi muốn gia nhập nhóm @%{groupName}."
       name_placeholder: "Tên nhóm, không có khoảng trắng, tương tự như luật đặt tên người dùng"
       public: "Cho phép người dùng tham gia/rời bỏ nhóm tự do (Nhóm phải là công khai)"
       empty:
@@ -458,7 +455,6 @@ vi:
       mute: "Im lặng"
       edit: "Tùy chỉnh"
       download_archive:
-        button_text: "Tải các bài viết của tôi"
         confirm: "Bạn có chắc chắn muốn download các bài viết của mình?"
         success: "Quá trình tải về đã bắt đầu, bạn sẽ được thông báo qua tin nhắn khi quá trình hoàn tất."
         rate_limit_error: "Bài viết chỉ được tải về một lần mỗi người, hãy thử lại vào ngày mai."
@@ -581,7 +577,6 @@ vi:
         title: "Thay Username"
         confirm: "Nếu bạn thay đổi tên đăng nhập, tất cả những liên kết người khác nhắc đến bạn @name sẽ bị lỗi. Bạn chắc chắn muốn thay đổi chứ?"
         taken: "Xin lỗi, đã có username này."
-        error: "Có lỗi trong khi thay đổi username của bạn."
         invalid: "Username này không thích hợp. Nó chỉ chứa các ký tự  là chữ cái và chữ số. "
       change_email:
         title: "Thay đổi Email"
@@ -927,7 +922,6 @@ vi:
       invited_by: "Bạn đã được mời bởi:"
       your_email: "Địa chỉ email của bạn là <b>%{email}</b>."
       accept_invite: "Chấp nhận lời mời"
-      password_label: "Thiết lập mật khẩu (Không bắt buộc)"
     password_reset:
       continue: "Tiếp tục truy cập %{site_name}"
     emoji_set:
@@ -1157,10 +1151,8 @@ vi:
         dismiss_new: "Bỏ "
         toggle: "chuyển sang chọn chủ đề theo lô"
         actions: "Hành động theo lô"
-        change_category: "Chuyển chuyên mục"
         close_topics: "Đóng các chủ đề"
         archive_topics: "Chủ đề Lưu trữ"
-        notification_level: "Thay đổi cấp độ thông báo"
         choose_new_category: "Chọn chuyên mục mới cho chủ đề này:"
         selected:
           other: "Bạn đã chọn <b>{{count}}</b> chủ đề"
@@ -1613,7 +1605,6 @@ vi:
       settings: 'Cấu hình'
       topic_template: "Mẫu Chủ đề"
       tags: "Thẻ"
-      tags_allowed_tags: "Thẻ chỉ được dùng ở chuyên mục này"
       tags_placeholder: "(Tuỳ chọn) danh sách thẻ cho phép"
       delete: 'Xóa chuyên mục'
       create: 'Chuyên mục mới'
@@ -1859,8 +1850,6 @@ vi:
       earned_n_times:
         other: "Đã giành được huy hiệu này %{count} lần"
       title: Huy hiệu
-      allow_title: "tiêu đề khả dụng"
-      multiple_grant: "được tặng thưởng nhiều lần"
       badge_count:
         other: "%{count} huy hiệu"
       none: "<none>"
@@ -2275,7 +2264,6 @@ vi:
           do_nothing: "không làm gì"
         staff_actions:
           title: "Staff Actions"
-          instructions: "Click username và thực hiện lọc danh sách, click ảnh hồ sơ để đến trang thành viên."
           clear_filters: "Hiện thị mọi thứ"
           staff_user: "Tài khoản Nhân viên"
           target_user: "Target User"

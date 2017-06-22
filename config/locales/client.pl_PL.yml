@@ -403,9 +403,6 @@ pl_PL:
         full_name: 'Pełna nazwa'
         add_members: "Dodaj użytkowników"
         delete_member_confirm: "Czy usunąć użytkownika '%{username}' z grupy '%{group}'?"
-      request_membership_pm:
-        title: "Prośba o członkostwo"
-        body: "Chciałbym(-am) poprosić o członkostwo w grupie @%{groupName}."
       name_placeholder: "Nazwa grupy, bez spacji, takie same zasady jak przy nazwie użytkownika"
       public: "Zezwalaj użytkownikom na zapraszanie/opuszczanie grupy (Grupa musi być widoczna)"
       empty:
@@ -546,7 +543,6 @@ pl_PL:
       mute: "Wycisz"
       edit: "Edytuj ustawienia"
       download_archive:
-        button_text: "Pobierz moje wpisy"
         confirm: "Czy na pewno chcesz pobrać swoje wszystkie wpisy?"
         success: "Rozpoczęto eksport: otrzymasz wiadomość, gdy proces zostanie zakończony."
         rate_limit_error: "Wpisy mogą być pobierane raz dziennie, spróbuj ponownie jutro."
@@ -673,7 +669,6 @@ pl_PL:
         title: "Zmień nazwę użytkownika"
         confirm: "Jeżeli zmienisz swoją nazwę użytkownika, wszystkie wcześniejsze cytaty twoich wpisów oraz wzmianki przez @nazwa przestaną działać. Czy jesteś absolutnie pewny że tego chcesz?"
         taken: "Przykro nam, ale ta nazwa jest zajęta."
-        error: "Podczas zmiany twojej nazwy użytkownika wystąpił błąd."
         invalid: "Ta nazwa jest niepoprawna. Powinna zawierać jedynie liczby i litery."
       change_email:
         title: "Zmień adres email"
@@ -1068,7 +1063,7 @@ pl_PL:
       your_email: "Adres e-mail przypisany do twojego konta to <b>%{email}</b>."
       accept_invite: "Akceptuj zaproszenie"
       success: "Twje konto zostało utworzone i zostałeś zalogowany."
-      password_label: "Ustaw hasło (opcjonalne)"
+      name_label: "Nazwa"
     password_reset:
       continue: "Przejdź do %{site_name}"
     emoji_set:
@@ -1107,7 +1102,6 @@ pl_PL:
       cannot_see_mention:
         category: "Wspomniałeś o {{username}} lecz nie zostaną oni powiadomieni ponieważ nie mają dostępu do tej kategorii. Dodaj ich do grupy która ma dostęp do tej kategorii."
         private: "Wspomniałeś o {{username}} lecz nie zostaną powiadomieni ponieważ nie mogą odczytać tej wiadomości . Będziesz musiał ich zaprosić do odczytania tej wiadomości "
-      duplicate_link: "Wyglądan na to, że Twój link do <b>{{domain}}</b> został już użyty w tym temacie przez <b>@{{username}}</b> w <a href='{{post_url}}'>odpowiedzi {{ago}}</a> – czy jesteś pewien, że chcesz go użyć ponownie ?"
       error:
         title_missing: "tytuł jest wymagany"
         title_too_short: "tytuł musi zawierać co najmniej {{min}} znaków"
@@ -1329,10 +1323,9 @@ pl_PL:
         dismiss_new: "Wyczyść nowe"
         toggle: "włącz grupowe zaznaczanie tematów"
         actions: "Operacje grupowe"
-        change_category: "Zmień kategorię"
         close_topics: "Zamknij wpisy"
         archive_topics: "Zarchiwizuj tematy"
-        notification_level: "Poziom powiadomień o zmianach"
+        notification_level: "Powiadomienia"
         choose_new_category: "Wybierz nową kategorię dla tematów:"
         selected:
           one: "Zaznaczono <b>1</b> temat."
@@ -1451,7 +1444,12 @@ pl_PL:
         publish_to: "Opublikuj do:"
         when: "Kiedy:"
       auto_update_input:
+        later_today: "Później dzisiaj"
         tomorrow: "Jutro"
+        later_this_week: "Później w tym tygodniu"
+        this_weekend: "W ten weekend"
+        next_week: "Następny tydzień"
+        next_month: "Następny miesiąc"
         pick_date_and_time: "Wybierz datę i czas"
       publish_to_category:
         title: "Zaplanuj publikację"
@@ -1910,12 +1908,6 @@ pl_PL:
           few: "Jesteś pewny(-a), że chcesz usunąć te wszystkie wpisy?"
           many: "Czy na pewno chcesz usunąć te wszystkie wpisy?"
           other: "Czy na pewno chcesz usunąć te wszystkie wpisy?"
-      merge:
-        confirm:
-          one: "Czy na pewno chcesz scalić te posty?"
-          few: "Czy na pewno chcesz scalić te {{count}} postów?"
-          many: "Czy na pewno chcesz scalić te {{count}} postów?"
-          other: "Czy na pewno chcesz scalić te {{count}} postów?"
       revisions:
         controls:
           first: "Pierwsza wersja"
@@ -1961,8 +1953,6 @@ pl_PL:
       settings: 'Ustawienia'
       topic_template: "Szablon tematu"
       tags: "Tagi"
-      tags_allowed_tags: "Tagi których można użyć w tej kategorii: "
-      tags_allowed_tag_groups: "Grupy tagów, które mogą być wykorzystane w tej kategorii"
       tags_placeholder: "(Opcjonalnie) lista dozwolonych tagów"
       tag_groups_placeholder: "(Opcjonalnie) lista dozwolonych grup tagów"
       topic_featured_link_allowed: "Zezwól na wybrane linki w tej kategorii"
@@ -2042,6 +2032,10 @@ pl_PL:
         created: "Utworzony"
       sort_ascending: 'Rosnąco'
       sort_descending: 'Malejąco'
+      subcategory_list_styles:
+        rows: "Rzędy"
+        rows_with_featured_topics: "Rzędy z wybranymi tematami"
+        boxes_with_featured_topics: "Ramki z wybranymi tematami"
     flagging:
       title: 'Dziękujemy za pomoc w utrzymaniu porządku w naszej społeczności!'
       action: 'Oflaguj wpis'
@@ -2314,8 +2308,6 @@ pl_PL:
       granted_on: "Przyznano %{date}"
       others_count: "Inni użytkownicy z tą odznaką (%{count})"
       title: Odznaki
-      allow_title: "dostępny tytuł"
-      multiple_grant: "przyznana wielokrotnie"
       badge_count:
         one: "1 odznaka"
         few: "%{count} odznak"
@@ -2627,7 +2619,6 @@ pl_PL:
         event_type_missing: "Musisz ustawić co najmniej jeden typ wydarzenia."
         content_type: "Typ zawartości "
         secret: "Tajemnica"
-        event_chooser: "Które wydarzenia chcesz wywołać ten webhook'iem?"
         wildcard_event: "Wysyłaj mi wszystko."
         individual_event: "Wybierz indywidualne zdarzenia"
         verify_certificate: "Sprawdź certyfikat TLS zawarty w url"
@@ -2798,23 +2789,30 @@ pl_PL:
           color_scheme: "Schemat kolorów"
           color_scheme_select: "Wybierz kolory, jakie mają być użyte w motywie"
           theme_components: "Komponenty motywu"
+          no_uploads: "Możesz załadować zasoby do swojego motywu np. fonty lub obrazy"
           css_html: "Własny CSS/HTML"
           edit_css_html: "Edytuj CSS/HTML"
           edit_css_html_help: "Nie modyfikowałeś CSS ani HTML"
+          delete_upload_confirm: "Czy usunąć ten plik? (CSS motywu może przestać działać!)"
           about_theme: "O motywie"
           license: "Licencja"
+          update_to_latest: "Aktualizuj do najnowszego"
           check_for_updates: "Sprawdź dostępność aktualizacji"
           updating: "Trwa proces aktualizacji..."
           up_to_date: "Motyw jest aktualny. Ostatnio sprawdzano:"
           add: "Dodaj"
           scss:
             text: "CSS"
+            title: "Wstaw własny CSS, przyjmujemy wszystkie prawidłowe style CSS i SCSS"
           header:
             text: "Nagłówek"
+            title: "Wstaw kod HTML do wyświetlenia powyżej nagłówka"
           after_header:
             text: "Po nagłówku"
+            title: "Wstaw kod HTML do wyświetlenia po nagłówku"
           footer:
             text: "Stopka"
+            title: "Wstaw kod HTML do wyświetlenia w stopce strony"
           embedded_scss:
             text: "Osadzony CSS"
           head_tag:
@@ -2949,7 +2947,6 @@ pl_PL:
           do_nothing: "nic nie rób"
         staff_actions:
           title: "Działania obsługi"
-          instructions: "Klikając nazwę użytkownika i akcję możesz filtrować listę. Kliknij awatary aby przejść na stronę użytkownika."
           clear_filters: "Pokaż wszystko"
           staff_user: "Użytkownik obsługi"
           target_user: "Użytkownik będący Obiektem"

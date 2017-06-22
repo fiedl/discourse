@@ -7,7 +7,8 @@ let _unicodeRegexp;
 export function setUnicodeReplacements(replacements) {
   _unicodeReplacements = replacements;
   if (replacements) {
-    _unicodeRegexp = new RegExp(Object.keys(replacements).join("|"), "g");
+    // We sort and reverse to match longer emoji sequences first
+    _unicodeRegexp = new RegExp(Object.keys(replacements).sort().reverse().join("|"), "g");
   }
 };
 
@@ -81,11 +82,17 @@ export function setup(helper) {
       return;
     }
 
-    // Simple find and replace from our array
-    const between = text.slice(1, endPos);
+    let between;
+    const emojiNameMatch = text.match(/(?:.*?)(:(?!:).?[\w-]*(?::t\d)?:)/);
+    if (emojiNameMatch) {
+      between = emojiNameMatch[0].slice(1, -1);
+    } else {
+      between = text.slice(1, -1);
+    }
+
     const contents = imageFor(between);
     if (contents) {
-      return [endPos+1, contents];
+      return [text.indexOf(between, 1) + between.length + 1, contents];
     }
   });
 

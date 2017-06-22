@@ -348,9 +348,6 @@ pt:
         full_name: 'Nome Completo'
         add_members: "Adicionar membros"
         delete_member_confirm: "Remover '%{username}' do grupo '%{group}'?"
-      request_membership_pm:
-        title: "Pedido de Adesão"
-        body: "Eu gostaria de aderir a @%{groupName}."
       name_placeholder: "Nome do grupo, sem espaços, com as mesmas regras do nome de utilizador"
       public: "Permitir aos utilizadores de se juntarem/saírem do grupo livremente (Requere que o grupo seja visível)"
       empty:
@@ -481,7 +478,6 @@ pt:
       mute: "Silenciar"
       edit: "Editar Preferências"
       download_archive:
-        button_text: "Descarregar As Minhas Publicações"
         confirm: "Tem a certeza que deseja descarregar as suas publicações?"
         success: "Descarregamento iniciado, será notificado via mensagem assim que o processo estiver concluído."
         rate_limit_error: "As publicações podem ser descarregadas uma vez por dia, por favor, tente novamente amanhã."
@@ -599,7 +595,6 @@ pt:
         title: "Alterar Nome de Utilizador"
         confirm: "Se mudar o seu nome de utilizador, todas as citações das suas publicações e menções @nome serão quebradas. Tem a certeza absoluta de que o quer fazer?"
         taken: "Pedimos desculpa, esse nome de utilizador já está a ser utilizado."
-        error: "Ocorreu um erro ao alterar o seu nome de utilizador."
         invalid: "Esse nome de utilizador é inválido. Deve conter apenas números e letras."
       change_email:
         title: "Alterar Email"
@@ -992,7 +987,6 @@ pt:
       cannot_see_mention:
         category: "Mencionou {{username}}  mas este não será notificado porque não têm acesso a esta categoria. Terá de os adicionar a um grupo que tenho acesso a esta categoria."
         private: "Mencionou {{username}} mas estes não serão notificados porque não conseguem ver esta mensagem privada.  Terá de os convidar para esta MP."
-      duplicate_link: "Parce que a tua ligação a <b>{{domain}}</b> já foi publicada neste tópico por <b>@{{username}}</b>  nesta <a href='{{post_url}}'>resposta {{ago}}</a> – tens a certeza de que a queres publicar outra vez?"
       error:
         title_missing: "O título é obrigatório"
         title_too_short: "O título tem que ter pelo menos {{min}} caracteres."
@@ -1203,10 +1197,8 @@ pt:
         dismiss_new: "Marcar Visto Novos"
         toggle: "ativar seleção em massa de tópicos"
         actions: "Ações em Massa"
-        change_category: "Mudar Categoria"
         close_topics: "Fechar Tópicos"
         archive_topics: "Arquivar tópicos"
-        notification_level: "Mudar Nível de Notificação"
         choose_new_category: "Escolha a nova categoria para os tópicos:"
         selected:
           one: "Selecionou  <b>1</b> tópico."
@@ -1662,10 +1654,6 @@ pt:
         confirm:
           one: "Tem a certeza que quer eliminar essa publicação?"
           other: "Tem a certeza que quer eliminar todas essas publicações?"
-      merge:
-        confirm:
-          one: "Tem a certeza que quer juntar estas publicações?"
-          other: "Tem a certeza que quer unir estas {{count}} publicações?"
       revisions:
         controls:
           first: "Primeira revisão"
@@ -1700,8 +1688,6 @@ pt:
       settings: 'Configurações'
       topic_template: "Modelo do Tópico"
       tags: "Etiquetas"
-      tags_allowed_tags: "Etiquetas que só podem ser usadas nesta categoria:"
-      tags_allowed_tag_groups: "Grupos de etiquetas que só podem ser usados nesta categoria:"
       tags_placeholder: "(Opcional) lista de etiquetas perimitidas"
       tag_groups_placeholder: "(Opcional) lista de grupos de etiquetas permitidos"
       delete: 'Eliminar Categoria'
@@ -2014,8 +2000,6 @@ pt:
       granted_on: "Concedido %{date}"
       others_count: "Outros com este distintivo (%{count})"
       title: Distintivos
-      allow_title: "título disponivel"
-      multiple_grant: "atribuido multiplas vezes"
       badge_count:
         one: "1 Distintivo"
         other: "%{count} Distintivos"
@@ -2305,7 +2289,6 @@ pt:
         event_type_missing: "Tem de configurar pelo menos um tipo de evento."
         content_type: "Tipo de Conteúdo"
         secret: "Segredo"
-        event_chooser: "Que eventos gostaria que este webhook despoletasse?"
         wildcard_event: "Enviar-me tudo."
         individual_event: "Selecionar eventos individuais."
         verify_certificate: "Verificar certificado TLS do url de carga"
@@ -2573,7 +2556,6 @@ pt:
           do_nothing: "não fazer nada"
         staff_actions:
           title: "Ações do Pessoal"
-          instructions: "Clique nos nomes de utilizadores e nas ações para filtrar a lista. Clique nas fotografias de perfil para ir para as páginas dos utilizadores."
           clear_filters: "Mostrar Tudo"
           staff_user: "Utilizador do Pessoal"
           target_user: "Utilizador Destino"
