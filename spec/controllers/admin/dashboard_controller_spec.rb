@@ -3,7 +3,7 @@ require_dependency 'discourse_version_check'
 
 describe Admin::DashboardController do
   before do
-    AdminDashboardData.stubs(:fetch_cached_stats).returns({reports:[]})
+    AdminDashboardData.stubs(:fetch_cached_stats).returns(reports: [])
     Jobs::VersionCheck.any_instance.stubs(:execute).returns(true)
   end
 
@@ -22,7 +22,7 @@ describe Admin::DashboardController do
 
       context 'version checking is enabled' do
         before do
-          SiteSetting.stubs(:version_checks).returns(true)
+          SiteSetting.version_checks = true
         end
 
         it 'returns discourse version info' do
@@ -34,7 +34,7 @@ describe Admin::DashboardController do
 
       context 'version checking is disabled' do
         before do
-          SiteSetting.stubs(:version_checks).returns(false)
+          SiteSetting.version_checks = false
         end
 
         it 'does not return discourse version info' do

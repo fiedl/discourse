@@ -34,7 +34,7 @@ class Guardian
 
   attr_accessor :can_see_emails
 
-  def initialize(user=nil)
+  def initialize(user = nil)
     @user = user.presence || AnonymousUser.new
   end
 
@@ -91,7 +91,7 @@ class Guardian
     end
   end
 
-  def can_create?(klass, parent=nil)
+  def can_create?(klass, parent = nil)
     return false unless authenticated? && klass
 
     # If no parent is provided, we look for a can_create_klass?
@@ -126,8 +126,11 @@ class Guardian
   end
   alias :can_move_posts? :can_moderate?
   alias :can_see_flags? :can_moderate?
-  alias :can_send_activation_email? :can_moderate?
   alias :can_close? :can_moderate?
+
+  def can_send_activation_email?(user)
+    user && is_staff? && !SiteSetting.must_approve_users?
+  end
 
   def can_grant_badges?(_user)
     SiteSetting.enable_badges && is_staff?
@@ -135,13 +138,22 @@ class Guardian
 
   def can_see_group?(group)
     return false if group.blank?
-    return true if is_admin? || group.visible?
+    return true if group.visibility_level == Group.visibility_levels[:public]
+    return true if is_admin?
+    return true if is_staff? && group.visibility_level == Group.visibility_levels[:staff]
     return false if user.blank?
 
-    group.group_users.where(user_id: user.id).exists?
+    membership = GroupUser.find_by(group_id: group.id, user_id: user.id)
+
+    return false unless membership
+
+    if !membership.owner
+      return false if group.visibility_level == Group.visibility_levels[:owners]
+      return false if group.visibility_level == Group.visibility_levels[:staff]
+    end
+
+    true
   end
-
-
 
   # Can we impersonate this user?
   def can_impersonate?(target)
@@ -219,7 +231,7 @@ class Guardian
     is_me?(user)
   end
 
-  def can_invite_to_forum?(groups=nil)
+  def can_invite_to_forum?(groups = nil)
     authenticated? &&
     (SiteSetting.max_invites_per_day.to_i > 0 || is_staff?) &&
     !SiteSetting.enable_sso &&
@@ -228,16 +240,16 @@ class Guardian
       (!SiteSetting.must_approve_users? && @user.has_trust_level?(TrustLevel[2])) ||
       is_staff?
     ) &&
-    (groups.blank? || is_admin?)
+    (groups.blank? || is_admin? || groups.all? { |g| can_edit_group?(g) })
   end
 
-  def can_invite_to?(object, group_ids=nil)
+  def can_invite_to?(object, groups = nil)
     return false unless authenticated?
     return true if is_admin?
     return false unless SiteSetting.enable_private_messages?
     return false if (SiteSetting.max_invites_per_day.to_i == 0 && !is_staff?)
     return false unless can_see?(object)
-    return false if group_ids.present?
+    return false if groups.present?
 
     if object.is_a?(Topic) && object.category
       if object.category.groups.any?
@@ -257,15 +269,15 @@ class Guardian
     user.admin?
   end
 
-  def can_create_disposable_invite?(user)
-    user.admin?
-  end
-
   def can_send_multiple_invites?(user)
     user.staff?
   end
 
   def can_resend_all_invites?(user)
+    user.staff?
+  end
+
+  def can_rescind_all_invites?(user)
     user.staff?
   end
 
@@ -307,7 +319,6 @@ class Guardian
       Theme.user_theme_keys.include?(theme_key)
     end
   end
-
 
   private
 

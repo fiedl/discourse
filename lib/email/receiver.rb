@@ -49,7 +49,9 @@ module Email
           @incoming_email = create_incoming_email
           process_internal
         rescue => e
-          @incoming_email.update_columns(error: e.to_s) if @incoming_email
+          error = e.to_s
+          error = e.class.name if error.blank?
+          @incoming_email.update_columns(error: error) if @incoming_email
           raise
         end
       end
@@ -153,7 +155,7 @@ module Email
       if $redis.setnx(key, "1")
         $redis.expire(key, 25.hours)
 
-        if user = User.find_by(email: email)
+        if user = User.find_by_email(email)
           user.user_stat.bounce_score += score
           user.user_stat.reset_bounce_score_after = SiteSetting.reset_bounce_score_after_days.days.from_now
           user.user_stat.save
@@ -166,7 +168,7 @@ module Email
           elsif bounce_score >= SiteSetting.bounce_score_threshold
             # NOTE: we check bounce_score before sending emails, nothing to do
             # here other than log it happened.
-            reason = I18n.t("user.email.revoked", { email: user.email, date: user.user_stat.reset_bounce_score_after })
+            reason = I18n.t("user.email.revoked", email: user.email, date: user.user_stat.reset_bounce_score_after)
             StaffActionLogger.new(Discourse.system_user).log_revoke_email(user, reason)
           end
         end
@@ -374,6 +376,7 @@ module Email
 
         create_topic(user: user,
                      raw: body,
+                     elided: elided,
                      title: subject,
                      category: category.id,
                      skip_validations: user.staged?)
@@ -465,7 +468,7 @@ module Email
       true
     end
 
-    def self.reply_by_email_address_regex(extract_reply_key=true)
+    def self.reply_by_email_address_regex(extract_reply_key = true)
       reply_addresses = [SiteSetting.reply_by_email_address]
       reply_addresses << (SiteSetting.alternative_reply_by_email_addresses.presence || "").split("|")
 
@@ -537,11 +540,11 @@ module Email
       PostActionType.types[:like] if likes.include?(body.strip.downcase)
     end
 
-    def create_topic(options={})
+    def create_topic(options = {})
       create_post_with_attachments(options)
     end
 
-    def create_reply(options={})
+    def create_reply(options = {})
       raise TopicNotFoundError if options[:topic].nil? || options[:topic].trashed?
 
       if post_action_type = post_action_for(options[:raw])
@@ -571,7 +574,7 @@ module Email
       end
     end
 
-    def create_post_with_attachments(options={})
+    def create_post_with_attachments(options = {})
       # deal with attachments
       attachments.each do |attachment|
         tmp = Tempfile.new(["discourse-email-attachment", File.extname(attachment.filename)])
@@ -611,7 +614,7 @@ module Email
       end
     end
 
-    def create_post(options={})
+    def create_post(options = {})
       options[:via_email] = true
       options[:raw_email] = @raw_email
 
@@ -621,7 +624,7 @@ module Email
         raise InvalidPost, "No post creation date found. Is the e-mail missing a Date: header?"
       end
 
-      options[:created_at]   = DateTime.now if options[:created_at] > DateTime.now
+      options[:created_at] = DateTime.now if options[:created_at] > DateTime.now
 
       is_private_message = options[:archetype] == Archetype.private_message ||
                            options[:topic].try(:private_message?)

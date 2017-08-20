@@ -77,7 +77,7 @@ class Admin::UsersController < Admin::AdminController
       @user.logged_out
       render json: success_json
     else
-      render json: {error: I18n.t('admin_js.admin.users.id_not_found')}, status: 404
+      render json: { error: I18n.t('admin_js.admin.users.id_not_found') }, status: 404
     end
   end
 
@@ -135,18 +135,29 @@ class Admin::UsersController < Admin::AdminController
   def remove_group
     group = Group.find(params[:group_id].to_i)
     return render_json_error group unless group && !group.automatic
+
     group.remove(@user)
     GroupActionLogger.new(current_user, group).log_remove_user_from_group(@user)
+
     render nothing: true
   end
 
   def primary_group
-    group = Group.find(params[:primary_group_id].to_i)
     guardian.ensure_can_change_primary_group!(@user)
-    if group.users.include?(@user)
-      @user.primary_group_id = params[:primary_group_id]
-      @user.save!
+
+    if params[:primary_group_id].present?
+      primary_group_id = params[:primary_group_id].to_i
+      if group = Group.find(primary_group_id)
+        if group.user_ids.include?(@user.id)
+          @user.primary_group_id = primary_group_id
+        end
+      end
+    else
+      @user.primary_group_id = nil
     end
+
+    @user.save!
+
     render nothing: true
   end
 
@@ -154,8 +165,7 @@ class Admin::UsersController < Admin::AdminController
     guardian.ensure_can_change_trust_level!(@user)
     level = params[:level].to_i
 
-
-    if !@user.trust_level_locked && [0,1,2].include?(level) && Promotion.send("tl#{level+1}_met?", @user)
+    if !@user.trust_level_locked && [0, 1, 2].include?(level) && Promotion.send("tl#{level + 1}_met?", @user)
       @user.trust_level_locked = true
       @user.save
     end
@@ -187,7 +197,7 @@ class Admin::UsersController < Admin::AdminController
 
     unless @user.trust_level_locked
       p = Promotion.new(@user)
-      2.times{ p.review }
+      2.times { p.review }
       p.review_tl2
       if @user.trust_level == 3 && Promotion.tl3_lost?(@user)
         @user.change_trust_level!(2, log_action_for: current_user)
@@ -212,6 +222,8 @@ class Admin::UsersController < Admin::AdminController
 
   def activate
     guardian.ensure_can_activate!(@user)
+    # ensure there is an active email token
+    @user.email_tokens.create(email: @user.email) unless @user.email_tokens.active.exists?
     @user.activate
     StaffActionLogger.new(current_user).log_user_activate(@user, I18n.t('user.activated_by_staff'))
     render json: success_json
@@ -242,7 +254,7 @@ class Admin::UsersController < Admin::AdminController
     d = UserDestroyer.new(current_user)
 
     User.where(id: params[:users]).each do |u|
-      success_count += 1 if guardian.can_delete_user?(u) and d.destroy(u, params.slice(:context)) rescue UserDestroyer::PostsExistError
+      success_count += 1 if guardian.can_delete_user?(u) && d.destroy(u, params.slice(:context)) rescue UserDestroyer::PostsExistError
     end
 
     render json: {
@@ -339,12 +351,12 @@ class Admin::UsersController < Admin::AdminController
     user.save!
     user.grant_admin!
     user.change_trust_level!(4)
-    user.email_tokens.update_all  confirmed: true
+    user.email_tokens.update_all confirmed: true
 
     email_token = user.email_tokens.create(email: user.email)
 
     unless params[:send_email] == '0' || params[:send_email] == 'false'
-      Jobs.enqueue( :critical_user_email,
+      Jobs.enqueue(:critical_user_email,
                     type: :account_created,
                     user_id: user.id,
                     email_token: email_token.token)

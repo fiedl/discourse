@@ -10,9 +10,9 @@ class Backup
 
   def self.all
     Dir.glob(File.join(Backup.base_directory, "*.{gz,tgz}"))
-       .sort_by { |file| File.mtime(file) }
-       .reverse
-       .map { |backup| Backup.create_from_filename(File.basename(backup)) }
+      .sort_by { |file| File.mtime(file) }
+      .reverse
+      .map { |backup| Backup.create_from_filename(File.basename(backup)) }
   end
 
   def self.[](filename)
@@ -31,6 +31,7 @@ class Backup
 
   def after_create_hook
     upload_to_s3 if SiteSetting.enable_s3_backups?
+    DiscourseEvent.trigger(:backup_created)
   end
 
   def after_remove_hook

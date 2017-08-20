@@ -1,9 +1,10 @@
 import { createWidget } from 'discourse/widgets/widget';
-import { iconNode } from 'discourse/helpers/fa-icon-node';
+import { iconNode } from 'discourse-common/lib/icon-library';
 import { avatarImg } from 'discourse/widgets/post';
 import DiscourseURL from 'discourse/lib/url';
 import { wantsNewWindow } from 'discourse/lib/intercept-click';
 import { applySearchAutocomplete } from "discourse/lib/search";
+import { ajax } from 'discourse/lib/ajax';
 
 import { h } from 'virtual-dom';
 
@@ -89,11 +90,18 @@ createWidget('header-dropdown', jQuery.extend({
       body.push(attrs.contents.call(this));
     }
 
-    return h('a.icon', { attributes: { href: attrs.href,
-                                       'data-auto-route': true,
-                                       title,
-                                       'aria-label': title,
-                                       id: attrs.iconId } }, body);
+    return h(
+      'a.icon.btn-flat',
+      { attributes: { 
+        href: attrs.href,
+          'data-auto-route': true,
+          title,
+          'aria-label': title,
+          id: attrs.iconId
+        }
+      },
+      body
+    );
   }
 }, dropdown));
 
@@ -249,7 +257,29 @@ export default createWidget('header', {
   },
 
   linkClickedEvent(attrs) {
-    if (!(attrs && attrs.searchContextEnabled)) this.closeAll();
+
+    let searchContextEnabled = false;
+    if (attrs) {
+      searchContextEnabled = attrs.searchContextEnabled;
+
+      const { searchLogId, searchResultId, searchResultType } = attrs;
+      if (searchLogId && searchResultId && searchResultType) {
+
+        ajax('/search/click', {
+          type: 'POST',
+          data: {
+            search_log_id: searchLogId,
+            search_result_id: searchResultId,
+            search_result_type: searchResultType
+          }
+        });
+      }
+    }
+
+    if (!searchContextEnabled) {
+      this.closeAll();
+    }
+
     this.updateHighlight();
   },
 
@@ -282,7 +312,10 @@ export default createWidget('header', {
   },
 
   toggleUserMenu() {
-    this.state.ringBackdrop = false;
+    if (this.currentUser.get('read_first_notification')) {
+      this.state.ringBackdrop = false;
+    };
+
     this.state.userVisible = !this.state.userVisible;
   },
 
@@ -303,8 +336,12 @@ export default createWidget('header', {
 
     // If we're viewing a topic, only intercept search if there are cloaked posts
     if (showSearch && currentPath.match(/^topic\./)) {
-      showSearch = ($('.topic-post .cooked, .small-action:not(.time-gap)').length <
-                    this.register.lookup('controller:topic').get('model.postStream.stream.length'));
+      const controller = this.register.lookup('controller:topic');
+      const total = controller.get('model.postStream.stream.length') || 0;
+      const chunkSize = controller.get('model.chunk_size') || 0;
+
+      showSearch = (total > chunkSize) &&
+        $('.topic-post .cooked, .small-action:not(.time-gap)').length < total;
     }
 
     if (state.searchVisible) {

@@ -29,7 +29,7 @@ describe Upload do
   context ".create_thumbnail!" do
 
     it "does not create a thumbnail when disabled" do
-      SiteSetting.stubs(:create_thumbnails?).returns(false)
+      SiteSetting.create_thumbnails = false
       OptimizedImage.expects(:create_for).never
       upload.create_thumbnail!(100, 100)
     end
@@ -44,6 +44,11 @@ describe Upload do
       expect(upload.optimized_images.count).to eq(1)
     end
 
+  end
+
+  it "extracts file extension" do
+    created_upload = UploadCreator.new(image, image_filename).create_for(user_id)
+    expect(created_upload.extension).to eq("png")
   end
 
   context ".get_from_url" do

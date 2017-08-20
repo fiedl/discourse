@@ -36,6 +36,7 @@ config/discourse.conf
 *.sql.gz
 /db/*.sqlite3
 /db/structure.sql
+/db/schema.rb
 
 # Ignore all logfiles and tempfiles.
 /log/*.log
@@ -116,3 +117,7 @@ vendor/bundle/*
 
 #ignore jetbrains ide file
 *.iml
+
+# ignore nodejs files
+/node_modules
+/package-lock.json

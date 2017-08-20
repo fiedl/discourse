@@ -11,7 +11,7 @@ class ThemeField < ActiveRecord::Base
   end
 
   def self.theme_var_type_ids
-    @theme_var_type_ids ||= [2,3,4]
+    @theme_var_type_ids ||= [2, 3, 4]
   end
 
   COMPILER_VERSION = 5
@@ -19,7 +19,7 @@ class ThemeField < ActiveRecord::Base
   belongs_to :theme
 
   def transpile(es6_source, version)
-    template  = Tilt::ES6ModuleTranspilerTemplate.new {}
+    template = Tilt::ES6ModuleTranspilerTemplate.new {}
     wrapped = <<PLUGIN_API_JS
 Discourse._registerPluginCode('#{version}', api => {
   #{es6_source}
@@ -37,7 +37,7 @@ PLUGIN_API_JS
       name = node["name"] || node["data-template-name"] || "broken"
       is_raw = name =~ /\.raw$/
       if is_raw
-        template = "require('discourse-common/lib/raw-handlebars').template(#{Barber::Precompiler.compile(node.inner_html)})"
+        template = "requirejs('discourse-common/lib/raw-handlebars').template(#{Barber::Precompiler.compile(node.inner_html)})"
         node.replace <<COMPILED
           <script>
             (function() {
@@ -89,7 +89,6 @@ COMPILED
   def self.scss_fields
     @scss_fields ||= %w(scss embedded_scss)
   end
-
 
   def ensure_baked!
     if ThemeField.html_fields.include?(self.name)
@@ -159,8 +158,8 @@ end
 #  name             :string(30)       not null
 #  value            :text             not null
 #  value_baked      :text
-#  created_at       :datetime
-#  updated_at       :datetime
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
 #  compiler_version :integer          default(0), not null
 #  error            :string
 #  upload_id        :integer

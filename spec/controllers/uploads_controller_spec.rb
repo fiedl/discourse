@@ -13,24 +13,18 @@ describe UploadsController do
       before { @user = log_in :user }
 
       let(:logo) do
-        ActionDispatch::Http::UploadedFile.new({
-          filename: 'logo.png',
-          tempfile: file_from_fixtures("logo.png")
-        })
+        ActionDispatch::Http::UploadedFile.new(filename: 'logo.png',
+                                               tempfile: file_from_fixtures("logo.png"))
       end
 
       let(:fake_jpg) do
-        ActionDispatch::Http::UploadedFile.new({
-          filename: 'fake.jpg',
-          tempfile: file_from_fixtures("fake.jpg")
-        })
+        ActionDispatch::Http::UploadedFile.new(filename: 'fake.jpg',
+                                               tempfile: file_from_fixtures("fake.jpg"))
       end
 
       let(:text_file) do
-        ActionDispatch::Http::UploadedFile.new({
-          filename: 'LICENSE.TXT',
-          tempfile: File.new("#{Rails.root}/LICENSE.txt")
-        })
+        ActionDispatch::Http::UploadedFile.new(filename: 'LICENSE.TXT',
+                                               tempfile: File.new("#{Rails.root}/LICENSE.txt"))
       end
 
       it 'expects a type' do
@@ -38,7 +32,7 @@ describe UploadsController do
       end
 
       it 'parameterize the type' do
-        subject.expects(:create_upload).with(logo, nil, "super_long_type_with_charssuper_long_type_with_char", nil)
+        subject.expects(:create_upload).with(logo, nil, "super_long_type_with_charssuper_long_type_with_char", false, false)
         xhr :post, :create, file: logo, type: "super \# long \//\\ type with \\. $%^&*( chars" * 5
       end
 
@@ -140,7 +134,7 @@ describe UploadsController do
         @user.update_columns(moderator: true)
 
         message = MessageBus.track_publish do
-          xhr :post, :create, file: text_file, type: "composer", for_private_message: true
+          xhr :post, :create, file: text_file, type: "composer", for_private_message: "true"
         end.first
 
         expect(response).to be_success

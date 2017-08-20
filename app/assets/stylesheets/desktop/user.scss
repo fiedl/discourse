@@ -19,7 +19,15 @@
 }
 
 .user-preferences {
+  display: table-cell;
+  vertical-align: top;
   padding-top: 10px;
+  padding-left: 30px;
+
+  h3 {
+    color: $primary;
+    margin: 20px 0 10px 0;
+  }
 
   input.category-selector, input.user-selector, input.tag-chooser {
     width: 530px;
@@ -47,6 +55,9 @@
     margin-bottom: 10px;
     font-size: 80%;
     line-height: 1.4em;
+  }
+  .form-horizontal .instructions {
+    margin-left: 160px;
   }
   .avatar {
     margin-left: 3px;
@@ -89,6 +100,11 @@
 .user-table {
   margin-top: 30px;
   width: 100%;
+  display: table;
+  table-layout: fixed;
+  .wrapper {
+    display: table-row;
+  }
 }
 
 .user-navigation .nav-stacked .glyph {
@@ -98,7 +114,7 @@
   // position: static;
 }
 
-.user-navigation, .user-preferences {
+.user-navigation {
   display: table-cell;
   vertical-align: top;
   width: 170px;
@@ -135,7 +151,6 @@
    }
 
   .user-right {
-    width: 900px;
     display: table-cell;
   }
 
@@ -159,7 +174,7 @@
 
       th {
         text-align: left;
-        border-bottom: 3px solid dark-light-diff($primary, $secondary, 90%, -60%);
+        border-bottom: 3px solid $primary-low; 
         padding: 0 0 10px 0;
         color: dark-light-choose(scale-color($primary, $lightness: 50%), scale-color($secondary, $lightness: 50%));
         font-weight: normal;
@@ -167,7 +182,7 @@
 
       td {
         padding: 10px 0 10px 0;
-        border-bottom: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
+        border-bottom: 1px solid $primary-low; 
       }
     }
 
@@ -179,7 +194,7 @@
     }
 
     .user-invite-controls {
-      background-color: dark-light-diff($primary, $secondary, 90%, -75%);
+      background-color: $primary-low; 
       padding: 5px 10px 0px 0;
       height: 35px;
     }
@@ -211,8 +226,8 @@
 
   .secondary {
     background: scale-color($secondary, $lightness: -5%);
-    border-top: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
-    border-bottom: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
+    border-top: 1px solid $primary-low; 
+    border-bottom: 1px solid $primary-low; 
     font-size: 0.929em;
       .btn { padding: 3px 12px; }
 
@@ -249,7 +264,7 @@
       }
 
       dt {
-        color: dark-light-diff($secondary, $primary, 50%, -40%);
+        color: $secondary-medium;
         margin: 0;
       }
     }
@@ -261,8 +276,8 @@
       transition: margin .15s linear;
 
       blockquote {
-        background-color: dark-light-diff($secondary, $primary, 30%, -70%);
-        border-left-color: dark-light-diff($secondary, $primary, 50%, -50%);
+        background-color: $secondary-low; 
+        border-left-color: $secondary-low; 
       }
 
       h1 {
@@ -389,7 +404,7 @@
       padding: 0 0 2px 0;
       margin-top: 0;
       background: rgba($secondary, .85);
-      border-bottom: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
+      border-bottom: 1px solid $primary-low; 
       .bio { display: none; }
 
       .primary {
@@ -433,7 +448,7 @@
       color: $primary;
     }
     .item.moderator-action {
-      background-color: dark-light-diff($highlight, $secondary, 50%, -10%);
+      background-color: $highlight-medium;
     }
     .item.deleted {
       opacity: 0.8;
@@ -446,7 +461,7 @@
     .item {
       padding: 20px 8px 15px 8px;
       background-color: $secondary;
-      border-bottom: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
+      border-bottom: 1px solid $primary-low; 
     }
     .type {
       color: $primary;
@@ -490,7 +505,7 @@
     }
     .notification {
       &.unread {
-        background-color: dark-light-diff($tertiary, $secondary, 85%, -65%);
+        background-color: $tertiary-low;
       }
 
       li { display: inline-block; }
