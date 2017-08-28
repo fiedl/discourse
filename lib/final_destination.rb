@@ -9,9 +9,16 @@ class FinalDestination
   attr_reader :status
   attr_reader :cookie
 
-  def initialize(url, opts=nil)
-    @uri = URI(url) rescue nil
+  def initialize(url, opts = nil)
+    @url = url
+    @uri =
+      begin
+        URI(escape_url) if @url
+      rescue URI::InvalidURIError
+      end
+
     @opts = opts || {}
+    @force_get_hosts = @opts[:force_get_hosts] || []
     @opts[:max_redirects] ||= 5
     @opts[:lookup_ip] ||= lambda do |host|
       begin
@@ -20,8 +27,10 @@ class FinalDestination
         nil
       end
     end
+    @ignored = [Discourse.base_url_no_prefix] + (@opts[:ignore_redirects] || [])
     @limit = @opts[:max_redirects]
     @status = :ready
+    @http_verb = @force_get_hosts.any? { |host| hostname_matches?(host) } ? :get : :head
     @cookie = nil
   end
 
@@ -63,15 +72,16 @@ class FinalDestination
       return nil
     end
 
-    # Always allow current base url
-    if hostname_matches?(Discourse.base_url_no_prefix)
-      @status = :resolved
-      return @uri
+    @ignored.each do |host|
+      if hostname_matches?(host)
+        @status = :resolved
+        return @uri
+      end
     end
 
     return nil unless validate_uri
     headers = request_headers
-    response = Excon.head(
+    response = Excon.public_send(@http_verb,
       @uri.to_s,
       read_timeout: FinalDestination.connection_timeout,
       headers: headers
@@ -154,7 +164,7 @@ class FinalDestination
 
     address = IPAddr.new(address_s)
 
-    if private_ranges.any? {|r| r === address }
+    if private_ranges.any? { |r| r === address }
       @status = :invalid_address
       return false
     end
@@ -169,9 +179,13 @@ class FinalDestination
     false
   end
 
+  def escape_url
+    URI.escape(CGI.unescapeHTML(@url), Regexp.new("[^#{URI::PATTERN::UNRESERVED}#{URI::PATTERN::RESERVED}#]"))
+  end
+
   def private_ranges
     FinalDestination.standard_private_ranges +
-      SiteSetting.blacklist_ip_blocks.split('|').map {|r| IPAddr.new(r) rescue nil }.compact
+      SiteSetting.blacklist_ip_blocks.split('|').map { |r| IPAddr.new(r) rescue nil }.compact
   end
 
   def self.standard_private_ranges

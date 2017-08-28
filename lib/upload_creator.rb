@@ -19,6 +19,7 @@ class UploadCreator
   #  - for_group_message (boolean)
   #  - for_theme (boolean)
   #  - for_private_message (boolean)
+  #  - pasted (boolean)
   def initialize(file, filename, opts = {})
     @upload = Upload.new
     @file = file
@@ -45,6 +46,7 @@ class UploadCreator
 
           return @upload   if is_still_too_big?
 
+          fix_orientation! if should_fix_orientation?
           crop!            if should_crop?
           optimize!        if should_optimize?
         end
@@ -73,6 +75,7 @@ class UploadCreator
       @upload.sha1              = sha1
       @upload.url               = ""
       @upload.origin            = @opts[:origin][0...1000] if @opts[:origin]
+      @upload.extension         = File.extname(@filename)[1..10]
 
       if FileHelper.is_image?(@filename)
         @upload.width, @upload.height = ImageSizer.resize(*@image_info.size)
@@ -121,9 +124,10 @@ class UploadCreator
   MIN_PIXELS_TO_CONVERT_TO_JPEG ||= 1280 * 720
 
   def should_convert_to_jpeg?
-    TYPES_CONVERTED_TO_JPEG.include?(@image_info.type) &&
-    pixels > MIN_PIXELS_TO_CONVERT_TO_JPEG &&
-    SiteSetting.png_to_jpg_quality < 100
+    return false if !TYPES_CONVERTED_TO_JPEG.include?(@image_info.type)
+    return true  if @opts[:pasted]
+    return false if SiteSetting.png_to_jpg_quality == 100
+    pixels > MIN_PIXELS_TO_CONVERT_TO_JPEG
   end
 
   def convert_to_jpeg!
@@ -134,6 +138,7 @@ class UploadCreator
       'convert', @file.path,
       '-auto-orient',
       '-background', 'white',
+      '-interlace', 'none',
       '-flatten',
       '-quality', SiteSetting.png_to_jpg_quality.to_s,
       jpeg_tempfile.path
@@ -183,6 +188,18 @@ class UploadCreator
     @file.rewind
   end
 
+  def should_fix_orientation?
+    # orientation is between 1 and 8, 1 being the default
+    # cf. http://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/
+    @image_info.orientation.to_i > 1
+  end
+
+  def fix_orientation!
+    OptimizedImage.ensure_safe_paths!(@file.path)
+    Discourse::Utils.execute_command('convert', @file.path, '-auto-orient', @file.path)
+    extract_image_info!
+  end
+
   def should_crop?
     TYPES_TO_CROP.include?(@opts[:type])
   end
@@ -221,7 +238,7 @@ class UploadCreator
 
   def optimize!
     OptimizedImage.ensure_safe_paths!(@file.path)
-    ImageOptim.new.optimize_image!(@file.path)
+    FileHelper.optimize_image!(@file.path)
     extract_image_info!
   rescue ImageOptim::Worker::TimeoutExceeded
     Rails.logger.warn("ImageOptim timed out while optimizing #{@filename}")

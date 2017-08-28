@@ -1,7 +1,7 @@
 require_dependency 'distributed_cache'
 
 class Category < ActiveRecord::Base
-
+  include Searchable
   include Positionable
   include HasCustomFields
   include CategoryHashtag
@@ -63,7 +63,6 @@ class Category < ActiveRecord::Base
   after_update :rename_category_definition, if: :name_changed?
   after_update :create_category_permalink, if: :slug_changed?
 
-  has_one :category_search_data
   belongs_to :parent_category, class_name: 'Category'
   has_many :subcategories, class_name: 'Category', foreign_key: 'parent_category_id'
 
@@ -71,7 +70,6 @@ class Category < ActiveRecord::Base
   has_many :tags, through: :category_tags
   has_many :category_tag_groups, dependent: :destroy
   has_many :tag_groups, through: :category_tag_groups
-
 
   scope :latest, -> { order('topic_count DESC') }
 
@@ -141,10 +139,10 @@ class Category < ActiveRecord::Base
 
   def self.update_stats
     topics_with_post_count = Topic
-                              .select("topics.category_id, COUNT(*) topic_count, SUM(topics.posts_count) post_count")
-                              .where("topics.id NOT IN (select cc.topic_id from categories cc WHERE topic_id IS NOT NULL)")
-                              .group("topics.category_id")
-                              .visible.to_sql
+      .select("topics.category_id, COUNT(*) topic_count, SUM(topics.posts_count) post_count")
+      .where("topics.id NOT IN (select cc.topic_id from categories cc WHERE topic_id IS NOT NULL)")
+      .group("topics.category_id")
+      .visible.to_sql
 
     Category.exec_sql <<-SQL
     UPDATE categories c
@@ -183,13 +181,12 @@ SQL
     end
   end
 
-
   def visible_posts
     query = Post.joins(:topic)
-                .where(['topics.category_id = ?', self.id])
-                .where('topics.visible = true')
-                .where('posts.deleted_at IS NULL')
-                .where('posts.user_deleted = false')
+      .where(['topics.category_id = ?', self.id])
+      .where('topics.visible = true')
+      .where('posts.deleted_at IS NULL')
+      .where('posts.user_deleted = false')
     self.topic_id ? query.where(['topics.id <> ?', self.topic_id]) : query
   end
 
@@ -202,7 +199,7 @@ SQL
     t = Topic.new(title: I18n.t("category.topic_prefix", category: name), user: user, pinned_at: Time.now, category_id: id)
     t.skip_callbacks = true
     t.ignore_category_auto_close = true
-    t.set_or_create_timer(TopicTimer.types[:close], nil)
+    t.delete_topic_timer(TopicTimer.types[:close])
     t.save!(validate: false)
     update_column(:topic_id, t.id)
     t.posts.create(raw: post_template, user: user)
@@ -256,11 +253,11 @@ SQL
 
   def publish_category
     group_ids = self.groups.pluck(:id) if self.read_restricted
-    MessageBus.publish('/categories', {categories: ActiveModel::ArraySerializer.new([self]).as_json}, group_ids: group_ids)
+    MessageBus.publish('/categories', { categories: ActiveModel::ArraySerializer.new([self]).as_json }, group_ids: group_ids)
   end
 
   def publish_category_deletion
-    MessageBus.publish('/categories', {deleted_categories: [self.id]})
+    MessageBus.publish('/categories', deleted_categories: [self.id])
   end
 
   def parent_category_validator
@@ -321,7 +318,7 @@ SQL
   end
 
   def allowed_tags=(tag_names_arg)
-    DiscourseTagging.add_or_create_tags_by_name(self, tag_names_arg, {unlimited: true})
+    DiscourseTagging.add_or_create_tags_by_name(self, tag_names_arg, unlimited: true)
   end
 
   def allowed_tag_groups=(group_names)
@@ -359,21 +356,21 @@ SQL
 
   def update_latest
     latest_post_id = Post
-                        .order("posts.created_at desc")
-                        .where("NOT hidden")
-                        .joins("join topics on topics.id = topic_id")
-                        .where("topics.category_id = :id", id: self.id)
-                        .limit(1)
-                        .pluck("posts.id")
-                        .first
+      .order("posts.created_at desc")
+      .where("NOT hidden")
+      .joins("join topics on topics.id = topic_id")
+      .where("topics.category_id = :id", id: self.id)
+      .limit(1)
+      .pluck("posts.id")
+      .first
 
     latest_topic_id = Topic
-                        .order("topics.created_at desc")
-                        .where("visible")
-                        .where("topics.category_id = :id", id: self.id)
-                        .limit(1)
-                        .pluck("topics.id")
-                        .first
+      .order("topics.created_at desc")
+      .where("visible")
+      .where("topics.category_id = :id", id: self.id)
+      .limit(1)
+      .pluck("topics.id")
+      .first
 
     self.update_attributes(latest_topic_id: latest_topic_id, latest_post_id: latest_post_id)
   end
@@ -384,7 +381,7 @@ SQL
     everyone = Group::AUTO_GROUPS[:everyone]
     full = CategoryGroup.permission_types[:full]
 
-    mapped = permissions.map do |group,permission|
+    mapped = permissions.map do |group, permission|
       group = group.id if group.is_a?(Group)
 
       # subtle, using Group[] ensures the group exists in the DB
@@ -498,7 +495,7 @@ SQL
     SearchIndexer.index(self)
   end
 
-  def self.find_by_slug(category_slug, parent_category_slug=nil)
+  def self.find_by_slug(category_slug, parent_category_slug = nil)
     if parent_category_slug
       parent_category_id = self.where(slug: parent_category_slug, parent_category_id: nil).pluck(:id).first
       self.where(slug: category_slug, parent_category_id: parent_category_id).first

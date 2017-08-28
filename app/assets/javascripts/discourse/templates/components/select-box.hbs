@@ -1,0 +1,46 @@
+<input
+  class="select-box-offscreen"
+  type="text"
+  aria-haspopup="true"
+  role="button"
+  aria-labelledby="select-box-input-{{componentId}}"
+  tabindex={{tabindex}}
+/>
+
+{{component selectBoxHeaderComponent
+  text=headerText
+  focused=focused
+  caretUpIcon=caretUpIcon
+  caretDownIcon=caretDownIcon
+  onToggle=(action "onToggle")
+  icon=icon
+  expanded=expanded
+}}
+
+<div class="select-box-body">
+  {{#if renderBody}}
+    {{#if filterable}}
+      {{component selectBoxFilterComponent
+        onFilterChange=(action "onFilterChange")
+        icon=filterIcon
+        focused=filterFocused
+        placeholder=filterPlaceholder
+      }}
+    {{/if}}
+
+    {{component selectBoxCollectionComponent
+      filteredContent=filteredContent
+      selectBoxRowComponent=selectBoxRowComponent
+      selectBoxRowTemplate=selectBoxRowTemplate
+      lastHoveredId=lastHoveredId
+      onSelectRow=(action "onSelectRow")
+      onHoverRow=(action "onHoverRow")
+      noContentText=noContentText
+      selectedId=value
+    }}
+  {{/if}}
+</div>
+
+{{#if wrapper}}
+  <div class="select-box-wrapper"></div>
+{{/if}}

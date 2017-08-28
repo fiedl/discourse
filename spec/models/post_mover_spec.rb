@@ -235,7 +235,7 @@ describe PostMover do
       end
 
       context "to an existing topic" do
-        let!(:destination_topic) { Fabricate(:topic, user: user ) }
+        let!(:destination_topic) { Fabricate(:topic, user: user) }
         let!(:destination_op) { Fabricate(:post, topic: destination_topic, user: user) }
 
         it "works correctly" do
@@ -360,10 +360,10 @@ describe PostMover do
           topic.expects(:add_moderator_post)
         end
 
-        let!(:destination_topic) { Fabricate(:topic, user: user ) }
+        let!(:destination_topic) { Fabricate(:topic, user: user) }
         let!(:destination_op) { Fabricate(:post, topic: destination_topic, user: user) }
         let!(:destination_deleted_reply) { Fabricate(:post, topic: destination_topic, user: another_user) }
-        let(:moved_to) { topic.move_posts(user, [p2.id, p4.id], destination_topic_id: destination_topic.id)}
+        let(:moved_to) { topic.move_posts(user, [p2.id, p4.id], destination_topic_id: destination_topic.id) }
 
         it "works correctly" do
           destination_deleted_reply.trash!
@@ -391,6 +391,19 @@ describe PostMover do
         end
       end
 
+      context "to an existing closed topic" do
+        let!(:destination_topic) { Fabricate(:topic, closed: true) }
+
+        it "works correctly for admin" do
+          admin = Fabricate(:admin)
+          moved_to = topic.move_posts(admin, [p1.id, p2.id], destination_topic_id: destination_topic.id)
+          expect(moved_to).to be_present
+
+          moved_to.reload
+          expect(moved_to.posts_count).to eq(2)
+          expect(moved_to.highest_post_number).to eq(2)
+        end
+      end
 
     end
   end

@@ -6,7 +6,8 @@ class GroupsController < ApplicationController
     :update,
     :messages,
     :histories,
-    :request_membership
+    :request_membership,
+    :search
   ]
 
   skip_before_filter :preload_json, :check_xhr, only: [:posts_feed, :mentions_feed]
@@ -20,8 +21,18 @@ class GroupsController < ApplicationController
     page = params[:page]&.to_i || 0
 
     groups = Group.visible_groups(current_user)
+
+    unless guardian.is_staff?
+      # hide automatic groups from all non stuff to de-clutter page
+      groups = groups.where(automatic: false)
+    end
+
     count = groups.count
     groups = groups.offset(page * page_size).limit(page_size)
+
+    if Group.preloaded_custom_field_names.present?
+      Group.preload_custom_fields(groups, Group.preloaded_custom_field_names)
+    end
 
     group_user_ids = GroupUser.where(group: groups, user: current_user).pluck(:group_id)
 
@@ -117,13 +128,13 @@ class GroupsController < ApplicationController
     members = group.users
       .order('NOT group_users.owner')
       .order(order)
-      .order(:username_lower => dir)
+      .order(username_lower: dir)
       .limit(limit)
       .offset(offset)
 
     owners = group.users
       .order(order)
-      .order(:username_lower => dir)
+      .order(username_lower: dir)
       .where('group_users.owner')
 
     render json: {
@@ -139,7 +150,7 @@ class GroupsController < ApplicationController
 
   def add_members
     group = Group.find(params[:id])
-    group.public ? ensure_logged_in : guardian.ensure_can_edit!(group)
+    group.public_admission ? ensure_logged_in : guardian.ensure_can_edit!(group)
 
     users =
       if params[:usernames].present?
@@ -147,7 +158,7 @@ class GroupsController < ApplicationController
       elsif params[:user_ids].present?
         User.find(params[:user_ids].split(","))
       elsif params[:user_emails].present?
-        User.where(email: params[:user_emails].split(","))
+        User.with_email(params[:user_emails].split(","))
       else
         raise Discourse::InvalidParameters.new(
           'user_ids or usernames or user_emails must be present'
@@ -156,7 +167,7 @@ class GroupsController < ApplicationController
 
     raise Discourse::NotFound if users.blank?
 
-    if group.public
+    if group.public_admission
       if !guardian.can_log_group_changes?(group) && current_user != users.first
         raise Discourse::InvalidAccess
       end
@@ -194,7 +205,7 @@ class GroupsController < ApplicationController
 
   def remove_member
     group = Group.find(params[:id])
-    group.public ? ensure_logged_in : guardian.ensure_can_edit!(group)
+    group.public_exit ? ensure_logged_in : guardian.ensure_can_edit!(group)
 
     user =
       if params[:user_id].present?
@@ -209,7 +220,7 @@ class GroupsController < ApplicationController
 
     raise Discourse::NotFound unless user
 
-    if group.public
+    if group.public_exit
       if !guardian.can_log_group_changes?(group) && current_user != user
         raise Discourse::InvalidAccess
       end
@@ -232,6 +243,8 @@ class GroupsController < ApplicationController
   end
 
   def request_membership
+    params.require(:reason)
+
     unless current_user.staff?
       RateLimiter.new(current_user, "request_group_membership", 1, 1.day).performed!
     end
@@ -248,7 +261,7 @@ class GroupsController < ApplicationController
 
     post = PostCreator.new(current_user,
       title: I18n.t('groups.request_membership_pm.title', group_name: group_name),
-      raw: I18n.t('groups.request_membership_pm.body', group_name: group_name),
+      raw: params[:reason],
       archetype: Archetype.private_message,
       target_usernames: usernames.join(','),
       skip_validations: true
@@ -267,8 +280,8 @@ class GroupsController < ApplicationController
     end
 
     GroupUser.where(group_id: group.id)
-             .where(user_id: user_id)
-             .update_all(notification_level: notification_level)
+      .where(user_id: user_id)
+      .update_all(notification_level: notification_level)
 
     render json: success_json
   end
@@ -290,6 +303,26 @@ class GroupsController < ApplicationController
     )
   end
 
+  def search
+    groups = Group.visible_groups(current_user)
+      .where("groups.id <> ?", Group::AUTO_GROUPS[:everyone])
+      .order(:name)
+
+    if term = params[:term].to_s
+      groups = groups.where("name ILIKE :term OR full_name ILIKE :term", term: "%#{term}%")
+    end
+
+    if params[:ignore_automatic].to_s == "true"
+      groups = groups.where(automatic: false)
+    end
+
+    if Group.preloaded_custom_field_names.present?
+      Group.preload_custom_fields(groups, Group.preloaded_custom_field_names)
+    end
+
+    render_serialized(groups, BasicGroupSerializer)
+  end
+
   private
 
   def group_params
@@ -299,7 +332,8 @@ class GroupsController < ApplicationController
       :flair_color,
       :bio_raw,
       :full_name,
-      :public,
+      :public_admission,
+      :public_exit,
       :allow_membership_requests
     )
   end

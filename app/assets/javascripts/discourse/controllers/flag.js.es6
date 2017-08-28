@@ -1,3 +1,4 @@
+import { iconHTML } from 'discourse-common/lib/icon-library';
 import ModalFunctionality from 'discourse/mixins/modal-functionality';
 import ActionSummary from 'discourse/models/action-summary';
 import { MAX_MESSAGE_LENGTH } from 'discourse/models/post-action-type';
@@ -83,9 +84,9 @@ export default Ember.Controller.extend(ModalFunctionality, {
 
   submitText: function(){
     if (this.get('selected.is_custom_flag')) {
-      return "<i class='fa fa-envelope'></i>" + (I18n.t(this.get('flagTopic') ? "flagging_topic.notify_action" : "flagging.notify_action"));
+      return iconHTML('envelope') + (I18n.t(this.get('flagTopic') ? "flagging_topic.notify_action" : "flagging.notify_action"));
     } else {
-      return "<i class='fa fa-flag'></i>" + (I18n.t(this.get('flagTopic') ? "flagging_topic.action" : "flagging.action"));
+      return iconHTML('flag') + (I18n.t(this.get('flagTopic') ? "flagging_topic.action" : "flagging.action"));
     }
   }.property('selected.is_custom_flag'),
 
@@ -145,11 +146,10 @@ export default Ember.Controller.extend(ModalFunctionality, {
     }
   }.property('selected.name_key', 'userDetails.can_be_deleted', 'userDetails.can_delete_all_posts'),
 
-  canSendWarning: function() {
-    if (this.get("flagTopic")) return false;
-
-    return (Discourse.User.currentProp('staff') && this.get('selected.name_key') === 'notify_user');
-  }.property('selected.name_key'),
+  @computed('flagTopic', 'selected.name_key')
+  canSendWarning(flagTopic, nameKey) {
+    return !flagTopic && this.currentUser.get('staff') && nameKey === 'notify_user';
+  },
 
   usernameChanged: function() {
     this.set('userDetails', null);
@@ -158,7 +158,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
 
   fetchUserDetails() {
     if (Discourse.User.currentProp('staff') && this.get('model.username')) {
-      const AdminUser = require('admin/models/admin-user').default;
+      const AdminUser = requirejs('admin/models/admin-user').default;
       AdminUser.find(this.get('model.user_id')).then(user => this.set('userDetails', user));
     }
   }

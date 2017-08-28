@@ -8,7 +8,7 @@ describe ListController do
     @post = Fabricate(:post, user: @user)
 
     # forces tests down some code paths
-    SiteSetting.stubs(:top_menu).returns('latest,-video|new|unread|categories|category/beer')
+    SiteSetting.top_menu = 'latest,-video|new|unread|categories|category/beer'
   end
 
   describe 'titles for crawler layout' do
@@ -40,7 +40,6 @@ describe ListController do
       parsed = JSON.parse(response.body)
       expect(parsed["topic_list"]["topics"].length).to eq(1)
     end
-
 
     it "doesn't throw an error with a negative page" do
       xhr :get, :top, page: -1024
@@ -219,7 +218,22 @@ describe ListController do
           xhr :get, :category_default, category: category.slug
           expect(response).to be_success
         end
+      end
 
+      describe "renders canonical tag" do
+        render_views
+
+        it 'for category default view' do
+          get :category_default, category: category.slug
+          expect(response).to be_success
+          expect(css_select("link[rel=canonical]").length).to eq(1)
+        end
+
+        it 'for category latest view' do
+          get :category_latest, category: category.slug
+          expect(response).to be_success
+          expect(css_select("link[rel=canonical]").length).to eq(1)
+        end
       end
     end
   end

@@ -148,20 +148,21 @@ de:
       default_description: "Standard"
     s3:
       regions:
-        us_east_1: "USA Ost (Nord-Virginia)"
-        us_west_1: "USA West (Nordkalifornien)"
-        us_west_2: "USA West (Oregon)"
-        us_gov_west_1: "AWS GovCloud (USA)"
-        eu_west_1: "EU (Irland)"
-        eu_west_2: "EU (London)"
-        eu_central_1: "EU (Frankfurt)"
-        ap_southeast_1: "Asien-Pazifik (Singapur)"
-        ap_southeast_2: "Asien-Pazifik (Sydney)"
-        ap_south_1: "Asien-Pazifik (Mumbai)"
         ap_northeast_1: "Asien-Pazifik (Tokio)"
         ap_northeast_2: "Asien-Pazifik (Seoul)"
-        sa_east_1: "Südamerika (São Paulo)"
+        ap_south_1: "Asien-Pazifik (Mumbai)"
+        ap_southeast_1: "Asien-Pazifik (Singapur)"
+        ap_southeast_2: "Asien-Pazifik (Sydney)"
         cn_north_1: "China (Peking)"
+        eu_central_1: "EU (Frankfurt)"
+        eu_west_1: "EU (Irland)"
+        eu_west_2: "EU (London)"
+        sa_east_1: "Südamerika (São Paulo)"
+        us_east_1: "USA Ost (Nord-Virginia)"
+        us_east_2: "USA West (Ohio)"
+        us_gov_west_1: "AWS GovCloud (USA)"
+        us_west_1: "USA West (Nordkalifornien)"
+        us_west_2: "USA West (Oregon)"
     edit: 'Titel und Kategorie dieses Themas ändern'
     not_implemented: "Entschuldige, diese Funktion wurde noch nicht implementiert!"
     no_value: "Nein"
@@ -352,7 +353,8 @@ de:
         add_members: "Mitglieder hinzufügen"
         delete_member_confirm: "'%{username}' aus der Gruppe '%{group}' entfernen?"
       name_placeholder: "Gruppenname, keine Leerzeichen, gleiche Regel wie beim Benutzernamen"
-      public: "Benutzern erlauben, die Gruppenzugehörigkeit frei zu wechseln (Erfordert, dass die Gruppe sichtbar ist)"
+      public_admission: "Erlaube Benutzern, die Gruppe eigenständig zu betreten (Erfordert, dass die Gruppe öffentlich sichtbar ist)"
+      public_exit: "Erlaube Benutzern, die Gruppe eigenständig zu verlassen"
       empty:
         posts: "Es gibt keine Beiträge von Mitgliedern dieser Gruppe."
         members: "Es gibt keine Mitglieder in dieser Gruppe."
@@ -364,6 +366,7 @@ de:
       join: "Gruppe beitreten"
       leave: "Gruppe verlassen"
       request: "Gruppenbeitritt beantragen"
+      message: "Nachricht"
       automatic_group: Automatische Gruppe
       closed_group: Geschlossene Gruppe
       is_group_user: "Du bist ein Mitglied in dieser Gruppe."
@@ -374,7 +377,6 @@ de:
       bio: "Über die Gruppe"
       selector_placeholder: "Mitglieder hinzufügen"
       owner: "Eigentümer"
-      visible: "Gruppe ist für alle Benutzer sichtbar"
       index:
         title: "Gruppen"
         empty: "Es gibt keine sichtbaren Gruppen."
@@ -388,6 +390,12 @@ de:
       mentions: "Erwähnungen"
       messages: "Nachrichten"
       notification_level: "Standard-Benachrichtigungsstufe für Gruppen-Nachrichten"
+      visibility_levels:
+        title: "Wer kann diese Gruppe sehen?"
+        public: "Alle"
+        members: "Gruppenbesitzer, Mitglieder und Admins"
+        staff: "Gruppenbesitzer und Team"
+        owners: "Gruppenbesitzer und Admins"
       alias_levels:
         title: "Wer kann diese Gruppe kontaktieren und per @Gruppenname erwähnen?"
         nobody: "Niemand"
@@ -485,6 +493,7 @@ de:
       mute: "Stummschalten"
       edit: "Einstellungen bearbeiten"
       download_archive:
+        button_text: "Alle herunterladen"
         confirm: "Möchtest du wirklich deine Beiträge herunterladen?"
         success: "Der Export wurde gestartet. Du erhältst eine Nachricht, sobald der Vorgang abgeschlossen ist."
         rate_limit_error: "Beiträge können pro Tag nur einmal heruntergeladen werden. Bitte versuch es morgen wieder."
@@ -554,6 +563,7 @@ de:
       watched_first_post_tags_instructions: "Du erhältst eine Benachrichtigung für den ersten Beitrag in jedem neuen Thema mit diesen Schlagwörtern."
       muted_categories: "Stummgeschaltet"
       muted_categories_instructions: "Du erhältst keine Benachrichtigungen über neue Themen in dieser Kategorie und die Themen werden auch nicht in der Liste der aktuellen Themen erscheinen."
+      no_category_access: "Moderaturen haben eingeschränkte Kategorien-Berechtigungen, Speichern ist nicht verfügbar."
       delete_account: "Lösche mein Benutzerkonto"
       delete_account_confirm: "Möchtest du wirklich dein Benutzerkonto permanent löschen? Diese Aktion kann nicht rückgängig gemacht werden!"
       deleted_yourself: "Dein Benutzerkonto wurde erfolgreich gelöscht."
@@ -748,6 +758,9 @@ de:
         expired: "Diese Einladung ist abgelaufen."
         rescind: "Einladung zurücknehmen"
         rescinded: "Einladung zurückgenommen"
+        rescind_all: "Alle Eingeladungen entfernen"
+        rescinded_all: "Alle Einladungen wurden entfernt!"
+        rescind_all_confirm: "Alle Einladungen wirklich entfernen?"
         reinvite: "Einladung erneut senden"
         reinvite_all: "Alle Einladungen erneut senden"
         reinvite_all_confirm: "Bist Du dir sicher alle Einladungen nochmals zu senden?"
@@ -930,6 +943,9 @@ de:
       complete_email_found: "Wir haben ein zu <b>%{email}</b> gehörendes Benutzerkonto gefunden. Du solltest in Kürze eine E-Mail mit Anweisungen zum Zurücksetzen deines Passwortes erhalten."
       complete_username_not_found: "Es gibt kein Konto mit dem Benutzernamen <b>%{username}</b>"
       complete_email_not_found: "Es gibt kein Benutzerkonto für <b>%{email}</b>"
+      help: "E-Mail nicht angekommen? Bitte prüfe zuerst deinen Spam-Ordner. <p>Nicht sicher, welche E-Mail-Adresse du verwendet hast? Gib eine E-Mail-Adresse ein und wir werden dir sagen, ob sie hier existiert.</p><p>Falls du keinen Zugriff mehr auf die hinterlegte E-Mail-Adresse deines Kontos hast, kontaktiere bitte <a href='/about'>unser hilfsbereites Team. </a></p>"
+      button_ok: "OK"
+      button_help: "Hilfe"
     login:
       title: "Anmelden"
       username: "Benutzername"
@@ -988,6 +1004,7 @@ de:
       your_email: "Die E-Mail-Adresse deines Benutzerkontos ist <b>%{email}</b>"
       accept_invite: "Einladung annehmen"
       success: "Dein Konto wurde erstellt und du bist jetzt angemeldet."
+      name_label: "Name"
       password_label: "Wähle ein Passwort"
       optional_description: "(optional)"
     password_reset:
@@ -998,6 +1015,8 @@ de:
       twitter: "Twitter"
       emoji_one: "Emoji One"
       win10: "Windows 10"
+      google_classic: "Google Classic"
+      facebook_messenger: "Facebook Messenger"
     category_page_style:
       categories_only: "nur Kategorien"
       categories_with_featured_topics: "Kategorien mit empfohlenen Themen"
@@ -1006,12 +1025,30 @@ de:
       shift: 'Umschalt'
       ctrl: 'Strg'
       alt: 'Alt'
+    emoji_picker:
+      filter_placeholder: Emoji suchen
+      people: Personen
+      nature: Natur
+      food: Lebensmittel
+      activity: Aktivität
+      travel: Reisen
+      objects: Objekte
+      celebration: Feiern
+      custom: Benutzerdefinierte Emojis
+      recent: Zuletzt verwendet
+      default_tone: Keine Hautfarbe
+      light_tone: Helle Hautfarbe
+      medium_light_tone: Mittel-helle Hautfarbe
+      medium_tone: Mittlere Hautfarbe
+      medium_dark_tone: Mittel-dunkle Hautfarbe
+      dark_tone: Dunkle Hautfarbe
     composer:
       emoji: "Emoji :)"
       more_emoji: "mehr…"
       options: "Optionen"
       whisper: "flüstern"
       unlist: "unsichtbar"
+      blockquote_text: "Blockquote"
       add_warning: "Dies ist eine offizielle Warnung."
       toggle_whisper: "Flüstermodus umschalten"
       toggle_unlisted: "Unsichtbar umschalten"
@@ -1170,14 +1207,15 @@ de:
       clear_all: "Auswahl aufheben"
       too_short: "Der Suchbegriff ist zu kurz."
       result_count:
-        one: "1 Ergebnis für <span class='term'>\"{{term}}\"</span>"
-        other: "{{count}} Ergebnisse für <span class='term'>\"{{term}}\"</span>"
+        one: "1 Ergebnis für <span class='term'>{{term}}</span>"
+        other: "{{count}} Ergebnisse für <span class='term'>{{term}}</span>"
       title: "suche nach Themen, Beiträgen, Benutzern oder Kategorien"
       no_results: "Keine Ergebnisse gefunden."
       no_more_results: "Es wurde keine weiteren Ergebnisse gefunden."
       searching: "Suche …"
       post_format: "#{{post_number}} von {{username}}"
       results_page: "Suchergebnisse"
+      more_results: "Es gibt mehr Ergebnisse. Bitte grenze deine Suchkriterien weiter ein."
       context:
         user: "Beiträge von @{{username}} durchsuchen"
         category: "Kategorie #{{category}} durchsuchen"
@@ -1209,6 +1247,7 @@ de:
           seen: Gelesene Themen/Beiträge
           unseen: Ungelesene Themen/Beiträge
           wiki: Wikis
+          images: eingeschlossene(s) Bild(er)
           all_tags: Enthält alle Schlagwörter
         statuses:
           label: 'Themen einschränken:'
@@ -1539,6 +1578,7 @@ de:
         success_email: "Wir haben an <b>{{emailOrUsername}}</b> eine Einladung verschickt und werden dich benachrichtigen, sobald die Einladung angenommen wurde. In deinem Benutzerprofil kannst du alle deine Einladungen überwachen."
         success_username: "Wir haben den Benutzer gebeten, sich an diesem Thema zu beteiligen."
         error: "Es tut uns leid, wir konnten diese Person nicht einladen. Wurde diese Person vielleicht schon eingeladen? (Einladungen sind in ihrer Zahl beschränkt)"
+        success_existing_email: "Ein Benutzer mit der E-Mail-Adresse <b>{{emailOrUsername}}</b> existiert bereits. Wir haben den Benutzer eingeladen, sich an diesem Thema zu beteiligen."
       login_reply: 'Anmelden, um zu antworten'
       filters:
         n_posts:
@@ -1656,6 +1696,7 @@ de:
         has_liked: "dir gefällt dieser Beitrag"
         undo_like: "gefällt mir nicht mehr"
         edit: "diesen Beitrag bearbeiten"
+        edit_action: "Bearbeiten"
         edit_anonymous: "Entschuldige, du musst angemeldet sein, um diesen Beitrag zu bearbeiten."
         flag: "Diesen Beitrag den Moderatoren melden oder eine Nachricht senden."
         delete: "diesen Beitrag löschen"
@@ -1760,6 +1801,10 @@ de:
         confirm:
           one: "Möchtest du wirklich diesen Beitrag löschen?"
           other: "Möchtest du wirklich all diese Beiträge löschen?"
+      merge:
+        confirm:
+          one: "Möchtest du diese Beiträge wirklich zusammenführen?"
+          other: "Möchtest du diese {{count}} Beiträge wirklich zusammenführen?"
       revisions:
         controls:
           first: "Erste Überarbeitung"
@@ -1805,6 +1850,8 @@ de:
       settings: 'Einstellungen'
       topic_template: "Themenvorlage"
       tags: "Schlagwörter"
+      tags_allowed_tags: "Erlaube in dieser Kategorie nur folgende Schlagwörter:"
+      tags_allowed_tag_groups: "Erlaube in dieser Kategorie nur Schlagwörter aus folgenden Schlagwortgruppen:"
       tags_placeholder: "(Optional) Liste erlaubter Schlagwörter"
       tag_groups_placeholder: "(Optional) Liste erlaubter Schlagwort-Gruppen"
       topic_featured_link_allowed: "Erlaube hervorgehobene Links in dieser Kategorie"
@@ -2099,7 +2146,7 @@ de:
         hamburger_menu: '<b>=</b> „Hamburger“-Menü öffnen'
         user_profile_menu: '<b>p</b> Benutzermenü öffnen'
         show_incoming_updated_topics: '<b>.</b> Aktualisierte Themen anzeigen'
-        search: '<b>/</b> Suche'
+        search: '<b>/</b> oder <b>STRG</b>+<b>/</b> Suchen'
         help: '<b>?</b> Tastaturhilfe öffnen'
         dismiss_new_posts: '<b>x</b>, <b>r</b> Neue/ausgewählte Beiträge ausblenden'
         dismiss_topics: '<b>x</b>, <b>t</b> Themen ausblenden'
@@ -2622,6 +2669,9 @@ de:
           updating: "Wird aktualisiert..."
           up_to_date: "Theme ist aktuell, zuletzt geprüft:"
           add: "Hinzufügen"
+          commits_behind:
+            one: "Theme liegt 1 Commit zurück!"
+            other: "Theme liegt {{count}} Commits zurück!"
           scss:
             text: "CSS"
             title: "Gib benutzerdefiniertes CSS ein, wir akzeptieren alle gültigen CSS und SCSS-Stile"
@@ -2769,6 +2819,7 @@ de:
           do_nothing: "nichts tun"
         staff_actions:
           all: "alle"
+          filter: "Filter:"
           title: "Team-Aktionen"
           clear_filters: "Alles anzeigen"
           staff_user: "Team-Mitglied"
@@ -2822,6 +2873,8 @@ de:
             change_readonly_mode: "Nur-Lesen-Modus ändern"
             backup_download: "Backup herunterladen"
             backup_destroy: "Backup löschen"
+            reviewed_post: "Geprüfter Beitrag"
+            custom_staff: "plugin-spezifische Aktion"
         screened_emails:
           title: "Gefilterte E-Mails"
           description: "Wenn jemand ein Konto erstellt, werden die folgenden E-Mail-Adressen überprüft und es wird die Anmeldung blockiert oder eine andere Aktion ausgeführt."
@@ -2854,6 +2907,30 @@ de:
             title: "Erzeugt neue Einträge zum Blockieren von Subnetzen, wenn mindestens 'min_ban_entries_for_roll_up' Einträge vorhanden sind."
         logster:
           title: "Fehlerprotokolle"
+      watched_words:
+        title: "Beobachtete Wörter"
+        search: "Suchen"
+        clear_filter: "Zurücksetzen"
+        show_words: "Wörter anzeigen"
+        word_count:
+          one: "1 Wort"
+          other: "%{count} Wörter"
+        actions:
+          block: 'Blockieren'
+          censor: 'Zensieren'
+          require_approval: 'Erfordert Genehmigung'
+          flag: 'Melden'
+        action_descriptions:
+          block: 'Verhindert, dass Beiträge mit diesen Wörtern abgeschickt werden. Benutzer werden eine Fehlermeldung sehen, wenn sie ihren Beitrag abschicken.'
+          censor: 'Erlaube Beiträge mit diesen Wörtern, aber ersetze sie mit Zeichen, die die zensierten Wörter verstecken.'
+          require_approval: 'Beitärge mit diesen Wörtern werden eine Genehmigung vom Team erfordern, bevor sie sichtbar sind.'
+          flag: 'Erlaube Beiträge mit diesen Wörtern, aber markiere sie als unangemessen, damit Moderatoren sie überprüfen können.'
+        form:
+          label: 'Neues Wort:'
+          add: 'Hinzufügen'
+          success: 'Erfolg'
+          upload: "Hochladen"
+          upload_successful: "Hochladen erfolgreich. Wörter wurden hinzugefügt."
       impersonate:
         title: "Als Benutzer ausgeben"
         help: "Benutze dieses Werkzeug, um zur Fehlersuche in die Rolle eines anderen Benutzers zu schlüpfen. Du musst dich abmelden, wenn du fertig bist."
@@ -2994,6 +3071,7 @@ de:
         reset_bounce_score:
           label: "Zurücksetzen"
           title: "Anzahl unzustellbarer E-Mails auf 0 zurücksetzen"
+        visit_profile: "Besuche die <a href='%{url}'>Benutzer-Einstellungen</a>, um dieses Profil zu bearbeiten"
         deactivate_explanation: "Ein deaktivierter Benutzer muss seine E-Mail-Adresse erneut bestätigen."
         suspended_explanation: "Ein gesperrter Benutzer kann sich nicht anmelden."
         block_explanation: "Ein geblockter Benutzer kann keine Themen erstellen oder Beiträge veröffentlichen."

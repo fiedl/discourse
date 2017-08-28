@@ -1,0 +1,18 @@
+<ul class="collection">
+  {{#each filteredContent as |content|}}
+    {{component selectBoxRowComponent
+      content=content
+      selectBoxRowTemplate=selectBoxRowTemplate
+      lastHoveredId=lastHoveredId
+      onSelect=onSelectRow
+      onHover=onHoverRow
+      selectedId=selectedId
+    }}
+  {{else}}
+    {{#if noContentText}}
+      <li class="select-box-row no-content">
+        {{noContentText}}
+      </li>
+    {{/if}}
+  {{/each}}
+</ul>

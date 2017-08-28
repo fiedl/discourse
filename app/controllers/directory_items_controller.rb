@@ -26,7 +26,7 @@ class DirectoryItemsController < ApplicationController
       user_ids = UserSearch.new(params[:name]).search.pluck(:id)
       if user_ids.present?
         # Add the current user if we have at least one other match
-        if current_user && result.dup.where(user_id: user_ids).count > 0
+        if current_user && result.dup.where(user_id: user_ids).exists?
           user_ids << current_user.id
         end
         result = result.where(user_id: user_ids)
@@ -53,7 +53,7 @@ class DirectoryItemsController < ApplicationController
     # Put yourself at the top of the first page
     if result.present? && current_user.present? && page == 0
 
-      position = result.index {|r| r.user_id == current_user.id }
+      position = result.index { |r| r.user_id == current_user.id }
 
       # Don't show the record unless you're not in the top positions already
       if (position || 10) >= 10

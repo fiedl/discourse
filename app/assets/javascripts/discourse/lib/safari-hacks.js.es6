@@ -7,8 +7,8 @@ export function isAppleDevice() {
 }
 
 
-// we can't tell what the actual visible window height is 
-// because we cannot account for the height of the mobile keyboard 
+// we can't tell what the actual visible window height is
+// because we cannot account for the height of the mobile keyboard
 // and any other mobile autocomplete UI that may appear
 // so let's be conservative here rather than trying to max out every
 // available pixel of height for the editor
@@ -99,7 +99,7 @@ function positioningWorkaround($fixedElement) {
 
     fixedElement.style.top = '0px';
 
-    composingTopic = $('#reply-control select.category-combobox').length > 0;
+    composingTopic = $('#reply-control .category-select-box').length > 0;
 
     const height = calcHeight(composingTopic);
 
@@ -123,6 +123,10 @@ function positioningWorkaround($fixedElement) {
 
   const checkForInputs = _.debounce(function(){
     $fixedElement.find('button:not(.hide-preview),a:not(.mobile-file-upload):not(.toggle-toolbar)').each(function(idx, elem){
+      if ($(elem).parents('.emoji-picker').length > 0) {
+        return;
+      }
+
       if ($(elem).parents('.autocomplete').length > 0) {
         return;
       }

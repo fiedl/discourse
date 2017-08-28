@@ -108,6 +108,16 @@ export default function() {
             id: 1234
           }]
         });
+      } else if (request.queryParams.q === 'evil') {
+        return response({
+          posts: [{
+            id: 1234
+          }],
+          tags: [{
+            id: 6,
+            name: 'eviltrout'
+          }]
+        });
       }
 
       return response({});
@@ -333,6 +343,17 @@ export default function() {
     this.delete('/admin/users/:user_id/revoke_api_key', success);
     this.post('/admin/badges', success);
     this.delete('/admin/badges/:id', success);
+
+    this.get('/admin/logs/watched_words', () => {
+      return response(200, fixturesByUrl['/admin/logs/watched_words.json']);
+    });
+    this.delete('/admin/logs/watched_words/:id.json', success);
+
+    this.post('/admin/logs/watched_words.json', request => {
+      const result = parsePostData(request.requestBody);
+      result.id = new Date().getTime();
+      return response(200, result);
+    });
 
     this.get('/onebox', request => {
       if (request.queryParams.url === 'http://www.example.com/has-title.html' ||
