@@ -25,10 +25,11 @@ describe DiscourseRedis do
       let(:redis) { DiscourseRedis.new }
 
       it 'should append namespace to the keys' do
-        redis.set('key', 1)
+        raw_redis.set('default:key', 1)
+        raw_redis.set('test:key2', 1)
 
-        expect(raw_redis.get('default:key')).to eq('1')
-        expect(redis.keys).to eq(['key'])
+        expect(redis.keys).to include('key')
+        expect(redis.keys).to_not include('key2')
 
         redis.del('key')
 
@@ -45,10 +46,10 @@ describe DiscourseRedis do
       let(:redis) { DiscourseRedis.new(nil, namespace: false) }
 
       it 'should not append any namespace to the keys' do
-        redis.set('key', 1)
+        raw_redis.set('default:key', 1)
+        raw_redis.set('test:key2', 1)
 
-        expect(raw_redis.get('key')).to eq('1')
-        expect(redis.keys).to eq(['key'])
+        expect(redis.keys).to include('default:key', 'test:key2')
 
         redis.del('key')
 
@@ -102,20 +103,6 @@ describe DiscourseRedis do
       expect(connector.resolve).to eq(config)
     end
 
-    it 'should return the slave config when master is down' do
-      begin
-        Redis::Client.any_instance.expects(:call).raises(Redis::CannotConnectError).once
-        expect { connector.resolve }.to raise_error(Redis::CannotConnectError)
-
-        config = connector.resolve
-
-        expect(config[:host]).to eq(slave_host)
-        expect(config[:port]).to eq(slave_port)
-      ensure
-        fallback_handler.master = true
-      end
-    end
-
     class BrokenRedis
       def initialize(error)
         @error = error
@@ -126,6 +113,20 @@ describe DiscourseRedis do
       end
 
       def disconnect
+      end
+    end
+
+    it 'should return the slave config when master is down' do
+      begin
+        error = Redis::CannotConnectError
+        expect { connector.resolve(BrokenRedis.new(error)) }.to raise_error(Redis::CannotConnectError)
+
+        config = connector.resolve
+
+        expect(config[:host]).to eq(slave_host)
+        expect(config[:port]).to eq(slave_port)
+      ensure
+        fallback_handler.master = true
       end
     end
 
