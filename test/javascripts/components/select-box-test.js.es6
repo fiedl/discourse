@@ -10,12 +10,12 @@ componentTest('updating the content refreshes the list', {
   },
 
   test(assert) {
-    click(".select-box-header");
+    expandSelectBox();
 
     andThen(() => {
-      assert.equal(find(".select-box-row .text").html().trim(), "robin");
+      assert.equal(selectBox().row(1).text(), "robin");
       this.set("content", [{ id: 1, text: "regis" }]);
-      assert.equal(find(".select-box-row .text").html().trim(), "regis");
+      assert.equal(selectBox().row(1).text(), "regis");
     });
   }
 });
@@ -29,16 +29,16 @@ componentTest('accepts a value by reference', {
   },
 
   test(assert) {
-    click(".select-box-header");
+    expandSelectBox();
 
     andThen(() => {
       assert.equal(
-        find(".select-box-row.is-highlighted .text").html().trim(), "robin",
+        selectBox().selectedRow.text(), "robin",
         "it highlights the row corresponding to the value"
       );
     });
 
-    click(".select-box-row[title='robin']");
+    selectBoxSelectRow(1);
 
     andThen(() => {
       assert.equal(this.get("value"), 1, "it mutates the value");
@@ -54,21 +54,19 @@ componentTest('select-box can be filtered', {
   },
 
   test(assert) {
-    click(".select-box-header");
+    expandSelectBox();
 
     andThen(() => assert.equal(find(".filter-query").length, 1, "it has a search input"));
 
-    fillIn(".filter-query", "regis");
-    triggerEvent('.filter-query', 'keyup');
+    selectBoxFillInFilter("regis");
 
-    andThen(() => assert.equal(find(".select-box-row").length, 1, "it filters results"));
+    andThen(() => assert.equal(selectBox().rows.length, 1, "it filters results"));
 
-    fillIn(".filter-query", "");
-    triggerEvent('.filter-query', 'keyup');
+    selectBoxFillInFilter("");
 
     andThen(() => {
       assert.equal(
-        find(".select-box-row").length, 2,
+        selectBox().rows.length, 2,
         "it returns to original content when filter is empty"
       );
     });
@@ -79,7 +77,7 @@ componentTest('no default icon', {
   template: '{{select-box}}',
 
   test(assert) {
-    assert.equal(find(".select-box-header .icon").length, 0, "it doesn’t have an icon if not specified");
+    assert.equal(selectBox().header.icon().length, 0, "it doesn’t have an icon if not specified");
   }
 });
 
@@ -87,7 +85,7 @@ componentTest('customisable icon', {
   template: '{{select-box icon="shower"}}',
 
   test(assert) {
-    assert.equal(find(".select-box-header .icon").hasClass("d-icon-shower"), true, "it has a the correct icon");
+    assert.ok(selectBox().header.icon().hasClass("d-icon-shower"), "it has a the correct icon");
   }
 });
 
@@ -95,22 +93,22 @@ componentTest('default search icon', {
   template: '{{select-box filterable=true}}',
 
   test(assert) {
-    click(".select-box-header");
+    expandSelectBox();
 
     andThen(() => {
-      assert.equal(find(".select-box-filter .d-icon-search").length, 1, "it has a the correct icon");
+      assert.ok(selectBox().filter.icon().hasClass("d-icon-search"), "it has a the correct icon");
     });
   }
 });
 
 componentTest('with no search icon', {
-  template: '{{select-box filterable=true searchIcon=null}}',
+  template: '{{select-box filterable=true filterIcon=null}}',
 
   test(assert) {
-    click(".select-box-header");
+    expandSelectBox();
 
     andThen(() => {
-      assert.equal(find(".search-icon").length, 0, "it has no icon");
+      assert.equal(selectBox().filter.icon().length, 0, "it has no icon");
     });
   }
 });
@@ -119,10 +117,10 @@ componentTest('custom search icon', {
   template: '{{select-box filterable=true filterIcon="shower"}}',
 
   test(assert) {
-    click(".select-box-header");
+    expandSelectBox();
 
     andThen(() => {
-      assert.equal(find(".select-box-filter .d-icon-shower").length, 1, "it has a the correct icon");
+      assert.ok(selectBox().filter.icon().hasClass("d-icon-shower"), "it has a the correct icon");
     });
   }
 });
@@ -130,29 +128,22 @@ componentTest('custom search icon', {
 componentTest('not filterable by default', {
   template: '{{select-box}}',
   test(assert) {
-    click(".select-box-header");
+    expandSelectBox();
 
-    andThen(() => {
-      assert.equal(find(".select-box-filter").length, 0);
-    });
+    andThen(() => assert.notOk(selectBox().filter.exists()) );
   }
 });
-
 
 componentTest('select-box is expandable', {
   template: '{{select-box}}',
   test(assert) {
-    click(".select-box-header");
+    expandSelectBox();
 
-    andThen(() => {
-      assert.equal(find(".select-box").hasClass("is-expanded"), true);
-    });
+    andThen(() => assert.ok(selectBox().isExpanded) );
 
-    click(".select-box-header");
+    collapseSelectBox();
 
-    andThen(() => {
-      assert.equal(find(".select-box").hasClass("is-expanded"), false);
-    });
+    andThen(() => assert.notOk(selectBox().isExpanded) );
   }
 });
 
@@ -165,10 +156,10 @@ componentTest('accepts custom id/text keys', {
   },
 
   test(assert) {
-    click(".select-box-header");
+    expandSelectBox();
 
     andThen(() => {
-      assert.equal(find(".select-box-row.is-highlighted .text").html().trim(), "robin");
+      assert.equal(selectBox().selectedRow.text(), "robin");
     });
   }
 });
@@ -181,12 +172,12 @@ componentTest('doesn’t render collection content before first expand', {
   },
 
   test(assert) {
-    assert.equal(find(".select-box-body .collection").length, 0);
+    assert.notOk(exists(find(".collection")));
 
-    click(".select-box-header");
+    expandSelectBox();
 
     andThen(() => {
-      assert.equal(find(".select-box-body .collection").length, 1);
+      assert.ok(exists(find(".collection")));
     });
   }
 });
@@ -199,76 +190,76 @@ componentTest('persists filter state when expandind/collapsing', {
   },
 
   test(assert) {
-    click(".select-box-header");
-    fillIn('.filter-query', 'rob');
-    triggerEvent('.filter-query', 'keyup');
+    expandSelectBox();
 
-    andThen(() => {
-      assert.equal(find(".select-box-row").length, 1);
-    });
+    selectBoxFillInFilter("rob");
 
-    click(".select-box-header");
+    andThen(() => assert.equal(selectBox().rows.length, 1) );
 
-    andThen(() => {
-      assert.equal(find(".select-box").hasClass("is-expanded"), false);
-    });
+    collapseSelectBox();
 
-    click(".select-box-header");
+    andThen(() => assert.notOk(selectBox().isExpanded) );
 
-    andThen(() => {
-      assert.equal(find(".select-box-row").length, 1);
-    });
+    expandSelectBox();
+
+    andThen(() => assert.equal(selectBox().rows.length, 1) );
   }
 });
 
 componentTest('supports options to limit size', {
-  template: '{{select-box width=50 maxCollectionHeight=20 content=content}}',
+  template: '{{select-box collectionHeight=20 content=content}}',
 
   beforeEach() {
     this.set("content", [{ id: 1, text: "robin" }]);
   },
 
   test(assert) {
-    click(".select-box-header");
+    expandSelectBox();
 
     andThen(() => {
-      assert.equal(find(".select-box-body").height(), 20, "it limits the height");
-      assert.equal(find(".select-box").width(), 50, "it limits the width");
+      const body = find(".select-box-body");
+      assert.equal(parseInt(body.height()), 20, "it limits the height");
     });
   }
 });
 
 componentTest('supports custom row template', {
-  template: '{{select-box content=content selectBoxRowTemplate=selectBoxRowTemplate}}',
+  template: '{{select-box content=content templateForRow=templateForRow}}',
 
   beforeEach() {
     this.set("content", [{ id: 1, text: "robin" }]);
-    this.set("selectBoxRowTemplate", (rowComponent) => {
-      return `<b>${rowComponent.get("text")}</b>`;
+    this.set("templateForRow", (rowComponent) => {
+      return `<b>${rowComponent.get("content.text")}</b>`;
     });
   },
 
   test(assert) {
-    click(".select-box-header");
+    expandSelectBox();
 
-    andThen(() => {
-      assert.equal(find(".select-box-row").html().trim(), "<b>robin</b>");
-    });
+    andThen(() => assert.equal(selectBox().row(1).el().html().trim(), "<b>robin</b>") );
   }
 });
 
 componentTest('supports converting select value to integer', {
-  template: '{{select-box value=2 content=content castInteger=true}}',
+  template: '{{select-box value=value content=content castInteger=true}}',
 
   beforeEach() {
+    this.set("value", 2);
     this.set("content", [{ id: "1", text: "robin"}, {id: "2", text: "régis" }]);
   },
 
   test(assert) {
-    click(".select-box-header");
+    expandSelectBox();
+
+    andThen(() => assert.equal(selectBox().selectedRow.text(), "régis") );
 
     andThen(() => {
-      assert.equal(find(".select-box-row.is-highlighted .text").text(), "régis");
+      this.set("value", 3);
+      this.set("content", [{ id: "3", text: "jeff" }]);
+    });
+
+    andThen(() => {
+      assert.equal(selectBox().selectedRow.text(), "jeff", "it works with dynamic content");
     });
   }
 });
@@ -281,14 +272,14 @@ componentTest('dynamic headerText', {
   },
 
   test(assert) {
-    click(".select-box-header");
-    andThen(() => {
-      assert.equal(find(".select-box-header .current-selection").html().trim(), "robin");
-    });
+    expandSelectBox();
 
-    click(".select-box-row[title='regis']");
+    andThen(() => assert.equal(selectBox().header.text(), "robin") );
+
+    selectBoxSelectRow(2);
+
     andThen(() => {
-      assert.equal(find(".select-box-header .current-selection").html().trim(), "regis", "it changes header text");
+      assert.equal(selectBox().header.text(), "regis", "it changes header text");
     });
   }
 });
@@ -302,14 +293,97 @@ componentTest('static headerText', {
   },
 
   test(assert) {
-    click(".select-box-header");
+    expandSelectBox();
+
     andThen(() => {
-      assert.equal(find(".select-box-header .current-selection").html().trim(), "Choose...");
+      assert.equal(selectBox().header.text(), "Choose...");
     });
 
-    click(".select-box-row[title='regis']");
+    selectBoxSelectRow(2);
+
     andThen(() => {
-      assert.equal(find(".select-box-header .current-selection").html().trim(), "Choose...", "it doesn’t change header text");
+      assert.equal(selectBox().header.text(), "Choose...", "it doesn’t change header text");
+    });
+  }
+});
+
+componentTest('supports custom row title', {
+  template: '{{select-box content=content titleForRow=titleForRow}}',
+
+  beforeEach() {
+    this.set("content", [{ id: 1, text: "robin" }]);
+    this.set("titleForRow", () => "sam" );
+  },
+
+  test(assert) {
+    expandSelectBox();
+
+    andThen(() => assert.equal(selectBox().row(1).title(), "sam") );
+  }
+});
+
+componentTest('supports keyboard events', {
+  template: '{{select-box content=content filterable=true}}',
+
+  beforeEach() {
+    this.set("content", [{ id: 1, text: "robin" }, { id: 2, text: "regis" }]);
+  },
+
+  test(assert) {
+    expandSelectBox();
+
+    selectBox().keyboard.down();
+
+    andThen(() => {
+      assert.equal(selectBox().highlightedRow.title(), "robin", "it highlights the first row");
+    });
+
+    selectBox().keyboard.down();
+
+    andThen(() => {
+      assert.equal(selectBox().highlightedRow.title(), "regis", "it highlights the next row");
+    });
+
+    selectBox().keyboard.down();
+
+    andThen(() => {
+      assert.equal(selectBox().highlightedRow.title(), "regis", "it keeps highlighting the last row when reaching the end");
+    });
+
+    selectBox().keyboard.up();
+
+    andThen(() => {
+      assert.equal(selectBox().highlightedRow.title(), "robin", "it highlights the previous row");
+    });
+
+    selectBox().keyboard.enter();
+
+    andThen(() => {
+      assert.equal(selectBox().selectedRow.title(), "robin", "it selects the row when pressing enter");
+      assert.notOk(selectBox().isExpanded, "it collapses the select box when selecting a row");
+    });
+
+    expandSelectBox();
+
+    selectBox().keyboard.escape();
+
+    andThen(() => {
+      assert.notOk(selectBox().isExpanded, "it collapses the select box");
+    });
+
+    expandSelectBox();
+
+    selectBoxFillInFilter("regis");
+
+    andThen(() => {
+      assert.equal(selectBox().highlightedRow.title(), "regis", "it highlights the first result");
+    });
+
+    selectBox().keyboard.tab();
+
+    andThen(() => {
+      assert.equal(selectBox().selectedRow.title(), "regis", "it selects the row when pressing tab");
+      assert.notOk(selectBox().isExpanded, "it collapses the select box when selecting a row");
     });
   }
 });

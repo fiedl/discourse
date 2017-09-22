@@ -247,7 +247,7 @@ class Topic < ActiveRecord::Base
   def self.visible_post_types(viewed_by = nil)
     types = Post.types
     result = [types[:regular], types[:moderator_action], types[:small_action]]
-    result << types[:whisper] if viewed_by.try(:staff?)
+    result << types[:whisper] if viewed_by&.staff?
     result
   end
 
@@ -436,42 +436,46 @@ class Topic < ActiveRecord::Base
     archetype == Archetype.private_message
   end
 
-  MAX_SIMILAR_BODY_LENGTH = 200
-  # Search for similar topics
-  def self.similar_to(title, raw, user = nil)
-    return [] unless title.present?
-    return [] unless raw.present?
+  MAX_SIMILAR_BODY_LENGTH ||= 200
 
-    filter_words = Search.prepare_data(title + " " + raw[0...MAX_SIMILAR_BODY_LENGTH]);
+  def self.similar_to(title, raw, user = nil)
+    return [] if title.blank?
+    raw = raw.presence || ""
+
+    search_data = "#{title} #{raw[0...MAX_SIMILAR_BODY_LENGTH]}".strip
+    filter_words = Search.prepare_data(search_data)
     ts_query = Search.ts_query(filter_words, nil, "|")
 
-    # Exclude category definitions from similar topic suggestions
-
-    candidates = Topic.visible
-      .secured(Guardian.new(user))
+    candidates = Topic
+      .visible
       .listable_topics
-      .joins('JOIN topic_search_data s ON topics.id = s.topic_id')
+      .secured(Guardian.new(user))
+      .joins("JOIN topic_search_data s ON topics.id = s.topic_id")
+      .joins("LEFT JOIN categories c ON topics.id = c.topic_id")
       .where("search_data @@ #{ts_query}")
+      .where("c.topic_id IS NULL")
       .order("ts_rank(search_data, #{ts_query}) DESC")
       .limit(SiteSetting.max_similar_results * 3)
 
-    exclude_topic_ids = Category.pluck(:topic_id).compact!
-    if exclude_topic_ids.present?
-      candidates = candidates.where("topics.id NOT IN (?)", exclude_topic_ids)
-    end
-
     candidate_ids = candidates.pluck(:id)
 
-    return [] unless candidate_ids.present?
+    return [] if candidate_ids.blank?
 
-    similar = Topic.select(sanitize_sql_array(["topics.*, similarity(topics.title, :title) + similarity(topics.title, :raw) AS similarity, p.cooked as blurb", title: title, raw: raw]))
+    similars = Topic
       .joins("JOIN posts AS p ON p.topic_id = topics.id AND p.post_number = 1")
-      .limit(SiteSetting.max_similar_results)
       .where("topics.id IN (?)", candidate_ids)
-      .where("similarity(topics.title, :title) + similarity(topics.title, :raw) > 0.2", raw: raw, title: title)
-      .order('similarity desc')
+      .order("similarity DESC")
+      .limit(SiteSetting.max_similar_results)
 
-    similar
+    if raw.present?
+      similars
+        .select(sanitize_sql_array(["topics.*, similarity(topics.title, :title) + similarity(p.raw, :raw) AS similarity, p.cooked AS blurb", title: title, raw: raw]))
+        .where("similarity(topics.title, :title) + similarity(p.raw, :raw) > 0.2", title: title, raw: raw)
+    else
+      similars
+        .select(sanitize_sql_array(["topics.*, similarity(topics.title, :title) AS similarity, p.cooked AS blurb", title: title]))
+        .where("similarity(topics.title, :title) > 0.2", title: title)
+    end
   end
 
   def update_status(status, enabled, user, opts = {})
@@ -481,7 +485,7 @@ class Topic < ActiveRecord::Base
 
   # Atomically creates the next post number
   def self.next_post_number(topic_id, reply = false, whisper = false)
-    highest = exec_sql("select coalesce(max(post_number),0) as max from posts where topic_id = ?", topic_id).first['max'].to_i
+    highest = exec_sql("SELECT coalesce(max(post_number),0) AS max FROM posts WHERE topic_id = ?", topic_id).first['max'].to_i
 
     if whisper
 
@@ -1224,12 +1228,21 @@ SQL
   end
 
   def pm_with_non_human_user?
-    Topic.private_messages
-      .joins("LEFT JOIN topic_allowed_groups ON topics.id = topic_allowed_groups.topic_id")
-      .where("topic_allowed_groups.topic_id IS NULL")
-      .where("topics.id = ?", self.id)
-      .where("(SELECT COUNT(*) FROM topic_allowed_users WHERE topic_allowed_users.topic_id = ? AND topic_allowed_users.user_id > 0) = 1", self.id)
-      .exists?
+    sql = <<~SQL
+    SELECT 1 FROM topics
+    LEFT JOIN topic_allowed_groups ON topics.id = topic_allowed_groups.topic_id
+    WHERE topic_allowed_groups.topic_id IS NULL
+    AND topics.archetype = :private_message
+    AND topics.id = :topic_id
+    AND (
+      SELECT COUNT(*) FROM topic_allowed_users
+      WHERE topic_allowed_users.topic_id = :topic_id
+      AND topic_allowed_users.user_id > 0
+    ) = 1
+    SQL
+
+    result = Topic.exec_sql(sql, private_message: Archetype.private_message, topic_id: self.id)
+    result.ntuples != 0
   end
 
   private
@@ -1309,6 +1322,7 @@ end
 #
 #  idx_topics_front_page                   (deleted_at,visible,archetype,category_id,id)
 #  idx_topics_user_id_deleted_at           (user_id)
+#  idxtopicslug                            (slug)
 #  index_topics_on_bumped_at               (bumped_at)
 #  index_topics_on_created_at_and_visible  (created_at,visible)
 #  index_topics_on_id_and_deleted_at       (id,deleted_at)

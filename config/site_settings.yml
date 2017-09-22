@@ -499,15 +499,13 @@ posting:
     locale_default:
       zh_CN: 4
       zh_TW: 4
-  min_body_similar_length:
-    client: true
-    default: 15
-    locale_default:
-      zh_CN: 5
-      zh_TW: 5
   enable_private_messages:
     default: true
     client: true
+  enable_private_email_messages:
+    default: false
+    client: true
+    validator: "EnablePrivateEmailMessagesValidator"
   editing_grace_period: 300
   post_edit_time_limit:
     default: 86400
@@ -857,6 +855,9 @@ trust:
   min_trust_to_send_messages:
     default: 1
     enum: 'TrustLevelSetting'
+  min_trust_to_send_email_messages:
+    default: 4
+    enum: 'TrustLevelSetting'
   tl1_requires_topics_entered: 5
   tl1_requires_read_posts:
     default: 30
@@ -933,6 +934,10 @@ security:
   whitelist_internal_hosts:
     default: ''
     type: list
+  allowed_iframes:
+    default: 'https://www.google.com/maps/embed?|https://www.openstreetmap.org/export/embed.html?'
+    type: list
+    client: true
 
 onebox:
   enable_flash_video_onebox: false
@@ -1346,6 +1351,10 @@ uncategorized:
   native_app_install_banner: false
 
   share_anonymized_statistics: true
+
+  auto_handle_queued_age:
+    default: 60
+    min: 0
 
 user_preferences:
   default_email_digest_frequency:

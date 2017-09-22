@@ -129,13 +129,9 @@
 
   .searching {
     position: absolute;
+    top: 0.25em;
+    right: 1.5em;
 
-    top: -3px;
-    right: 0.75em;
-    .drop-down-visible & {
-      top: 0.2em;
-      right: 1.2em;
-    }
     .spinner {
       width: 10px;
       height: 10px;
@@ -218,6 +214,13 @@
         margin-right: 5px;
         padding-top: 2px;
       }
+
+      // This is until other languages remove the HTML from within
+      // notifications. It can then be removed
+      div i.fa {
+        display: none;
+      }
+
       span { color: $primary; }
       &:hover { background-color: $highlight-medium; }
       a { padding: 0; }

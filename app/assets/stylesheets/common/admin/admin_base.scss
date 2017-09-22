@@ -349,7 +349,7 @@ td.flaggers td {
       margin-top: 10px;
     }
 
-    input, textarea, select {
+    input, textarea, select, .select-box {
       width: 350px;
     }
 
@@ -374,11 +374,6 @@ td.flaggers td {
 .admin-nav {
   width: 18.018%;
   position: relative;
-
-  li a.active {
-    color: $secondary;
-    background-color: $quaternary;
-  }
 
   // The admin-nav becomes a slide-out menu at the mobile-nav breakpoint
   @media (max-width: $mobile-breakpoint) {
@@ -1670,6 +1665,10 @@ table#user-badges {
     margin-bottom: 1em;
     max-width: 700px;
   }
+}
+
+.embedding td input {
+  margin-bottom: 0;
 }
 
 // Emails

@@ -270,7 +270,7 @@ describe PostAlerter do
 
   context '@group mentions' do
 
-    let(:group) { Fabricate(:group, name: 'group', alias_level: Group::ALIAS_LEVELS[:everyone]) }
+    let(:group) { Fabricate(:group, name: 'group', mentionable_level: Group::ALIAS_LEVELS[:everyone]) }
     let(:post) { create_post_with_alerts(raw: "Hello @group how are you?") }
     before { group.add(evil_trout) }
 
@@ -281,7 +281,7 @@ describe PostAlerter do
 
       expect(GroupMention.count).to eq(1)
 
-      Fabricate(:group, name: 'group-alt', alias_level: Group::ALIAS_LEVELS[:everyone])
+      Fabricate(:group, name: 'group-alt', mentionable_level: Group::ALIAS_LEVELS[:everyone])
 
       expect {
         create_post_with_alerts(raw: "Hello, @group-alt should not trigger a notification?")
@@ -289,7 +289,7 @@ describe PostAlerter do
 
       expect(GroupMention.count).to eq(2)
 
-      group.update_columns(alias_level: Group::ALIAS_LEVELS[:members_mods_and_admins])
+      group.update_columns(mentionable_level: Group::ALIAS_LEVELS[:members_mods_and_admins])
       expect {
         create_post_with_alerts(raw: "Hello @group you are not mentionable")
       }.to change(evil_trout.notifications, :count).by(0)
@@ -532,6 +532,46 @@ describe PostAlerter do
         PostAlerter.post_created(reply)
       end
       expect(events).to include(event_name: :before_create_notifications_for_users, params: [[user], reply])
+    end
+
+    it "notifies about regular reply" do
+      user = Fabricate(:user)
+      topic = Fabricate(:topic)
+      post = Fabricate(:post, user: user, topic: topic)
+
+      reply = Fabricate(:post, topic: topic, reply_to_post_number: 1)
+      PostAlerter.post_created(reply)
+
+      expect(user.notifications.where(notification_type: Notification.types[:replied]).count).to eq(1)
+    end
+
+    it "doesn't notify regular user about whispered reply" do
+      user = Fabricate(:user)
+      admin = Fabricate(:admin)
+
+      topic = Fabricate(:topic)
+      post = Fabricate(:post, user: user, topic: topic)
+
+      whispered_reply = Fabricate(:post, user: admin, topic: topic, post_type: Post.types[:whisper], reply_to_post_number: 1)
+      PostAlerter.post_created(whispered_reply)
+
+      expect(user.notifications.where(notification_type: Notification.types[:replied]).count).to eq(0)
+    end
+
+    it "notifies staff user about whispered reply" do
+      user = Fabricate(:user)
+      admin1 = Fabricate(:admin)
+      admin2 = Fabricate(:admin)
+
+      topic = Fabricate(:topic)
+      post = Fabricate(:post, user: user, topic: topic)
+
+      whispered_reply1 = Fabricate(:post, user: admin1, topic: topic, post_type: Post.types[:whisper], reply_to_post_number: 1)
+      whispered_reply2 = Fabricate(:post, user: admin2, topic: topic, post_type: Post.types[:whisper], reply_to_post_number: 2)
+      PostAlerter.post_created(whispered_reply1)
+      PostAlerter.post_created(whispered_reply2)
+
+      expect(admin1.notifications.where(notification_type: Notification.types[:replied]).count).to eq(1)
     end
   end
 

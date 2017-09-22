@@ -88,6 +88,33 @@ describe UsersController do
         end
       end
 
+      describe "include_post_count_for" do
+
+        let(:admin) { Fabricate(:admin) }
+        let(:topic) { Fabricate(:topic) }
+
+        before do
+          Fabricate(:post, user: user, topic: topic)
+          Fabricate(:post, user: admin, topic: topic)
+          Fabricate(:post, user: admin, topic: topic, post_type: Post.types[:whisper])
+        end
+
+        it "includes only visible posts" do
+          get :show, username: admin.username, include_post_count_for: topic.id, format: :json
+          topic_post_count = JSON.parse(response.body).dig("user", "topic_post_count")
+          expect(topic_post_count[topic.id.to_s]).to eq(1)
+        end
+
+        it "includes all post types for staff members" do
+          log_in_user(admin)
+
+          get :show, username: admin.username, include_post_count_for: topic.id, format: :json
+          topic_post_count = JSON.parse(response.body).dig("user", "topic_post_count")
+          expect(topic_post_count[topic.id.to_s]).to eq(2)
+        end
+
+      end
+
     end
 
   end
@@ -173,7 +200,7 @@ describe UsersController do
 
       context 'user is not approved' do
         before do
-          Guardian.any_instance.expects(:can_access_forum?).returns(false)
+          SiteSetting.must_approve_users = true
           EmailToken.expects(:confirm).with('asdfasdf').returns(user)
           put :perform_account_activation, token: 'asdfasdf'
         end
@@ -522,27 +549,20 @@ describe UsersController do
         expect(session[SessionController::ACTIVATE_USER_KEY]).to be_present
       end
 
-      context "and 'must approve users' site setting is enabled" do
+      context "`must approve users` site setting is enabled" do
         before { SiteSetting.must_approve_users = true }
 
-        it 'does not enqueue an email' do
-          Jobs.expects(:enqueue).never
-          post_user
-        end
+        it 'creates a user correctly' do
+          Jobs.expects(:enqueue).with(:critical_user_email, has_entries(type: :signup))
+          User.any_instance.expects(:enqueue_welcome_message).with('welcome_user').never
 
-        it 'does not login the user' do
           post_user
-          expect(session[:current_user_id]).to be_blank
-        end
 
-        it 'indicates the user is not active in the response' do
-          post_user
           expect(JSON.parse(response.body)['active']).to be_falsey
-        end
 
-        it "shows the 'waiting approval' message" do
-          post_user
-          expect(JSON.parse(response.body)['message']).to eq(I18n.t 'login.wait_approval')
+          # should save user_created_message in session
+          expect(session["user_created_message"]).to be_present
+          expect(session[SessionController::ACTIVATE_USER_KEY]).to be_present
         end
       end
     end
@@ -564,12 +584,27 @@ describe UsersController do
       end
 
       context "with an admin api key" do
-        let(:user) { Fabricate(:admin) }
-        let(:api_key) { Fabricate(:api_key, user: user) }
+        let(:admin) { Fabricate(:admin) }
+        let(:api_key) { Fabricate(:api_key, user: admin) }
 
         it "creates the user as active with a regular key" do
-          xhr :post, :create, post_user_params.merge(active: true, api_key: api_key.key)
-          expect(JSON.parse(response.body)['active']).to be_truthy
+          SiteSetting.queue_jobs = true
+          SiteSetting.send_welcome_message = true
+          SiteSetting.must_approve_users = true
+
+          Sidekiq::Client.expects(:enqueue).never
+
+          xhr :post, :create, post_user_params.merge(approved: true, active: true, api_key: api_key.key)
+          json = JSON.parse(response.body)
+
+          new_user = User.find(json["user_id"])
+
+          expect(json['active']).to be_truthy
+
+          expect(new_user.active).to eq(true)
+          expect(new_user.approved).to eq(true)
+          expect(new_user.approved_by_id).to eq(admin.id)
+          expect(new_user.approved_at).to_not eq(nil)
         end
 
         it "won't create the developer as active" do
@@ -1965,6 +2000,14 @@ describe UsersController do
         user = Fabricate(:inactive_user)
         session[SessionController::ACTIVATE_USER_KEY] = user.id
         xhr :put, :update_activation_email, email: active_user.email
+        expect(response).to_not be_success
+      end
+
+      it "raises an error when the email is blacklisted" do
+        user = Fabricate(:inactive_user)
+        SiteSetting.email_domains_blacklist = 'example.com'
+        session[SessionController::ACTIVATE_USER_KEY] = user.id
+        xhr :put, :update_activation_email, email: 'test@example.com'
         expect(response).to_not be_success
       end
 
