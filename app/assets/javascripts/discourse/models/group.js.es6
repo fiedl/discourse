@@ -2,6 +2,9 @@ import { ajax } from 'discourse/lib/ajax';
 import { default as computed, observes } from "ember-addons/ember-computed-decorators";
 import GroupHistory from 'discourse/models/group-history';
 import RestModel from 'discourse/models/rest';
+import Category from "discourse/models/category";
+import User from "discourse/models/user";
+import Topic from "discourse/models/topic";
 
 const Group = RestModel.extend({
   limit: 50,
@@ -44,9 +47,9 @@ const Group = RestModel.extend({
           if (ownerIds[member.id]) {
             member.owner = true;
           }
-          return Discourse.User.create(member);
+          return User.create(member);
         }),
-        owners: result.owners.map(owner => Discourse.User.create(owner)),
+        owners: result.owners.map(owner => User.create(owner)),
       });
     });
   },
@@ -108,9 +111,9 @@ const Group = RestModel.extend({
     return this.get('flair_color') ? this.get('flair_color').replace(new RegExp("[^0-9a-fA-F]", "g"), "") : null;
   },
 
-  @computed('alias_level')
-  canEveryoneMention(aliasLevel) {
-    return aliasLevel === '99';
+  @computed('mentionable_level')
+  canEveryoneMention(mentionableLevel) {
+    return mentionableLevel === '99';
   },
 
   @observes("visibility_level", "canEveryoneMention")
@@ -131,7 +134,8 @@ const Group = RestModel.extend({
   asJSON() {
     const attrs = {
       name: this.get('name'),
-      alias_level: this.get('alias_level'),
+      mentionable_level: this.get('mentionable_level'),
+      messageable_level: this.get('messageable_level'),
       visibility_level: this.get('visibility_level'),
       automatic_membership_email_domains: this.get('emailDomains'),
       automatic_membership_retroactive: !!this.get('automatic_membership_retroactive'),
@@ -206,8 +210,9 @@ const Group = RestModel.extend({
 
     return ajax(`/groups/${this.get('name')}/${type}.json`, { data: data }).then(posts => {
       return posts.map(p => {
-        p.user = Discourse.User.create(p.user);
-        p.topic = Discourse.Topic.create(p.topic);
+        p.user = User.create(p.user);
+        p.topic = Topic.create(p.topic);
+        p.category = Category.findById(p.category_id);
         return Em.Object.create(p);
       });
     });
@@ -251,6 +256,10 @@ Group.reopenClass({
 
   mentionable(name) {
     return ajax(`/groups/${name}/mentionable`, { data: { name } });
+  },
+
+  messageable(name) {
+    return ajax(`/groups/${name}/messageable`, { data: { name } });
   }
 });
 

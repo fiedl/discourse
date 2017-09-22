@@ -3,6 +3,20 @@ task 'posts:rebake' => :environment do
   ENV['RAILS_DB'] ? rebake_posts : rebake_posts_all_sites
 end
 
+task 'posts:rebake_uncooked_posts' => :environment do
+  uncooked = Post.where(baked_version: nil)
+
+  rebaked = 0
+  total = uncooked.count
+
+  uncooked.find_each do |post|
+    rebake_post(post)
+    print_status(rebaked += 1, total)
+  end
+
+  puts "", "#{rebaked} posts done!", ""
+end
+
 desc 'Update each post with latest markdown and refresh oneboxes'
 task 'posts:refresh_oneboxes' => :environment do
   ENV['RAILS_DB'] ? rebake_posts(invalidate_oneboxes: true) : rebake_posts_all_sites(invalidate_oneboxes: true)
@@ -187,4 +201,24 @@ task 'posts:delete_all_likes' => :environment do
   UserStat.update_all(likes_given: 0, likes_received: 0) # clear user likes stats
   DirectoryItem.update_all(likes_given: 0, likes_received: 0) # clear user directory likes stats
   puts "", "#{likes_deleted} likes deleted!", ""
+end
+
+desc 'Defer all flags'
+task 'posts:defer_all_flags' => :environment do
+
+  active_flags = FlagQuery.flagged_post_actions('active')
+
+  flags_deferred = 0
+  total = active_flags.count
+
+  active_flags.each do |post_action|
+    begin
+      PostAction.defer_flags!(Post.find(post_action.post_id), Discourse.system_user)
+      print_status(flags_deferred += 1, total)
+    rescue
+      # skip
+    end
+  end
+
+  puts "", "#{flags_deferred} flags deferred!", ""
 end

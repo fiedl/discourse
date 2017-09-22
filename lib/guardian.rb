@@ -176,7 +176,7 @@ class Guardian
 
   # Can we approve it?
   def can_approve?(target)
-    is_staff? && target && not(target.approved?)
+    is_staff? && target && target.active? && not(target.approved?)
   end
 
   def can_activate?(target)
@@ -297,6 +297,17 @@ class Guardian
     (is_staff? || target.is_a?(Group) || !target.suspended?) &&
     # Blocked users can only send PM to staff
     (!is_blocked? || target.staff?)
+  end
+
+  def cand_send_private_messages_to_email?
+    # Staged users must be enabled to create a temporary user.
+    SiteSetting.enable_staged_users &&
+    # User is authenticated
+    authenticated? &&
+    # User is trusted enough
+    @user.has_trust_level?(SiteSetting.min_trust_to_send_email_messages) &&
+    # PMs to email addresses are enabled
+    (is_staff? || SiteSetting.enable_private_email_messages)
   end
 
   def can_see_emails?

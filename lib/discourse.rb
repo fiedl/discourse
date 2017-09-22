@@ -3,6 +3,7 @@ require 'open3'
 require_dependency 'plugin/instance'
 require_dependency 'auth/default_current_user_provider'
 require_dependency 'version'
+require 'digest/sha1'
 
 # Prevents errors with reloading dev with conditional includes
 if Rails.env.development?
@@ -119,6 +120,21 @@ module Discourse
 
   def self.activate_plugins!
     all_plugins = Plugin::Instance.find_all("#{Rails.root}/plugins")
+
+    if Rails.env.development?
+      plugin_hash = Digest::SHA1.hexdigest(all_plugins.map { |p| p.path }.sort.join('|'))
+      hash_file = "#{Rails.root}/tmp/plugin-hash"
+      old_hash = File.read(hash_file) rescue nil
+
+      if old_hash && old_hash != plugin_hash
+        puts "WARNING: It looks like your discourse plugins have recently changed."
+        puts "It is highly recommended to remove your `tmp` directory, otherwise"
+        puts "plugins might not work."
+        puts
+      else
+        File.write(hash_file, plugin_hash)
+      end
+    end
 
     @plugins = []
     all_plugins.each do |p|
@@ -276,7 +292,7 @@ module Discourse
   end
 
   def self.readonly_mode?
-    recently_readonly? || READONLY_KEYS.any? { |key| !!$redis.get(key) }
+    recently_readonly? || $redis.mget(*READONLY_KEYS).compact.present?
   end
 
   def self.last_read_only
@@ -311,25 +327,44 @@ module Discourse
   def self.git_version
     return $git_version if $git_version
 
-    # load the version stamped by the "build:stamp" task
-    f = Rails.root.to_s + "/config/version"
-    require f if File.exists?("#{f}.rb")
-
-    begin
-      $git_version ||= `git rev-parse HEAD`.strip
-    rescue
-      $git_version = Discourse::VERSION::STRING
-    end
+    git_cmd = 'git rev-parse HEAD'
+    self.load_version_or_git(git_cmd, Discourse::VERSION::STRING) { $git_version }
   end
 
   def self.git_branch
     return $git_branch if $git_branch
+    git_cmd = 'git rev-parse --abbrev-ref HEAD'
+    self.load_version_or_git(git_cmd, 'unknown') { $git_branch }
+  end
 
-    begin
-      $git_branch ||= `git rev-parse --abbrev-ref HEAD`.strip
-    rescue
-      $git_branch = "unknown"
+  def self.full_version
+    return $full_version if $full_version
+    git_cmd = 'git describe --dirty --match "v[0-9]*"'
+    self.load_version_or_git(git_cmd, 'unknown') { $full_version }
+  end
+
+  def self.load_version_or_git(git_cmd, default_value)
+    version_file  = "#{Rails.root}/config/version.rb"
+    version_value = false
+
+    if File.exists?(version_file)
+      require version_file
+      version_value = yield
     end
+
+    # file does not exist or does not define the expected global variable
+    unless version_value
+      begin
+        version_value = `#{git_cmd}`.strip
+      rescue
+        version_value = default_value
+      end
+    end
+    if version_value.empty?
+      version_value = default_value
+    end
+
+    version_value
   end
 
   # Either returns the site_contact_username user or the first admin.

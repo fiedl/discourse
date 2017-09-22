@@ -406,10 +406,6 @@ lv:
       index:
         title: "Grupas"
         empty: "Nav redzamu grupu."
-      title:
-        zero: "grupas"
-        one: "grupa"
-        other: "grupas"
       activity: "Aktivitāte"
       members: "Dalībnieki"
       topics: "Tēmas"
@@ -424,7 +420,6 @@ lv:
         staff: "Grupu īpašnieki un personāls"
         owners: "Grupu īpašnieki un administratori"
       alias_levels:
-        title: "Kas var rakstīt ziņas grupai un @pieminēt to?"
         nobody: "Neviens"
         only_admins: "Tikai administratori"
         mods_and_admins: "Tikai moderatori un administratori"
@@ -1177,31 +1172,6 @@ lv:
       empty: "Nav atrasti paziņojumi."
       more: "skatīt senākus paziņojumus"
       total_flagged: "pavisam ieraksti ar sūdzībam"
-      mentioned: "<i title='mentioned' class='fa fa-at'></i><p><span>{{username}}</span> {{description}}</p>"
-      group_mentioned: "<i title='group mentioned' class='fa fa-at'></i><p><span>{{username}}</span> {{description}}</p>"
-      quoted: "<i title='quoted' class='fa fa-quote-right'></i><p><span>{{username}}</span> {{description}}</p>"
-      replied: "<i title='replied' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
-      posted: "<i title='posted' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
-      edited: "<i title='edited' class='fa fa-pencil'></i><p><span>{{username}}</span> {{description}}</p>"
-      liked: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}</span> {{description}}</p>"
-      liked_2: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}, {{username2}}</span> {{description}}</p>"
-      liked_many:
-        zero: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}, {{username2}} un 0. citu</span> {{description}}</p>"
-        one: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}, {{username2}} un 1. cits</span> {{description}}</p>"
-        other: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}, {{username2}} un {{count}} citi</span> {{description}}</p>"
-      private_message: "<i title='private message' class='fa fa-envelope-o'></i><p><span>{{username}}</span> {{description}}</p>"
-      invited_to_private_message: "<i title='private message' class='fa fa-envelope-o'></i><p><span>{{username}}</span> {{description}}</p>"
-      invited_to_topic: "<i title='invited to topic' class='fa fa-hand-o-right'></i><p><span>{{username}}</span> {{description}}</p>"
-      invitee_accepted: "<i title='accepted your invitation' class='fa fa-user'></i><p><span>{{username}}</span> pieņēma jūsu ielūgūmu</p>"
-      moved_post: "<i title='moved post' class='fa fa-sign-out'></i><p><span>{{username}}</span> pārvietoja {{description}}</p>"
-      linked: "<i title='linked post' class='fa fa-link'></i><p><span>{{username}}</span> {{description}}</p>"
-      granted_badge: "<i title='badge granted' class='fa fa-certificate'></i><p>Nopelnīja '{{description}}'</p>"
-      topic_reminder: "<i title='topic reminder' class='fa fa-hand-o-right'></i><p><span>{{username}}</span> {{description}}</p>"
-      watching_first_post: "<i title='new topic' class='fa fa-dot-circle-o'></i><p><span>Jauna tēma</span> {{description}}</p>"
-      group_message_summary:
-        zero: "<i title='messages in group inbox' class='fa fa-group'></i><p> {{count}} ziņu jūsu {{group_name}} ienākošajos</p>"
-        one: "<i title='messages in group inbox' class='fa fa-group'></i><p> {{count}} ziņa jūsu {{group_name}} ienākošajos</p>"
-        other: "<i title='messages in group inbox' class='fa fa-group'></i><p> {{count}} ziņas jūsu {{group_name}} iesūtnē</p>"
       alt:
         mentioned: "Pieminēja"
         quoted: "Citēja"
@@ -2385,7 +2355,7 @@ lv:
       title: 'Discourse administrators'
       moderator: 'Moderators'
       dashboard:
-        title: "Administrācija panelis"
+        title: "Administrācijas panelis"
         last_updated: "Pēdējais administrācijas paneļa atjauninājums:"
         version: "Versija"
         up_to_date: "Tu seko līdzi laikam!"
@@ -2888,7 +2858,7 @@ lv:
           actions:
             block: "Bloķēt"
             do_nothing: "Atļaut"
-            allow_admin: "Atļaut Administrēt"
+            allow_admin: "Atļaut administrēt"
           form:
             label: "Jauns:"
             ip_address: "IP adrese"
@@ -2931,7 +2901,7 @@ lv:
         invalid: "Piedod, tu nevari izlikties (impersonate) par šo lietotāju."
       users:
         title: 'Lietotāji'
-        create: 'Pievienot Administrātoru'
+        create: 'Pievienot administratoru'
         last_emailed: "Pēdējo reizi saņēmis e-pastu"
         not_found: "Piedod, šāds lietotājvārds neeksistē mūsu sistēmā."
         id_not_found: "Piedod, šāds lietotāja ID neeksistē mūsu sistēmā."
@@ -2964,7 +2934,7 @@ lv:
           regular: 'Lietotāji ar 3. uzticības pakāpi (Aktīvie atbalstītāji)'
           leader: 'Lietotāji ar 4. uzticības pakāpi (Vadītāji)'
           staff: "Personāls"
-          admins: 'Administrātori'
+          admins: 'Administratori'
           moderators: 'Moderātori'
           blocked: 'Bloķētie lietotāji'
           suspended: 'Atceltie lietotāji'
@@ -2995,7 +2965,7 @@ lv:
         unsuspend: "Neapturēt"
         suspended: "Neapturēts?"
         moderator: "Moderātors?"
-        admin: "Administrātors?"
+        admin: "Administrators?"
         blocked: "Bloķēts?"
         staged: "Izveidots?"
         show_admin_profile: "Administrators"
@@ -3007,9 +2977,9 @@ lv:
         ip_lookup: "IP meklēšana"
         log_out: "Iziet"
         logged_out: "Lietotājs tika atslēgts no visām ierīcēm"
-        revoke_admin: 'Atsaukt Administrātora pakāpi'
-        grant_admin: 'Piešķirt Administrātora pakāpi'
-        grant_admin_confirm: "Tu saņem šo e-pastu lai apstiprinātu jaunu administrātoru. Lūdzu atver e-pastu un seko instrukcijām."
+        revoke_admin: 'Atsaukt Administratora pakāpi'
+        grant_admin: 'Piešķirt Administratora pakāpi'
+        grant_admin_confirm: "Mēs nosūtījām jums e-pastu, lai jūs apstiprinātu jauno administratoru. Lūdzu atver e-pastu un seko instrukcijām."
         revoke_moderation: 'Atsaukt Moderātora pakāpi'
         grant_moderation: 'Piešķirt Moderātora pakāpi'
         unblock: 'Atbloķēt'
@@ -3037,8 +3007,8 @@ lv:
         anonymize_yes: "Jā, anonimizēt kontu. (anonymize)"
         anonymize_failed: "Radās problēma ar konta anonimizēšanu (anonymizing)."
         delete: "Dzēst lietotāju."
-        delete_forbidden_because_staff: "Administrātori un moderātori nevar tikt dzēsti."
-        delete_posts_forbidden_because_staff: "Nevar izdzēst visus administrātoru un moderātoru ierakstus."
+        delete_forbidden_because_staff: "Administratori un moderatori nevar tikt dzēsti."
+        delete_posts_forbidden_because_staff: "Nevar izdzēst visus administratoru un moderatoru ierakstus."
         delete_forbidden:
           zero: "Lietotāji nevar tikt dzēsti ja viņiem ir ieraksti. Izdzēs visus ierakstus pirms dzēs lietotāju. (ieraksti vecāki kā %{count} dienas nevar tikt izdzēsti.)"
           one: "Lietotāji nevar tikt dzēsti ja viņiem ir ieraksti. Izdzēs visus ierakstus pirms dzēs lietotāju. (ieraksti vecāki kā %{count} dienas nevar tikt izdzēsti.)"
@@ -3334,6 +3304,6 @@ lv:
         add_user: "Pievienot"
         none_added: "Neesi nevienu uzaicinājis. Droši zini ka vēlies turpināt?"
         roles:
-          admin: "Administrātors"
+          admin: "Administrators"
           moderator: "Moderātors"
           regular: "Lietotājs"

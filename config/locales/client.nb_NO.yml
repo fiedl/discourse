@@ -386,8 +386,8 @@ nb_NO:
         title: "Grupper"
         empty: "Det er ingen synlige grupper"
       title:
-        one: "gruppe"
-        other: "grupper"
+        one: "Gruppe"
+        other: "Grupper"
       activity: "Aktivitet"
       members: "Medlemmer"
       topics: "Emner"
@@ -402,7 +402,8 @@ nb_NO:
         staff: "Gruppemedlemmer og personale"
         owners: "Gruppeeiere og administratorer"
       alias_levels:
-        title: "Hvem kan sende meldinger til og @nevne denne gruppen?"
+        mentionable: "Hvem kan @nevne denne gruppen?"
+        messageable: "Hvem kan sende meldinger til denne gruppen?"
         nobody: "Ingen"
         only_admins: "Kun administratorer"
         mods_and_admins: "Kun moderatorer og administratorer"
@@ -490,6 +491,7 @@ nb_NO:
       topics_entered: "emner laget"
       post_count: "# innlegg"
       confirm_delete_other_accounts: "Er du sikker på at du vil slette disse kontoene?"
+      powered_by: "drevet av <a href='https://ipinfo.io'>ipinfo.io</a>"
     user_fields:
       none: "(velg et alternativ)"
     user:
@@ -645,7 +647,7 @@ nb_NO:
         uploaded_avatar_empty: "Legg til egendefinert bilde"
         upload_title: "Last opp bilde"
         upload_picture: "Last opp bilde"
-        image_is_not_a_square: "Vi har beskjært bildet ditt, høyde og bredde er ikke lik"
+        image_is_not_a_square: "Vi har beskåret bildet ditt, høyde og bredde er ikke lik"
         cache_notice: "Profilbildet ditt er oppdatert, men på grunn av mellomlagring i nettlesere kan det ta litt tid før det synes."
       change_profile_background:
         title: "Profilbakgrunn"
@@ -1032,7 +1034,8 @@ nb_NO:
       ctrl: 'Ctrl'
       alt: 'Alt'
     select_box:
-      no_content: Inget innhold
+      default_header_text: Velg…
+      no_content: Ingen treff funnet
       filter_placeholder: Søk…
     emoji_picker:
       filter_placeholder: Søk etter emoji
@@ -1145,29 +1148,6 @@ nb_NO:
       empty: "Ingen varsler funnet."
       more: "se gamle varsler"
       total_flagged: "totalt rapporterte innlegg"
-      mentioned: "<i title='mentioned' class='fa fa-at'></i><p><span>{{username}}</span> {{description}}</p>"
-      group_mentioned: "<i title='group mentioned' class='fa fa-at'></i><p><span>{{username}}</span> {{description}}</p>"
-      quoted: "<i title='quoted' class='fa fa-quote-right'></i><p><span>{{username}}</span> {{description}}</p>"
-      replied: "<i title='replied' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
-      posted: "<i title='posted' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
-      edited: "<i title='edited' class='fa fa-pencil'></i><p><span>{{username}}</span> {{description}}</p>"
-      liked: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}</span> {{description}}</p>"
-      liked_2: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}, {{username2}}</span> {{description}}</p>"
-      liked_many:
-        one: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}, {{username2}} og 1 anne</span> {{description}}</p>"
-        other: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}, {{username2}} og {{count}} andre</span> {{description}}</p>"
-      private_message: "<i title='private message' class='fa fa-envelope-o'></i><p><span>{{username}}</span> {{description}}</p>"
-      invited_to_private_message: "<i title='private message' class='fa fa-envelope-o'></i><p><span>{{username}}</span> {{description}}</p>"
-      invited_to_topic: "<i title='invited to topic' class='fa fa-hand-o-right'></i><p><span>{{username}}</span> {{description}}</p>"
-      invitee_accepted: "<i title='accepted your invitation' class='fa fa-user'></i><p><span>{{username}}</span> accepted your invitation</p>"
-      moved_post: "<i title='moved post' class='fa fa-sign-out'></i><p><span>{{username}}</span> moved {{description}}</p>"
-      linked: "<i title='linked post' class='fa fa-link'></i><p><span>{{username}}</span> {{description}}</p>"
-      granted_badge: "<i title='badge granted' class='fa fa-certificate'></i><p>Ble tildelt '{{description}}'</p>"
-      topic_reminder: "<i title='emnepåminnelse' class='fa fa-hand-o-right'></i><p><span>{{username}}</span> {{description}}</p>"
-      watching_first_post: "<i title='new topic' class='fa fa-dot-circle-o'></i><p><span>Nytt emne</span> {{description}}</p>"
-      group_message_summary:
-        one: "<i title='messages in group inbox' class='fa fa-group'></i><p> {{count}} melding i {{group_name}}-gruppens innboks</p>"
-        other: "<i title='messages in group inbox' class='fa fa-group'></i><p> {{count}} meldinger i {{group_name}}-gruppens innboks</p>"
       alt:
         mentioned: "Nevnt av"
         quoted: "Sitert av"
@@ -1384,8 +1364,8 @@ nb_NO:
         one: "Det er 1 nytt innlegg i dette emnet siden sist du leste det"
         other: "Det er {{count}} nye innlegg i dette emnet siden sist du leste det"
       likes:
-        one: "det er ett kjærtegn i dette emnet"
-        other: "det er {{count}} likes i dette emnet"
+        one: "det er én like i dette emnet"
+        other: "det er {{number}} likes i dette emnet"
       back_to_list: "Tilbake til emnelisten"
       options: "Valg for emner"
       show_links: "vis lenker i dette emnet"
@@ -1673,7 +1653,7 @@ nb_NO:
         one: "{{count}} svar"
         other: "{{count}} svar"
       has_likes:
-        one: "{{count}} kjærtegn"
+        one: "{{count}} like"
         other: "{{count}} likes"
       has_likes_title:
         one: "{{count}} bruker likte dette innlegget"
@@ -1704,7 +1684,7 @@ nb_NO:
         about: "dette innlegget er en wiki"
       archetypes:
         save: 'Lagre alternativene'
-      few_likes_left: "Takk for at du sprer kjærlighet! Du vil nå grensen for antall ting du kan like i dag ganske snart."
+      few_likes_left: "Takk for at du gir likes! Du vil nå grensen for antall ting du kan like i dag ganske snart."
       controls:
         reply: "begynn å skrive et svar til dette innlegget"
         like: "lik dette innlegget"
@@ -2042,7 +2022,7 @@ nb_NO:
     activity: "Aktivitet"
     likes: "Likes"
     likes_lowercase:
-      one: "kjærtegn"
+      one: "like"
       other: "likes"
     likes_long: "det er {{number}} likes i dette emnet"
     users: "Deltakere"
@@ -2165,7 +2145,7 @@ nb_NO:
         hamburger_menu: '<b>=</b> Åpne hamburgermeny'
         user_profile_menu: '<b>p</b> Åpne brukermenyen'
         show_incoming_updated_topics: '<b>.</b> Vis oppdaterte emner'
-        search: '<b>/</b> eller <b>ctrl</b>+<b>/</b> Søk'
+        search: '<b>/</b> eller <b>ctrl</b>+<b>shift</b>+<b>s</b> Søk'
         help: '<b>?</b> Åpne tastaturhjelp'
         dismiss_new_posts: '<b>x</b>, <b>r</b> Avvis Nye/Innlegg'
         dismiss_topics: '<b>x</b>, <b>t</b> Avvis emner'

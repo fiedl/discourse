@@ -8,13 +8,15 @@
 />
 
 {{component selectBoxHeaderComponent
-  text=headerText
+  text=generatedHeadertext
+  selectedTitle=selectedTitle
   focused=focused
   caretUpIcon=caretUpIcon
   caretDownIcon=caretDownIcon
   onToggle=(action "onToggle")
   icon=icon
   expanded=expanded
+  value=value
 }}
 
 <div class="select-box-body">
@@ -25,18 +27,25 @@
         icon=filterIcon
         focused=filterFocused
         placeholder=filterPlaceholder
+        tabindex=tabindex
       }}
     {{/if}}
 
     {{component selectBoxCollectionComponent
+      clearSelectionLabel=clearSelectionLabel
       filteredContent=filteredContent
       selectBoxRowComponent=selectBoxRowComponent
-      selectBoxRowTemplate=selectBoxRowTemplate
-      lastHoveredId=lastHoveredId
+      templateForRow=templateForRow
+      shouldHighlightRow=shouldHighlightRow
+      shouldSelectRow=shouldSelectRow
+      titleForRow=titleForRow
+      idForRow=idForRow
       onSelectRow=(action "onSelectRow")
       onHoverRow=(action "onHoverRow")
-      noContentText=noContentText
-      selectedId=value
+      onClearSelection=(action "onClearSelection")
+      noContentLabel=noContentLabel
+      highlightedValue=highlightedValue
+      value=value
     }}
   {{/if}}
 </div>

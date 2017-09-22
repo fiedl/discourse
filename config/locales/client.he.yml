@@ -380,9 +380,6 @@ he:
       index:
         title: "קבוצות"
         empty: "אין קבוצות נראות."
-      title:
-        one: "קבוצה"
-        other: "קבוצות"
       activity: "פעילות"
       members: "חברים"
       topics: "נושאים"
@@ -397,7 +394,6 @@ he:
         staff: "בעלי קבוצה וצוות"
         owners: "בעלי קבוצה ואדמיניסטרטורים"
       alias_levels:
-        title: "מי יכולים לשלוח מסרים ו@לאזכר בקבוצה זו?"
         nobody: "אף אחד"
         only_admins: "רק מנהלים"
         mods_and_admins: "רק מנחים ומנהלים"
@@ -1128,29 +1124,6 @@ he:
       empty: "לא נמצאו התראות."
       more: "הצגת התראות ישנות יותר"
       total_flagged: "סך הכל פוסטים מדוגלים"
-      mentioned: "<i title='mentioned' class='fa fa-at'></i><p><span>{{username}}</span> {{description}}</p>"
-      group_mentioned: "<i title='group mentioned' class='fa fa-at'></i><p><span>{{username}}</span> {{description}}</p>"
-      quoted: "<i title='quoted' class='fa fa-quote-right'></i><p><span>{{username}}</span> {{description}}</p>"
-      replied: "<i title='replied' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
-      posted: "<i title='posted' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
-      edited: "<i title='edited' class='fa fa-pencil'></i><p><span>{{username}}</span> {{description}}</p>"
-      liked: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}</span> {{description}}</p>"
-      liked_2: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}, {{username2}}</span> {{description}}</p>"
-      liked_many:
-        one: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}, {{username2}} ו 1 אחר</span> {{description}}</p>"
-        other: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}, {{username2}} ו {{count}} אחרים</span> {{description}}</p>"
-      private_message: "<i title='private message' class='fa fa-envelope-o'></i><p><span>{{username}}</span> {{description}}</p>"
-      invited_to_private_message: "<i title='private message' class='fa fa-envelope-o'></i><p><span>{{username}}</span> {{description}}</p>"
-      invited_to_topic: "<i title='invited to topic' class='fa fa-hand-o-right'></i><p><span>{{username}}</span> {{description}}</p>"
-      invitee_accepted: "<i title='accepted your invitation' class='fa fa-user'></i><p><span>{{username}}</span> אישר/ה את הזמנתך</p>"
-      moved_post: "<i title='moved post' class='fa fa-sign-out'></i><p><span>{{username}}</span> הזיז/ה {{description}}</p>"
-      linked: "<i title='linked post' class='fa fa-link'></i><p><span>{{username}}</span> {{description}}</p>"
-      granted_badge: "<i title='עיטור הוענק' class='fa fa-certificate'></i><p>הרוויחו '{{description}}'</p>"
-      topic_reminder: "<i title='topic reminder' class='fa fa-hand-o-right'></i><p><span>{{username}}</span> {{description}}</p>"
-      watching_first_post: "<i title='new topic' class='fa fa-dot-circle-o'></i><p><span>נושא חדש</span> {{description}}</p>"
-      group_message_summary:
-        one: "<i title='messages in group inbox' class='fa fa-group'></i><p> {{count}} הודעה בתיבת הודעות הקבוצה {{group_name}}</p>"
-        other: "<i title='messages in group inbox' class='fa fa-group'></i><p> {{count}} הודעות בתיבת הודעות הקבוצה {{group_name}}</p>"
       alt:
         mentioned: "הוזכר על ידי"
         quoted: "צוטט על ידי"
@@ -2140,7 +2113,6 @@ he:
         hamburger_menu: '<b>=</b> פתיחת תפריט המבורגר'
         user_profile_menu: '<b>p</b> פתיחת תפריט משתמש'
         show_incoming_updated_topics: '<b>.</b> הצגת נושאים שהתעדכנו'
-        search: '<b>/</b> חיפוש'
         help: '<b>?</b> פתיחת קיצורי מקשים'
         dismiss_new_posts: '<b>x</b>, <b>r</b> בטלו חדשים/פוסטים'
         dismiss_topics: '<b>x</b>, <b>t</b> בטלו נושאים'
@@ -3319,9 +3291,6 @@ he:
       upload: "העלאה"
       uploading: "מעלה..."
       quit: "אולי מאוחר יותר"
-      staff_count:
-        one: "לקהילה שלכם יש חבר צוות 1."
-        other: "לקהילה שלכם יש %{count} חברי צוות."
       invites:
         add_user: "הוספה"
         none_added: "טרם הזמנתם חברי צוות. האם אתם בטוחים שאתם מעוניינים להמשיך?"

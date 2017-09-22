@@ -7,24 +7,43 @@ import Category from "discourse/models/category";
 export default SelectBoxComponent.extend({
   classNames: ["category-select-box"],
 
+  selectBoxRowComponent: "category-select-box/category-select-box-row",
+
   textKey: "name",
 
   filterable: true,
 
   castInteger: true,
 
-  width: "100%",
+  clearable: true,
 
-  filterFunction: function() {
+  allowUncategorized: null,
+
+  init() {
+    this._super();
+
+    if (!Ember.isNone(this.get("categories"))) {
+      this.set("content", this.get("categories"));
+      this._scopeCategories();
+    }
+
+    if (Ember.isNone(this.get("value"))) {
+      if (this.siteSettings.allow_uncategorized_topics && this.get("allowUncategorized") !== false) {
+        this.set("value", Category.findUncategorized().id);
+      }
+    }
+  },
+
+  filterFunction: function(content) {
     const _matchFunction = (filter, text) => {
       return text.toLowerCase().indexOf(filter) > -1;
     };
 
     return (selectBox) => {
       const filter = selectBox.get("filter").toLowerCase();
-      return _.filter(selectBox.get("content"), (content) => {
-        const category = Category.findById(content[selectBox.get("idKey")]);
-        const text = content[selectBox.get("textKey")];
+      return _.filter(content, (c) => {
+        const category = Category.findById(c[selectBox.get("idKey")]);
+        const text = c[selectBox.get("textKey")];
         if (category && category.get("parentCategory")) {
           const categoryName = category.get("parentCategory.name");
           return _matchFunction(filter, text) || _matchFunction(filter, categoryName);
@@ -53,8 +72,7 @@ export default SelectBoxComponent.extend({
     this.set("headerText", headerText);
   },
 
-  // original method is kept for compatibility
-  selectBoxRowTemplate: function() {
+  templateForRow: function() {
     return (rowComponent) => this.rowContentTemplate(rowComponent.get("content"));
   }.property(),
 
@@ -75,6 +93,12 @@ export default SelectBoxComponent.extend({
       const categoryId = c.get("id");
       if (scopedCategoryId && categoryId !== scopedCategoryId && c.get("parent_category_id") !== scopedCategoryId) { return false; }
       if (excludeCategoryId === categoryId) { return false; }
+      if (this.get("allowUncategorized") === false && c.get("isUncategorizedCategory")) { return false; }
+      if (this.get("allowUncategorized") !== true) {
+        if (!this.siteSettings.allow_uncategorized_topics && c.get("isUncategorizedCategory")) {
+          return false;
+        }
+      }
       return c.get("permission") === PermissionType.FULL;
     });
 

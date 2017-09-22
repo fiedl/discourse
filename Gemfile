@@ -44,7 +44,7 @@ gem 'redis-namespace'
 
 gem 'active_model_serializers', '~> 0.8.3'
 
-gem 'onebox'
+gem 'onebox', '1.8.19'
 
 gem 'http_accept_language', '~>2.0.5', require: false
 
@@ -68,7 +68,7 @@ gem 'aws-sdk', require: false
 gem 'excon', require: false
 gem 'unf', require: false
 
-gem 'email_reply_trimmer', '0.1.7'
+gem 'email_reply_trimmer', '0.1.8'
 
 # Forked until https://github.com/toy/image_optim/pull/149 is merged
 gem 'discourse_image_optim', require: 'image_optim'

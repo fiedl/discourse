@@ -111,13 +111,18 @@
   {{/unless}}
 
   <div>
-    <label for="alias">{{i18n 'groups.alias_levels.title'}}</label>
-    {{combo-box name="alias" valueAttribute="value" value=model.alias_level content=aliasLevelOptions}}
+    <label for="alias">{{i18n 'groups.alias_levels.mentionable'}}</label>
+    {{combo-box name="alias" valueAttribute="value" value=model.mentionable_level content=aliasLevelOptions}}
+  </div>
+
+  <div>
+    <label for="alias">{{i18n 'groups.alias_levels.messageable'}}</label>
+    {{combo-box name="alias" valueAttribute="value" value=model.messageable_level content=aliasLevelOptions}}
   </div>
 
   <div>
     <label>{{i18n 'groups.notification_level'}}</label>
-    {{notifications-button i18nPrefix='groups.notifications' notificationLevel=model.default_notification_level}}
+    {{notifications-button i18nPrefix='groups.notifications' value=model.default_notification_level}}
     <div class='clearfix'></div>
   </div>
 

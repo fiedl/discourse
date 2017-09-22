@@ -341,8 +341,6 @@ tr_TR:
       index:
         title: "Gruplar"
         empty: "Görünen hiç bir grup bulunmamaktadır."
-      title:
-        other: "gruplar"
       activity: "Etkinlik"
       members: "Üyeler"
       topics: "Konular"
@@ -350,7 +348,6 @@ tr_TR:
       mentions: "Bahsetmeler"
       messages: "İletiler"
       alias_levels:
-        title: "Kimler bu gruba ileti gönderebilir ve gruptan @bahsedebilir?"
         nobody: " Hiç Kimse"
         only_admins: "Sadece Yöneticiler"
         mods_and_admins: "Sadece Moderatörler ve Yöneticiler"
@@ -474,6 +471,7 @@ tr_TR:
       first_notification: "İlk bilidiriminiz! Başlamak için seçiniz"
       disable_jump_reply: "Cevapladıktan sonra gönderime atlama"
       dynamic_favicon: "Tarayıcı simgesinde yeni / güncellenen konu sayısını göster"
+      theme_default_on_all_devices: "Seçilen temayı bütün cihazlarımda varsayılan yap"
       external_links_in_new_tab: "Tüm dış bağlantıları yeni sekmede aç"
       enable_quoting: "Vurgulanan yazıyı alıntılayarak cevaplama özelliğini etkinleştir"
       change: "değiştir"
@@ -547,6 +545,9 @@ tr_TR:
         failed_to_move: "Seçilen iletileri taşımak başarısız oldu (muhtemelen ağınız çöktü)"
         select_all: "Tümünü seç"
       preferences_nav:
+        account: "Hesap"
+        notifications: "Bildirimler"
+        categories: "Kategoriler"
         interface: "Arayüz"
       change_password:
         success: "(e-posta gönderildi)"
@@ -1024,26 +1025,6 @@ tr_TR:
       empty: "Bildirim yok."
       more: "daha eski bildirimleri görüntüle"
       total_flagged: "toplam bildirilen gönderiler"
-      mentioned: "<i title='bahsetti' class='fa fa-at'></i><p><span>{{username}}</span> {{description}}</p>"
-      group_mentioned: "<i title='bahsetti' class='fa fa-at'></i><p><span>{{username}}</span> {{description}}</p>"
-      quoted: "<i title='alıntıladı' class='fa fa-quote-right'></i><p><span>{{username}}</span> {{description}}</p>"
-      replied: "<i title='cevapladı' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
-      posted: "<i title='yazdı' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
-      edited: "<i title='düzenledi' class='fa fa-pencil'></i><p><span>{{username}}</span> {{description}}</p>"
-      liked: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}</span> {{description}}</p>"
-      liked_2: "<i title='beğendi' class='fa fa-heart'></i><p><span>{{username}}, {{username2}}</span> {{description}}</p>"
-      liked_many:
-        other: "<i title='beğendi' class='fa fa-heart'></i><p><span>{{username}}, {{username2}} ve diğer {{count}} kişi</span> {{description}}</p>"
-      private_message: "<i title='özel ileti' class='fa fa-envelope-o'></i><p><span>{{username}}</span> {{description}}</p>"
-      invited_to_private_message: "<i title='özel ileti' class='fa fa-envelope-o'></i><p><span>{{username}}</span> {{description}}</p>"
-      invited_to_topic: "<i title='konuya davet edildi' class='fa fa-hand-o-right'></i><p><span>{{username}}</span> {{description}}</p>"
-      invitee_accepted: "<i title='davetiyeni kabul etti' class='fa fa-user'></i><p><span>{{username}}</span> davetini kabul etti!</p>"
-      moved_post: "<i title='gönderiyi taşıdı' class='fa fa-sign-out'></i><p><span>{{username}}</span> taşıdı {{description}}</p>"
-      linked: "<i title='bağlanmış gönderi' class='fa fa-link'></i><p><span>{{username}}</span> {{description}}</p>"
-      granted_badge: "<i title='badge granted' class='fa fa-certificate'></i><p><strong>{{description}}</strong> rozeti kazandınız!</p>"
-      watching_first_post: "<i title='yeni konu' class='fa fa-dot-circle-o'></i><p><span>Yeni Konu</span> {{description}}</p>"
-      group_message_summary:
-        other: "<i title='grup gelen kutusundaki iletiler' class='fa fa-group'></i><p> {{group_name}} isimli grubunuzun gelen kutusunda {{count}} adet ileti var</p>"
       alt:
         mentioned: "Bahsedildi, şu kişi tarafından"
         quoted: "Alıntılandı, şu kişi tarafından"
@@ -1090,8 +1071,6 @@ tr_TR:
       select_all: "Tümünü Seç"
       clear_all: "Tümünü Temizle"
       too_short: "Aradığın terim çok kısa."
-      result_count:
-        other: "<span class='term'>\"{{term}}\"</span> için {{count}} sonuç "
       title: "konu, gönderi, kullanıcı veya kategori ara"
       no_results: "Hiç bir sonuç bulunamadı."
       no_more_results: "Başka sonuç yok."
@@ -1163,6 +1142,7 @@ tr_TR:
         actions: "Toplu Eylemler"
         close_topics: "Konuları Kapat"
         archive_topics: "Konuları Arşivle"
+        notification_level: "Bildirimler"
         choose_new_category: "Konular için yeni bir kategori seçin:"
         selected:
           other: "<b>{{count}}</b> konu seçtiniz."
@@ -1886,7 +1866,6 @@ tr_TR:
         hamburger_menu: '<b>=</b> Hamburger menüyü aç'
         user_profile_menu: '<b>p</b> Kullanıcı menüsünü aç'
         show_incoming_updated_topics: '<b>.</b> Güncellenmiş konuları göster'
-        search: '<b>/</b> Ara'
         help: '<b>?</b> Klavye yardım sayfasını aç'
         dismiss_new_posts: '<b>x</b>, <b>r</b> Yeni Konuları/Gönderileri Yoksay'
         dismiss_topics: '<b>x</b>, <b>t</b> Konuları yoksay'
@@ -2937,8 +2916,6 @@ tr_TR:
       upload: "Yükle"
       uploading: "Yükleniyor..."
       quit: "Belki Sonra"
-      staff_count:
-        other: "Topluluğunuzda %{count} görevli üye var."
       invites:
         add_user: "ekle"
         none_added: "Herhangi bir görevli davet etmediniz. Devam etmek istediğinize emin misiniz?"

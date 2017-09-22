@@ -50,12 +50,12 @@
   .title-wrapper {
     float: left;
     width: 90%;
+
     .btn-small {
       margin: 0 6px 0 0;
     }
 
     .badge-wrapper {
-      float: left;
       margin-right: 12px;
     }
 
@@ -123,7 +123,7 @@
 }
 
 .topic-unsubscribe {
-  .notification-options {
+  .notifications-button {
     display: inline-block;
     float: none;
     line-height: 2em;
