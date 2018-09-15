@@ -18,7 +18,8 @@
     action=(action "createFlag")
     disabled=submitDisabled
     title="flagging.submit_tooltip"
-    translatedLabel=submitText}}
+    icon=submitIcon
+    label=submitLabel}}
 
   {{#if canSendWarning}}
     {{d-button
@@ -39,10 +40,10 @@
       label="flagging.take_action"}}
   {{/if}}
 
-  {{#if canDeleteSpammer}}
+  {{#if showDeleteSpammer}}
     {{d-button
       class="btn-danger"
-      action=(route-action "deleteSpammer" userDetails)
+      action="deleteSpammer"
       disabled=submitDisabled
       icon="exclamation-triangle"
       label="flagging.delete_spammer"}}

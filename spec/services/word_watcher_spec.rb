@@ -47,6 +47,52 @@ describe WordWatcher do
         m = WordWatcher.new("I acknowledge you.").word_matches_for_action?(:require_approval)
         expect(m[1]).to eq("acknowledge")
       end
+
+      context "regular expressions" do
+        before do
+          SiteSetting.watched_words_regular_expressions = true
+        end
+
+        it "supports regular expressions on word boundaries" do
+          Fabricate(
+            :watched_word,
+            word: /\btest\b/,
+            action: WatchedWord.actions[:block]
+          )
+          m = WordWatcher.new("this is not a test.").word_matches_for_action?(:block)
+          expect(m[1]).to eq("test")
+        end
+
+        it "supports regular expressions as a site setting" do
+          Fabricate(
+            :watched_word,
+            word: /tro[uo]+t/,
+            action: WatchedWord.actions[:require_approval]
+          )
+          m = WordWatcher.new("Evil Trout is cool").word_matches_for_action?(:require_approval)
+          expect(m[1]).to eq("Trout")
+          m = WordWatcher.new("Evil Troot is cool").word_matches_for_action?(:require_approval)
+          expect(m[1]).to eq("Troot")
+          m = WordWatcher.new("trooooooooot").word_matches_for_action?(:require_approval)
+          expect(m[1]).to eq("trooooooooot")
+        end
+
+        it "support uppercase" do
+          Fabricate(
+            :watched_word,
+            word: /a\S+ce/,
+            action: WatchedWord.actions[:require_approval]
+          )
+
+          m = WordWatcher.new('Amazing place').word_matches_for_action?(:require_approval)
+          expect(m).to be_nil
+          m = WordWatcher.new('Amazing applesauce').word_matches_for_action?(:require_approval)
+          expect(m[1]).to eq('applesauce')
+          m = WordWatcher.new('Amazing AppleSauce').word_matches_for_action?(:require_approval)
+          expect(m[1]).to eq('AppleSauce')
+        end
+      end
+
     end
   end
 

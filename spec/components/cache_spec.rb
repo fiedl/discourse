@@ -41,7 +41,7 @@ describe Cache do
     cache.delete("key")
     cache.delete("bla")
 
-    key = cache.namespaced_key("key")
+    key = cache.normalize_key("key")
 
     cache.fetch("key", expires_in: 1.minute) do
       "bob"
@@ -52,7 +52,7 @@ describe Cache do
     # we always expire withing a day
     cache.fetch("bla") { "hi" }
 
-    key = cache.namespaced_key("bla")
+    key = cache.normalize_key("bla")
     expect($redis.ttl(key)).to be_within(2.seconds).of(1.day)
   end
 
@@ -72,5 +72,12 @@ describe Cache do
       "bob"
     end
     expect(r).to eq("bill")
+  end
+
+  it "can fetch keys with pattern" do
+    cache.write "users:admins", "jeff"
+    cache.write "users:moderators", "bob"
+
+    expect(cache.keys("users:*").count).to eq(2)
   end
 end

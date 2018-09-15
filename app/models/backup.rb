@@ -1,3 +1,5 @@
+require 'disk_space'
+
 class Backup
   include ActiveModel::SerializerSupport
 
@@ -36,6 +38,7 @@ class Backup
 
   def after_remove_hook
     remove_from_s3 if SiteSetting.enable_s3_backups? && !SiteSetting.s3_disable_cleanup?
+    DiskSpace.reset_cached_stats unless SiteSetting.enable_s3_backups?
   end
 
   def s3_bucket
@@ -46,7 +49,7 @@ class Backup
 
   def s3
     require "s3_helper" unless defined? S3Helper
-    @s3_helper ||= S3Helper.new(s3_bucket)
+    @s3_helper ||= S3Helper.new(s3_bucket, '', S3Helper.s3_options(SiteSetting))
   end
 
   def upload_to_s3
