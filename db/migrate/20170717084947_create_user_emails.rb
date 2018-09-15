@@ -1,6 +1,6 @@
-require_dependency 'column_dropper'
+require 'migration/column_dropper'
 
-class CreateUserEmails < ActiveRecord::Migration
+class CreateUserEmails < ActiveRecord::Migration[4.2]
   def up
     create_table :user_emails do |t|
       t.integer :user_id, null: false
@@ -33,7 +33,7 @@ class CreateUserEmails < ActiveRecord::Migration
     SQL
 
     change_column_null :users, :email, true
-    ColumnDropper.mark_readonly(:users, :email)
+    Migration::ColumnDropper.mark_readonly(:users, :email)
   end
 
   def down

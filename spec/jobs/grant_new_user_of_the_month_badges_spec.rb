@@ -106,6 +106,19 @@ describe Jobs::GrantNewUserOfTheMonthBadges do
       expect(granter.scores.keys).not_to include(user.id)
     end
 
+    it "doesn't count private topics" do
+      user = Fabricate(:user, created_at: 1.week.ago)
+      topic = Fabricate(:private_message_topic)
+      Fabricate(:post, topic: topic, user: user)
+      p = Fabricate(:post, user: user)
+      old_user = Fabricate(:user, created_at: 6.months.ago)
+      PostAction.act(old_user, p, PostActionType.types[:like])
+      old_user = Fabricate(:user, created_at: 6.months.ago)
+      PostAction.act(old_user, p, PostActionType.types[:like])
+
+      expect(granter.scores.keys).not_to include(user.id)
+    end
+
     it "requires at least two likes to be considered" do
       user = Fabricate(:user, created_at: 1.week.ago)
       Fabricate(:post, user: user)
@@ -149,11 +162,11 @@ describe Jobs::GrantNewUserOfTheMonthBadges do
       PostAction.act(um, p, PostActionType.types[:like])
       PostAction.act(ua, p, PostActionType.types[:like])
       PostAction.act(Discourse.system_user, p, PostActionType.types[:like])
-      expect(granter.scores[user.id]).to eq(4.425)
+      expect(granter.scores[user.id]).to eq(1.55)
 
       # It goes down the more they post
       Fabricate(:post, user: user)
-      expect(granter.scores[user.id]).to eq(2.95)
+      expect(granter.scores[user.id]).to eq(1.35625)
     end
 
     it "is limited to two accounts" do

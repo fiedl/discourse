@@ -1,24 +1,16 @@
 require 'rails_helper'
 
-RSpec.describe 'Multisite SiteSettings' do
+RSpec.describe 'Multisite SiteSettings', type: :multisite do
   let(:conn) { RailsMultisite::ConnectionManagement }
 
   before do
     @original_provider = SiteSetting.provider
     SiteSetting.provider = SiteSettings::DbProvider.new(SiteSetting)
-    conn.config_filename = "spec/fixtures/multisite/two_dbs.yml"
-    conn.load_settings!
   end
 
   after do
     ['default', 'second'].each do |db|
       conn.with_connection(db) { SiteSetting.where(name: 'default_locale').destroy_all }
-    end
-
-    conn.clear_settings!
-
-    [:@@db_spec_cache, :@@host_spec_cache, :@@default_spec].each do |class_variable|
-      conn.remove_class_variable(class_variable)
     end
 
     SiteSetting.provider = @original_provider

@@ -15,10 +15,23 @@ class WordWatcher
   def self.word_matcher_regexp(action)
     s = Discourse.cache.fetch(word_matcher_regexp_key(action), expires_in: 1.day) do
       words = words_for_action(action)
-      words.empty? ? nil : '\b(' + words.map { |w| Regexp.escape(w).gsub("\\*", '\S*') }.join('|'.freeze) + ')\b'
+      if words.empty?
+        nil
+      else
+        regexp = '(' + words.map { |w| word_to_regexp(w) }.join('|'.freeze) + ')'
+        SiteSetting.watched_words_regular_expressions? ? regexp : "\\b(#{regexp})\\b"
+      end
     end
-
     s.present? ? Regexp.new(s, Regexp::IGNORECASE) : nil
+  end
+
+  def self.word_to_regexp(word)
+    if SiteSetting.watched_words_regular_expressions?
+      # Strip ruby regexp format if present, we're going to make the whole thing
+      # case insensitive anyway
+      return word.start_with?("(?-mix:") ? word[7..-2] : word
+    end
+    Regexp.escape(word).gsub("\\*", '\S*')
   end
 
   def self.word_matcher_regexp_key(action)

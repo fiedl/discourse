@@ -24,11 +24,6 @@ class TopicCreator
     # this allows us to add errors
     valid = topic.valid?
 
-    # not sure where this should go
-    if !@guardian.is_staff? && staff_only = DiscourseTagging.staff_only_tags(@opts[:tags])
-      topic.errors[:base] << I18n.t("tags.staff_tag_disallowed", tag: staff_only.join(" "))
-    end
-
     DiscourseEvent.trigger(:after_validate_topic, topic, self)
     valid &&= topic.errors.empty?
 
@@ -48,11 +43,17 @@ class TopicCreator
     save_topic(topic)
     create_warning(topic)
     watch_topic(topic)
+    create_shared_draft(topic)
 
     topic
   end
 
   private
+
+  def create_shared_draft(topic)
+    return unless @opts[:shared_draft] && @opts[:category].present?
+    SharedDraft.create(topic_id: topic.id, category_id: @opts[:category])
+  end
 
   def create_warning(topic)
     return unless @opts[:is_warning]
@@ -72,12 +73,12 @@ class TopicCreator
       topic.notifier.watch_topic!(topic.user_id)
     end
 
-    topic.topic_allowed_users(true).each do |tau|
+    topic.reload.topic_allowed_users.each do |tau|
       next if tau.user_id == -1 || tau.user_id == topic.user_id
       topic.notifier.watch!(tau.user_id)
     end
 
-    topic.topic_allowed_groups(true).each do |tag|
+    topic.reload.topic_allowed_groups.each do |tag|
       tag.group.group_users.each do |gu|
         next if gu.user_id == -1 || gu.user_id == topic.user_id
 
@@ -138,6 +139,10 @@ class TopicCreator
     # PM can't have a category
     @opts.delete(:category) if @opts[:archetype].present? && @opts[:archetype] == Archetype.private_message
 
+    if @opts[:shared_draft]
+      return Category.find(SiteSetting.shared_drafts_category)
+    end
+
     # Temporary fix to allow older clients to create topics.
     # When all clients are updated the category variable should
     # be set directly to the contents of the if statement.
@@ -149,7 +154,19 @@ class TopicCreator
   end
 
   def setup_tags(topic)
-    DiscourseTagging.tag_topic_by_names(topic, @guardian, @opts[:tags])
+    if @opts[:tags].blank?
+      unless @guardian.is_staff? || !guardian.can_tag?(topic)
+        # Validate minimum required tags for a category
+        category = find_category
+        if category.present? && category.minimum_required_tags > 0
+          topic.errors[:base] << I18n.t("tags.minimum_required_tags", count: category.minimum_required_tags)
+          rollback_from_errors!(topic)
+        end
+      end
+    else
+      valid_tags = DiscourseTagging.tag_topic_by_names(topic, @guardian, @opts[:tags])
+      rollback_from_errors!(topic) unless valid_tags
+    end
   end
 
   def setup_auto_close_time(topic)
@@ -166,7 +183,7 @@ class TopicCreator
       rollback_with!(topic, :no_user_selected)
     end
 
-    if @opts[:target_emails].present? && !@guardian.cand_send_private_messages_to_email? then
+    if @opts[:target_emails].present? && !@guardian.can_send_private_messages_to_email? then
       rollback_with!(topic, :reply_by_email_disabled)
     end
 
@@ -190,7 +207,7 @@ class TopicCreator
     names = usernames.split(',').flatten
     len = 0
 
-    User.where(username: names).each do |user|
+    User.includes(:user_option).where(username: names).find_each do |user|
       check_can_send_permission!(topic, user)
       @added_users << user
       topic.topic_allowed_users.build(user_id: user.id)
@@ -203,18 +220,22 @@ class TopicCreator
   def add_emails(topic, emails)
     return unless emails
 
-    emails = emails.split(',').flatten
-    len = 0
+    begin
+      emails = emails.split(',').flatten
+      len = 0
 
-    emails.each do |email|
-      display_name = email.split("@").first
-      user = find_or_create_user(email, display_name)
-      @added_users << user
-      topic.topic_allowed_users.build(user_id: user.id)
-      len += 1
+      emails.each do |email|
+        display_name = email.split("@").first
+
+        if user = find_or_create_user(email, display_name)
+          @added_users << user
+          topic.topic_allowed_users.build(user_id: user.id)
+          len += 1
+        end
+      end
+    ensure
+      rollback_with!(topic, :target_user_not_found) unless len == emails.length
     end
-
-    rollback_with!(topic, :target_user_not_found) unless len == emails.length
   end
 
   def add_groups(topic, groups)
@@ -239,8 +260,9 @@ class TopicCreator
   def find_or_create_user(email, display_name)
     user = User.find_by_email(email)
 
-    if user.nil? && SiteSetting.enable_staged_users
+    if !user && SiteSetting.enable_staged_users
       username = UserNameSuggester.sanitize_username(display_name) if display_name.present?
+
       user = User.create!(
         email: email,
         username: UserNameSuggester.suggest(username.presence || email),
@@ -250,8 +272,6 @@ class TopicCreator
     end
 
     user
-  rescue
-    rollback_with!(topic, :target_user_not_found)
   end
 
 end
